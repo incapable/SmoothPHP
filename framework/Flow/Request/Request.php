@@ -11,7 +11,7 @@
  * Class that represents a "request", be it a browser request or a code-generated request.
  */
 
-namespace SmoothPHP\Framework\Flow;
+namespace SmoothPHP\Framework\Flow\Request;
 
 class Request {
     private $get, $post, $server;

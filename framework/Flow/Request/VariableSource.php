@@ -11,7 +11,7 @@
  * A "source" for external parameters with filtering options.
  */
 
-namespace SmoothPHP\Framework\Flow;
+namespace SmoothPHP\Framework\Flow\Request;
 
 class VariableSource {
     private $source;

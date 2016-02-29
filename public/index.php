@@ -13,9 +13,11 @@
 
 require_once '../framework/Bootstrap.php';
 use SmoothPHP\Framework\Core\Kernel;
-use SmoothPHP\Framework\Flow\GlobalVarRequest;
+use SmoothPHP\Framework\Flow\Request\GlobalVarRequest;
 
 {
     $kernel = new Kernel();
+    $kernel->loadPrototype(new Website());
+
     $request = new GlobalVarRequest();
 }

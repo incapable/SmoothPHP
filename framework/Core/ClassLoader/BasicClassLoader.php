@@ -19,6 +19,7 @@ class BasicClassLoader {
     public function __construct() {
         $this->prefixes = array();
         $this->prefixes['SmoothPHP\Framework'] = __ROOT__ . 'framework/';
+        $this->prefixes[''] = __ROOT__ . '/src/';
     }
     
     public function register() {
@@ -47,7 +48,7 @@ class BasicClassLoader {
         $classPath .= str_replace('_', '/', $className) . '.php';
 
         foreach ($this->prefixes as $prefix => $dir) {
-            if (strpos($class, $prefix) === 0) {
+            if (strlen($prefix) == 0 || strpos($class, $prefix) === 0) {
                 $prefix = str_replace('\\', '/', $prefix);
                 $ldPath = preg_replace('#' . $prefix . '#', $dir, $classPath, 1);
 

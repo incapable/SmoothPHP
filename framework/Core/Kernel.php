@@ -13,6 +13,17 @@
 
 namespace SmoothPHP\Framework\Core;
 
+use SmoothPHP\Framework\Flow\Routing\RouteDatabase;
+
 class Kernel {
+    private $routeDatabase;
+    
+    public function __construct() {
+        $this->routeDatabase = new RouteDatabase();
+    }
+    
+    public function loadPrototype(WebPrototype $prototype) {
+        $prototype->registerRoutes($this->routeDatabase);
+    }
     
 }
