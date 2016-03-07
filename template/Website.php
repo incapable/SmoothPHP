@@ -21,6 +21,13 @@ class Website extends WebPrototype {
             'name' => 'index',
             'path' => '/'
         ));
+
+        $routes->register(array(
+            'name' => 'secondpage',
+            'path' => '/second'
+        ));
+        
+        print_r($routes);
     }
 
 }
