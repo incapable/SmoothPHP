@@ -19,27 +19,9 @@ class Website extends WebPrototype {
     public function registerRoutes(RouteDatabase $routes) {
         $routes->register(array(
             'name' => 'index',
-            'path' => '/'
-        ));
-
-        $routes->register(array(
-            'name' => 'secondpage',
-            'path' => '/second'
-        ));
-
-        $routes->register(array(
-            'name' => 'thirdpage',
-            'path' => '/second/%/cookie/%/nom'
-        ));
-
-        $routes->register(array(
-            'name' => 'compare_none',
-            'path' => '/compare/none'
-        ));
-        
-        $routes->register(array(
-            'name' => 'compare',
-            'path' => '/compare/...'
+            'path' => '/',
+            'controller' => '\\Test\\Controllers\\TestController',
+            'call' => 'index'
         ));
     }
 

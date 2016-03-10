@@ -56,6 +56,8 @@ class RouteDatabase {
         
         $currentRecursive[self::HANDLER] = &$routeOpts;
         $this->routes[$routeOpts['name']] = &$routeOpts;
+        
+        new ControllerCall($routeOpts['controller'], $routeOpts['call']);
     }
     
     public function resolve(Request $request) {
