@@ -20,7 +20,7 @@ class Request {
      * @return \SmoothPHP\Framework\Flow\Request\GlobalVarRequest
      */
     public static function createFromGlobals() {
-        return new GlobalVarRequest();
+        return new Request($_GET, $_POST, $_SERVER);
     }
 
     public function __construct(array $get, array $post, array $server) {
