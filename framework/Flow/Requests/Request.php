@@ -11,21 +11,24 @@
  * Class that represents a "request", be it a browser request or a code-generated request.
  */
 
-namespace SmoothPHP\Framework\Flow\Request;
+namespace SmoothPHP\Framework\Flow\Requests;
 
 class Request {
     private $get, $post, $server;
-    
+
+    /**
+     * @return \SmoothPHP\Framework\Flow\Request\GlobalVarRequest
+     */
+    public static function createFromGlobals() {
+        return new GlobalVarRequest();
+    }
+
     public function __construct(array $get, array $post, array $server) {
         $this->get = new VariableSource($get);
         $this->post = new VariableSource($post);
         $this->server = new VariableSource($server);
     }
-    
-    /**
-     * @param string $scope
-     * @return \SmoothPHP\Framework\Flow\VariableSource
-     */
+
     public function __get($scope) {
         switch($scope) {
             case "get":

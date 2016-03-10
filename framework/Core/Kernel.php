@@ -14,6 +14,7 @@
 namespace SmoothPHP\Framework\Core;
 
 use SmoothPHP\Framework\Flow\Routing\RouteDatabase;
+use SmoothPHP\Framework\Flow\Requests\Request;
 
 class Kernel {
     private $routeDatabase;
@@ -24,6 +25,10 @@ class Kernel {
     
     public function loadPrototype(WebPrototype $prototype) {
         $prototype->registerRoutes($this->routeDatabase);
+    }
+    
+    public function getResponse(Request $request) {
+        $this->routeDatabase->resolve($request);
     }
     
 }

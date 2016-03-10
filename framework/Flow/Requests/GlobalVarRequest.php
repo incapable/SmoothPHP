@@ -11,7 +11,7 @@
  * A request implementation that will use server vars such as $_GET, $_POST and $_SERVER to provide data.
  */
 
-namespace SmoothPHP\Framework\Flow\Request;
+namespace SmoothPHP\Framework\Flow\Requests;
 
 class GlobalVarRequest extends Request {
     

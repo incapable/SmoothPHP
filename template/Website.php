@@ -26,8 +26,21 @@ class Website extends WebPrototype {
             'name' => 'secondpage',
             'path' => '/second'
         ));
+
+        $routes->register(array(
+            'name' => 'thirdpage',
+            'path' => '/second/%/cookie/%/nom'
+        ));
+
+        $routes->register(array(
+            'name' => 'compare_none',
+            'path' => '/compare/none'
+        ));
         
-        print_r($routes);
+        $routes->register(array(
+            'name' => 'compare',
+            'path' => '/compare/...'
+        ));
     }
 
 }
