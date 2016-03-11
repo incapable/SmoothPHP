@@ -76,6 +76,11 @@ class RouteDatabase {
         $parameters = array();
         $routeOpts = $this->findRoute(0, $this->resolveCache, $resolveQuery, $parameters);
 
+        if (!is_array($routeOpts)) {
+            // 404
+            return false;
+        }
+
         return new ResolvedRoute($routeOpts, $parameters);
     }
     

@@ -63,7 +63,7 @@ class BasicClassLoader {
         // Regular means don't work
         $next = strstr($class, '\\');
         if ($next)
-            return $this->findClassFile ($next);
+            return $this->findClassFile($next);
     }
     
 }

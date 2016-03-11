@@ -29,6 +29,8 @@ class Kernel {
     
     public function getResponse(Request $request) {
         $resolvedRoute = $this->routeDatabase->resolve($request);
+        if (!$resolvedRoute)
+            return false;
         return $resolvedRoute->buildResponse($this, $request);
     }
     

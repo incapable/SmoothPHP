@@ -23,13 +23,6 @@ class Website extends WebPrototype {
             'controller' => '\\Test\\Controllers\\TestController',
             'call' => 'index'
         ));
-        
-        $routes->register(array(
-            'name' => 'index',
-            'path' => '/%/%',
-            'controller' => '\\Test\\Controllers\\TestController',
-            'call' => 'index'
-        ));
     }
 
 }
