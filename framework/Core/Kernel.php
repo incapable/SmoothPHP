@@ -28,7 +28,8 @@ class Kernel {
     }
     
     public function getResponse(Request $request) {
-        $this->routeDatabase->resolve($request);
+        $resolvedRoute = $this->routeDatabase->resolve($request);
+        return $resolvedRoute->buildResponse($this, $request);
     }
     
 }

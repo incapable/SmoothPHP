@@ -36,11 +36,11 @@ class RouteDatabase {
     
     public function register(array $routeOptions) {
         $routeOpts = array_merge($this->defaults, $routeOptions);
-        
+
         $path = explode('/', $routeOptions['path']);
         $path = array_merge(array($routeOpts['method'], $routeOpts['subdomain']), $path);
         $path = array_values(array_filter($path, 'strlen'));
-        
+
         $currentRecursive = &$this->resolveCache;
         for($i = 0; $i < count($path); $i++) {
             $pathPart = $path[$i];
@@ -53,18 +53,21 @@ class RouteDatabase {
 
             $currentRecursive = &$currentRecursive[$pathPart];
         }
-        
+
         $currentRecursive[self::HANDLER] = &$routeOpts;
         $this->routes[$routeOpts['name']] = &$routeOpts;
-        
-        new ControllerCall($routeOpts['controller'], $routeOpts['call']);
+
+        $routeOpts['controllercall'] = new ControllerCall($routeOpts['controller'], $routeOpts['call']);
     }
-    
+
+    /**
+     * @return \SmoothPHP\Framework\Flow\Routing\ResolvedRoute
+     */
     public function resolve(Request $request) {
         // Clean the URL of extra arguments
         $cleanedQuery = explode('?', $request->server->REQUEST_URI)[0];
         $cleanedQuery = explode('#', $cleanedQuery)[0];
-        
+
         // Add the base data and split the request
         $base = array($request->server->REQUEST_METHOD, $request->server->SERVER_NAME);
         $resolveQuery = array_merge($base, array_filter(explode('/', $cleanedQuery), 'strlen'));
@@ -72,8 +75,8 @@ class RouteDatabase {
         // Find the route options needed for this url
         $parameters = array();
         $routeOpts = $this->findRoute(0, $this->resolveCache, $resolveQuery, $parameters);
-        
-        var_dump(new ResolvedRoute($routeOpts, $parameters));
+
+        return new ResolvedRoute($routeOpts, $parameters);
     }
     
     private function findRoute($depth, array &$cacheLevel, array &$query, array &$parameters) {
@@ -93,13 +96,13 @@ class RouteDatabase {
             }
 
             if (isset($cacheLevel[self::WILDCARD_INPUT])) {
-                if ($depth > 2)
+                if ($depth >= 2)
                     array_push($parameters, $part); // Add it to the params list
                 $result = $this->findRoute($depth + 1, $cacheLevel[self::WILDCARD_INPUT], $query, $parameters);
 
                 if (is_array($result))
                     return $result;
-                else if ($depth > 2)
+                else if ($depth >= 2)
                     array_pop($parameters); // Nope that was not it
             }
 

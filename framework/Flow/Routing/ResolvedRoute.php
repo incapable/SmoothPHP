@@ -13,6 +13,9 @@
 
 namespace SmoothPHP\Framework\Flow\Routing;
 
+use SmoothPHP\Framework\Core\Kernel;
+use SmoothPHP\Framework\Flow\Requests\Request;
+
 class ResolvedRoute {
     private $route;
     private $parameters;
@@ -20,5 +23,9 @@ class ResolvedRoute {
     public function __construct(array &$route, array $parameters) {
         $this->route = $route;
         $this->parameters = $parameters;
+    }
+
+    public function buildResponse(Kernel $kernel, Request $request) {
+        $this->route['controllercall']->performCall($kernel, $request, $this->parameters);
     }
 }

@@ -59,6 +59,11 @@ class BasicClassLoader {
 
         if ($file = stream_resolve_include_path($classPath))
             return $file;
+        
+        // Regular means don't work
+        $next = strstr($class, '\\');
+        if ($next)
+            return $this->findClassFile ($next);
     }
     
 }
