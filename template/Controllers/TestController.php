@@ -2,10 +2,12 @@
 
 namespace Test\Controllers;
 
+use SmoothPHP\Framework\Flow\Responses\TemplateResponse;
+
 class TestController {
     
     public function index() {
-        return 'Hello world!';
+        return new TemplateResponse('test');
     }
     
 }

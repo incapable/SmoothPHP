@@ -13,7 +13,12 @@
 
 namespace SmoothPHP\Framework\Flow\Responses;
 
+use SmoothPHP\Framework\Core\Kernel;
+use SmoothPHP\Framework\Flow\Requests\Request;
+
 class PlainTextResponse extends Response {
+    
+    public function build(Kernel $kernel, Request $request) {}
     
     protected function sendHeaders() {
         parent::sendHeaders();

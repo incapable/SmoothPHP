@@ -15,16 +15,26 @@ namespace SmoothPHP\Framework\Core;
 
 use SmoothPHP\Framework\Flow\Routing\RouteDatabase;
 use SmoothPHP\Framework\Flow\Requests\Request;
+use SmoothPHP\Framework\Templates\TemplateEngine;
 
 class Kernel {
     private $routeDatabase;
+    private $templateEngine;
     
     public function __construct() {
         $this->routeDatabase = new RouteDatabase();
+        $this->templateEngine = new TemplateEngine();
     }
     
     public function loadPrototype(WebPrototype $prototype) {
         $prototype->registerRoutes($this->routeDatabase);
+    }
+    
+    /**
+     * @return TemplateEngine
+     */
+    public function getTemplateEngine() {
+        return $this->templateEngine;
     }
     
     /**

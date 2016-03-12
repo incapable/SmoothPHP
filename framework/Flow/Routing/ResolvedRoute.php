@@ -29,9 +29,10 @@ class ResolvedRoute {
     public function buildResponse(Kernel $kernel, Request $request) {
         $response = $this->route['controllercall']->performCall($kernel, $request, $this->parameters);
         
-        if ($response instanceof Response)
-            return $response;
-        else
-            return new $this->route['content-type']($response);
+        if (!($response instanceof Response))
+            $response = new $this->route['content-type']($response);
+        
+        $response->build($kernel, $request);
+        return $response;
     }
 }

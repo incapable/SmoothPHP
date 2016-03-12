@@ -13,12 +13,17 @@
 
 namespace SmoothPHP\Framework\Flow\Responses;
 
+use SmoothPHP\Framework\Core\Kernel;
+use SmoothPHP\Framework\Flow\Requests\Request;
+
 abstract class Response {
     protected $controllerResponse;
     
     public function __construct($controllerResponse) {
         $this->controllerResponse = $controllerResponse;
     }
+    
+    public abstract function build(Kernel $kernel, Request $request);
     
     protected function sendHeaders() {
         header('X-Powered-By: SmoothPHP');
