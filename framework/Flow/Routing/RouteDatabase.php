@@ -14,6 +14,7 @@
 namespace SmoothPHP\Framework\Flow\Routing;
 
 use SmoothPHP\Framework\Flow\Requests\Request;
+use SmoothPHP\Framework\Flow\Responses\PlainTextResponse;
 
 class RouteDatabase {
     const HANDLER = '-EOP-';
@@ -30,7 +31,8 @@ class RouteDatabase {
         
         $this->defaults = array(
             'method' => 'GET',
-            'subdomain' => self::WILDCARD_INPUT
+            'subdomain' => self::WILDCARD_INPUT,
+            'content-type' => PlainTextResponse::class
         );
     }
     

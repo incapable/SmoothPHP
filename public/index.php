@@ -21,4 +21,5 @@ use SmoothPHP\Framework\Flow\Requests\Request;
 
     $request = Request::createFromGlobals();
     $response = $kernel->getResponse($request);
+    $response->send();
 }

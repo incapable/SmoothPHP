@@ -27,6 +27,9 @@ class Kernel {
         $prototype->registerRoutes($this->routeDatabase);
     }
     
+    /**
+     * @return \SmoothPHP\Framework\Flow\Responses\Response|boolean
+     */
     public function getResponse(Request $request) {
         $resolvedRoute = $this->routeDatabase->resolve($request);
         if (!$resolvedRoute)

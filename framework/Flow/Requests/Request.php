@@ -39,5 +39,5 @@ class Request {
                 throw new \Exception("Invalid scope.");
         }
     }
-    
+
 }

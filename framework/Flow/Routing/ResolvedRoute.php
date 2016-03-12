@@ -15,6 +15,7 @@ namespace SmoothPHP\Framework\Flow\Routing;
 
 use SmoothPHP\Framework\Core\Kernel;
 use SmoothPHP\Framework\Flow\Requests\Request;
+use SmoothPHP\Framework\Flow\Responses\Response;
 
 class ResolvedRoute {
     private $route;
@@ -26,6 +27,11 @@ class ResolvedRoute {
     }
 
     public function buildResponse(Kernel $kernel, Request $request) {
-        $this->route['controllercall']->performCall($kernel, $request, $this->parameters);
+        $response = $this->route['controllercall']->performCall($kernel, $request, $this->parameters);
+        
+        if ($response instanceof Response)
+            return $response;
+        else
+            return new $this->route['content-type']($response);
     }
 }

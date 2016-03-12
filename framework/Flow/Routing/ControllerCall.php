@@ -49,6 +49,9 @@ class ControllerCall {
         }
     }
 
+    /**
+     * @return \SmoothPHP\Framework\Flow\Responses\Response|mixed
+     */
     public function performCall(Kernel $kernel, Request $request, array $args) {
         $this->kernel = $kernel;
         $this->request = $request;

@@ -14,13 +14,15 @@
 use SmoothPHP\Framework\Core\WebPrototype;
 use SmoothPHP\Framework\Flow\Routing\RouteDatabase;
 
+use Test\Controllers\TestController;
+
 class Website extends WebPrototype {
     
     public function registerRoutes(RouteDatabase $routes) {
         $routes->register(array(
             'name' => 'index',
             'path' => '/',
-            'controller' => '\\Test\\Controllers\\TestController',
+            'controller' => TestController::class,
             'call' => 'index'
         ));
     }
