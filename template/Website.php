@@ -12,17 +12,25 @@
  */
 
 use SmoothPHP\Framework\Core\WebPrototype;
+use SmoothPHP\Framework\Core\Kernel;
 use SmoothPHP\Framework\Flow\Routing\RouteDatabase;
 
-use Test\Controllers\TestController;
-
 class Website extends WebPrototype {
+    
+    public function initialize(Kernel $kernel) {
+        $config = $kernel->getConfig();
+
+        $config->mysql_enabled = true;
+        $config->mysql_database = 'test';
+        $config->mysql_user = 'root';
+        $config->mysql_password = 'root';
+    }
     
     public function registerRoutes(RouteDatabase $routes) {
         $routes->register(array(
             'name' => 'index',
             'path' => '/',
-            'controller' => TestController::class,
+            'controller' => \Test\Controllers\TestController::class,
             'call' => 'index'
         ));
     }

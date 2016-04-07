@@ -15,10 +15,10 @@ namespace SmoothPHP\Framework\Flow\Routing;
 
 use SmoothPHP\Framework\Core\Kernel;
 use SmoothPHP\Framework\Flow\Requests\Request;
+use SmoothPHP\Framework\Database\MySQL;
 
 class ControllerCall {
-    private $request;
-    private $kernel;
+    private $request, $kernel, $mysql;
     private $parameters;
     
     private $callable;
@@ -41,6 +41,10 @@ class ControllerCall {
                 case Kernel::class:
                     $this->controllerArgs[] = &$this->kernel;
                     break;
+                case MySQL::class:
+                    $this->mysql = -1; // Make sure the later isset fills this value
+                    $this->controllerArgs[] = &$this->mysql;
+                    break;
                 default: // Mixed-type arg, url-argument
                     $this->parameters[++$i] = null;
                     $this->controllerArgs[] = &$this->parameters[$i];
@@ -55,6 +59,8 @@ class ControllerCall {
     public function performCall(Kernel $kernel, Request $request, array $args) {
         $this->kernel = $kernel;
         $this->request = $request;
+        if (isset($this->mysql)) // MySQL should only be initialized on-demand
+            $this->mysql = $kernel->getMySQL();
 
         $i = 0;
         foreach($args as $arg) {

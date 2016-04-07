@@ -13,9 +13,12 @@
 
 namespace SmoothPHP\Framework\Core;
 
+use SmoothPHP\Framework\Core\Kernel;
 use SmoothPHP\Framework\Flow\Routing\RouteDatabase;
 
 abstract class WebPrototype {
+    
+    public abstract function initialize(Kernel $kernel);
     
     public abstract function registerRoutes(RouteDatabase $routes);
     
