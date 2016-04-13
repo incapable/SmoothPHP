@@ -24,7 +24,9 @@ class TemplateResponse extends Response {
     }
     
     public function build(Kernel $kernel, Request $request) {
-        $this->built = $kernel->getTemplateEngine()->fetch($this->controllerResponse);
+        ob_start();
+        var_dump($kernel->getTemplateEngine()->fetch($this->controllerResponse));
+        $this->built = ob_get_clean();
     }
     
     protected function sendHeaders() {

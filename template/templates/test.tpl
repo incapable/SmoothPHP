@@ -1,6 +1,3 @@
 Hello world!
 
-{[assign $var='nom']}
-{[if $var == 'nom']}
-    {[=$var]}
-{[/if]}
+{assign $var 5 + 3}

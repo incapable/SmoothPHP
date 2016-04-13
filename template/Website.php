@@ -20,7 +20,7 @@ class Website extends WebPrototype {
     public function initialize(Kernel $kernel) {
         $config = $kernel->getConfig();
 
-        $config->mysql_enabled = true;
+        $config->mysql_enabled = false;
         $config->mysql_database = 'test';
         $config->mysql_user = 'root';
         $config->mysql_password = 'root';

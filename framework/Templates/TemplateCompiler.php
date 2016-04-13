@@ -14,81 +14,126 @@
 namespace SmoothPHP\Framework\Templates;
 
 class TemplateCompiler {
-    const DELIMITER_START = '{[';
-    const DELIMITER_END = ']}';
+    const DELIMITER_START = '{';
+    const DELIMITER_END = '}';
     
     public function compile($file) {
         $lexer = new TemplateLexer(file_get_contents($file));
-        $output = '';
+        $output = array();
         $this->read($lexer, $output);
         return $output;
     }
     
-    private function read(TemplateLexer $lexer, &$output, $upto = null) {
-        $continue = true;
-        while($continue) {
-            if ($upto != null && $lexer->lookAhead($upto))
+    private function read(TemplateLexer $lexer, array &$output, $stackEnd = null) {
+        $rawString = '';
+        
+        $finishString = function() use (&$output, &$rawString) {
+            $trimmed = trim($rawString);
+            if (strlen($trimmed) > 0)
+                $output[] = new Elements\StringElement($trimmed);
+            $rawString = '';
+        };
+        
+        while(true) {
+            if ( $stackEnd !== null && $lexer->peek($stackEnd) ) {
+                $finishString();
                 return;
-            else if ($lexer->lookAhead(self::DELIMITER_START)) {
+            } else if ( $lexer->peek(self::DELIMITER_START) ) {
+                if ($lexer->isWhitespace()) {
+                    $rawString .= self::DELIMITER_START;
+                    continue;
+                }
+                
                 $command = '';
-                $this->read($lexer, $command, self::DELIMITER_END);
-                $this->parseCommand($lexer, $command, $output);
+                while(!$lexer->peek(self::DELIMITER_END)) {
+                    $char = $lexer->next();
+                    if ($char)
+                        $command .= $char;
+                    else
+                        throw new TemplateCompileException("Template syntax error, unfinished command: " . self::DELIMITER_START . $command);
+                }
+                
+                $finishString();
+                
+                $this->handleCommand(new TemplateLexer($command), $lexer, $output);
             } else {
-                $next = $lexer->getNext();
-                if ($next)
-                    $output .= $next;
-                else
+                $char = $lexer->next();
+                if ($char)
+                    $rawString .= $char;
+                else {
+                    $finishString();
                     return;
+                }
             }
         }
     }
     
-    private function parseCommand(TemplateLexer $lexer, $command, &$output) {
-        if ($command[0] == '=') // Language shortcut
-            $output .= '<?php echo ' . substr($command, 1) . '; ?>';
-        else {
-            $split = strpos($command, ' ') ?: strlen($command);
-            $commandName = substr($command, 0, $split);
-            switch(strtolower($commandName)) {
-                case "assign":
-                    $assignment = explode('=', substr($command, $split + 1));
-                    $output .= '<?php ' . $assignment[0] . ' = ' . $assignment[1] . '; ?>';
-                    break;
-                case "if":
-                    $this->read($lexer, $ifBlock, self::DELIMITER_START . '/if' . self::DELIMITER_END);
-                    $output .= '<?php if (' . substr($command, $split + 1) . ') {?>' . $ifBlock . '<?php } ?>';
+    private function readRaw(TemplateLexer $lexer, $stackEnd = null) {
+        $rawString = '';
+        
+        while(true) {
+            if ($stackEnd != null && $lexer->peek($stackEnd)) {
+                return $rawString;
+            } else {
+                $char = $lexer->next();
+                if ($char)
+                    $rawString .= $char;
+                else
+                    return $rawString;
+            }
+        }
+    }
+    
+    private function readAlphaNumeric(TemplateLexer $lexer) {
+        $rawString = '';
+        
+        while(true) {
+            $char = $lexer->peekSingle();
+            if (ctype_alnum($char))
+                $rawString .= $lexer->next();
+            else
+                return $rawString;
+        }
+    }
+   
+    private function handleCommand(TemplateLexer $command, TemplateLexer $lexer, array &$output) {
+        if ($command->peek('(')) {
+            $elements = array();
+            $this->handleCommand(new TemplateLexer($this->readRaw($command, ')')), $lexer, $elements);
+            $output[] = new Elements\ParenthesisElement($elements);
+        } else if ($command->peek('$')) {
+            $output[] = new Elements\VariableElement($this->readAlphaNumeric($command));
+        } else {
+            $commandName = strtolower($this->readAlphaNumeric($command));
+            if (strlen($commandName) == 0)
+                return;
+
+            switch($commandName) {
+                case 'assign':
+                    $command->skipWhitespace();
+                    $command->peek('$');
+                    $varName = $this->readAlphaNumeric($command);
+
+                    $command->skipWhitespace();
+                    $value = array();
+                    $this->handleCommand($command, $lexer, $value);
+
+                    $output[] = new Elements\AssignElement($varName, $value);
+                    return;
+                case 'if':
+                    $condition = array();
+                    $this->handleCommand($command, $lexer, $condition);
+                    $body = array();
+                    $this->read($lexer, $body);
+                    $output[] = new Elements\ParenthesisElement($body);
                     break;
                 default:
-                    throw new TemplateCompileException("Unknown operator: " . $commandName);
+                    // Handle constant value
+                    // throw new TemplateCompileException("Unknown command '" . $commandName . "'.");
             }
         }
     }
     
-}
-
-class TemplateLexer {
-    private $pointer;
-    private $content;
-    
-    public function __construct($content) {
-        $this->content = $content;
-        $this->pointer = 0;
-    }
-    
-    public function getNext() {
-        if ($this->pointer > (strlen($this->content) - 1))
-            return false;
-        return $this->content[$this->pointer++];
-    }
-    
-    public function lookAhead($str) {
-        $peek = strtolower(substr($this->content, $this->pointer, strlen($str)));
-        if ($peek == $str) {
-            $this->pointer += strlen($str);
-            return true;
-        } else
-            return false;
-    }
 }
 
 class TemplateCompileException extends \Exception {
