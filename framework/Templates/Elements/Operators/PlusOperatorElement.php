@@ -11,13 +11,15 @@
  * Handles adding 2 elements (+)
  */
 
-namespace SmoothPHP\Framework\Templates\Elements;
+namespace SmoothPHP\Framework\Templates\Elements\Operators;
 
-class PlusOperatorElement {
+use SmoothPHP\Framework\Templates\Elements\Element;
+
+class PlusOperatorElement extends Element {
     private $left, $right;
     
     public function __construct($left, $right) {
-        $this->left = $left;
-        $this->right = $right;
+        $this->left = $this->flatten($left);
+        $this->right = $this->flatten($right);
     }
 }

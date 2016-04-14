@@ -11,14 +11,16 @@
  * Element that will assign a variable to the currently active scope
  */
 
-namespace SmoothPHP\Framework\Templates\Elements;
+namespace SmoothPHP\Framework\Templates\Elements\Commands;
 
-class AssignElement {
+use SmoothPHP\Framework\Templates\Elements\Element;
+
+class AssignElement extends Element {
     private $varName;
     private $value;
     
-    public function __construct($varName, array $value) {
+    public function __construct($varName, $value) {
         $this->varName = $varName;
-        $this->value = $value;
+        $this->value = $this->flatten($value);
     }
 }

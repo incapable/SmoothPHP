@@ -11,12 +11,18 @@
  * Element that outputs the current value of a variable.
  */
 
-namespace SmoothPHP\Framework\Templates\Elements;
+namespace SmoothPHP\Framework\Templates\Elements\Commands;
+
+use SmoothPHP\Framework\Templates\Elements\Element;
 
 class VariableElement extends Element {
     private $varName;
     
     public function __construct($varName) {
         $this->varName = $varName;
+    }
+    
+    public function getVarName() {
+        return $this->varName;
     }
 }
