@@ -13,13 +13,10 @@
 
 namespace SmoothPHP\Framework\Templates\Elements\Operators;
 
-use SmoothPHP\Framework\Templates\Elements\Element;
-
-class PlusOperatorElement extends Element {
-    private $left, $right;
+class PlusOperatorElement extends ArithmeticOperatorElement {
     
-    public function __construct($left, $right) {
-        $this->left = $this->flatten($left);
-        $this->right = $this->flatten($right);
+    public function getPriority() {
+        return 2;
     }
+    
 }

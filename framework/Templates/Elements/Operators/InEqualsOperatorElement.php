@@ -19,7 +19,7 @@ class InEqualsOperatorElement extends Element {
     private $left, $right;
     
     public function __construct($left, $right) {
-        $this->left = $this->flatten($left);
-        $this->right = $this->flatten($right);
+        $this->left = $left;
+        $this->right = $right;
     }
 }

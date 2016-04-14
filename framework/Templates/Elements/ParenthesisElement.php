@@ -16,7 +16,7 @@ namespace SmoothPHP\Framework\Templates\Elements;
 class ParenthesisElement extends Element {
     private $elements;
     
-    public function __construct(array $elements) {
-        $this->elements = $this->flatten($elements);
+    public function __construct($elements) {
+        $this->elements = $elements;
     }
 }

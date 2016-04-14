@@ -21,6 +21,6 @@ class AssignElement extends Element {
     
     public function __construct($varName, $value) {
         $this->varName = $varName;
-        $this->value = $this->flatten($value);
+        $this->value = $value;
     }
 }

@@ -14,12 +14,4 @@
 namespace SmoothPHP\Framework\Templates\Elements;
 
 abstract class Element {
-    
-    protected function flatten($pieces) {
-        if (is_array($pieces) && count($pieces) == 1)
-            return $this->flatten(current($pieces));
-        else
-            return $pieces;
-    }
-    
 }

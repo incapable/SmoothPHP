@@ -20,7 +20,7 @@ class IfElement extends Element{
     private $body;
     
     public function __construct($condition, $body) {
-        $this->condition = $this->flatten($condition);
-        $this->body = $this->flatten($body);
+        $this->condition = $condition;
+        $this->body = $body;
     }
 }

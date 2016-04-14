@@ -13,6 +13,8 @@
 
 namespace SmoothPHP\Framework\Templates;
 
+use SmoothPHP\Framework\Templates\Elements\Operators\ArithmeticOperatorElement;
+
 class TemplateCompiler {
     const DELIMITER_START = '{';
     const DELIMITER_END = '}';
@@ -103,7 +105,7 @@ class TemplateCompiler {
         } else if ($command->peek('(')) {
             $elements = array();
             $this->handleCommand($command, $lexer, $elements, ')');
-            $output[] = new Elements\ParenthesisElement($elements);
+            $output[] = new Elements\ParenthesisElement(self::flatten($elements));
         } else if ($command->peek('$')) {
             $output[] = new Elements\Commands\VariableElement($this->readAlphaNumeric($command));
         } else {
@@ -119,7 +121,7 @@ class TemplateCompiler {
                     $value = array();
                     $this->handleCommand($command, $lexer, $value, $stackEnd);
 
-                    $output[] = new Elements\Commands\AssignElement($varName, $value);
+                    $output[] = new Elements\Commands\AssignElement($varName, self::flatten($value));
                     return;
                 }
                 case 'if': {
@@ -127,7 +129,7 @@ class TemplateCompiler {
                     $this->handleCommand($command, $lexer, $condition, $stackEnd);
                     $body = array();
                     $this->read($lexer, $body, '{/if}');
-                    $output[] = new Elements\Commands\IfElement($condition, $body);
+                    $output[] = new Elements\Commands\IfElement(self::flatten($condition), self::flatten($body));
                     break;
                 }
                 default: {
@@ -142,7 +144,19 @@ class TemplateCompiler {
 
                                 $right = array();
                                 $this->handleCommand($command, $lexer, $right, $stackEnd);
-                                $output[] = new Elements\Operators\PlusOperatorElement(array_pop($output), $right);
+                                $right = self::flatten($right);
+                                $priority = ArithmeticOperatorElement::determineOrder(new Elements\Operators\PlusOperatorElement(array_pop($output), $right), $right);
+                                $output[] = $priority;
+                                break;
+                            case '*':
+                                $command->next();
+                                $command->skipWhitespace();
+
+                                $right = array();
+                                $this->handleCommand($command, $lexer, $right, $stackEnd);
+                                $right = self::flatten($right);
+                                $priority = ArithmeticOperatorElement::determineOrder(new Elements\Operators\MultiplicationOperatorElement(array_pop($output), $right), $right);
+                                $output[] = $priority;
                                 break;
                             case '=':
                                 $command->next();
@@ -151,7 +165,7 @@ class TemplateCompiler {
                                     
                                     $right = array();
                                     $this->handleCommand($command, $lexer, $right, $stackEnd);
-                                    $output[] = new Elements\Operators\EqualsOperatorElement(array_pop($output), $right);
+                                    $output[] = new Elements\Operators\EqualsOperatorElement(array_pop($output), self::flatten($right));
                                 } else {
                                     $assignTo = array_pop($output);
                                     if (!($assignTo instanceof Elements\Commands\VariableElement))
@@ -159,7 +173,7 @@ class TemplateCompiler {
                                     
                                     $right = array();
                                     $this->handleCommand($command, $lexer, $right, $stackEnd);
-                                    $output[] = new Elements\Commands\AssignElement($assignTo->getVarName(), $right);
+                                    $output[] = new Elements\Commands\AssignElement($assignTo->getVarName(), self::flatten($right));
                                 }
                                 break;
                             case '!':
@@ -169,7 +183,7 @@ class TemplateCompiler {
                                     
                                     $right = array();
                                     $this->handleCommand($command, $lexer, $right, $stackEnd);
-                                    $output[] = new Elements\Operators\InEqualsOperatorElement(array_pop($output), $right);
+                                    $output[] = new Elements\Operators\InEqualsOperatorElement(array_pop($output), self::flatten($right));
                                 }
                             default:
                                 if (strlen($command->peekSingle()) > 0)
@@ -182,6 +196,13 @@ class TemplateCompiler {
         
         if ($command->peekSingle()) // Do we have more to read?
             $this->handleCommand($command, $lexer, $output, $stackEnd);
+    }
+    
+    private static function flatten($pieces) {
+        if (is_array($pieces) && count($pieces) == 1)
+            return self::flatten(current($pieces));
+        else
+            return $pieces;
     }
     
 }
