@@ -162,6 +162,15 @@ class TemplateCompiler {
                                     $output[] = new Elements\Commands\AssignElement($assignTo->getVarName(), $right);
                                 }
                                 break;
+                            case '!':
+                                $command->next();
+                                if ($command->peek('=')) {
+                                    $command->next();
+                                    
+                                    $right = array();
+                                    $this->handleCommand($command, $lexer, $right, $stackEnd);
+                                    $output[] = new Elements\Operators\InEqualsOperatorElement(array_pop($output), $right);
+                                }
                             default:
                                 if (strlen($command->peekSingle()) > 0)
                                     throw new TemplateCompileException("Unknown operator '" . $command->peekSingle() . "'");
