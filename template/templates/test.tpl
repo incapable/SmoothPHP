@@ -1,10 +1,9 @@
-{$blName = 'main'}
-
-{block "main"}
-    Hi there!
-    {$i = 0}
-    {while $i != 25}
-        {$i}
-        {$i = $i + 1}
-    {/while}
-{/block}
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{block "title"}Random title{/block}</title>
+    </head>
+    <body>
+        {block "main"} {/block}
+    </body>
+</html>
