@@ -13,7 +13,7 @@
 
 namespace SmoothPHP\Framework\Templates\Elements;
 
-use SmoothPHP\Framework\Templates\TemplateCompileException;
+use SmoothPHP\Framework\Templates\TemplateState;
 
 class PrimitiveElement extends Element {
     private $value;
@@ -30,8 +30,6 @@ class PrimitiveElement extends Element {
                     case "false":
                         $value = false;
                         break;
-                    default:
-                        throw new TemplateCompileException("Unexpected value '" . $value . "'");
                 }
             }
         }
@@ -42,7 +40,7 @@ class PrimitiveElement extends Element {
         return $this->value;
     }
     
-    public function simplify(array &$vars) {
+    public function simplify(TemplateState $tpl) {
         return $this;
     }
     

@@ -13,6 +13,7 @@
 
 namespace SmoothPHP\Framework\Templates\Elements\Commands;
 
+use SmoothPHP\Framework\Templates\TemplateState;
 use SmoothPHP\Framework\Templates\Elements\Element;
 use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
 
@@ -25,11 +26,11 @@ class AssignElement extends Element {
         $this->value = $value;
     }
     
-    public function simplify(array &$vars) {
-        $this->value = $this->value->simplify($vars);
+    public function simplify(TemplateState $tpl) {
+        $this->value = $this->value->simplify($tpl);
         
         if ($this->value instanceof PrimitiveElement)
-            $vars[$this->varName] = $this->value;
+            $tpl->vars[$this->varName] = $this->value;
         
         return $this;
     }

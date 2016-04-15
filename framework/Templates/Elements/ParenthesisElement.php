@@ -13,6 +13,7 @@
 
 namespace SmoothPHP\Framework\Templates\Elements;
 
+use SmoothPHP\Framework\Templates\TemplateState;
 use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
 
 class ParenthesisElement extends Element {
@@ -22,8 +23,8 @@ class ParenthesisElement extends Element {
         $this->element = $element;
     }
     
-    public function simplify(array &$vars) {
-        $this->element = $this->element->simplify($vars);
+    public function simplify(TemplateState $tpl) {
+        $this->element = $this->element->simplify($tpl);
         if ($this->element instanceof PrimitiveElement) {
             return $this->element;
         } else

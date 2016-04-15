@@ -13,8 +13,10 @@
 
 namespace SmoothPHP\Framework\Templates\Elements;
 
+use SmoothPHP\Framework\Templates\TemplateState;
+
 abstract class Element {
     
-    abstract function simplify(array &$vars);
+    abstract function simplify(TemplateState $tpl);
     
 }

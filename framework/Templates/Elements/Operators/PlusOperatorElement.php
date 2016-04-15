@@ -13,6 +13,7 @@
 
 namespace SmoothPHP\Framework\Templates\Elements\Operators;
 
+use SmoothPHP\Framework\Templates\TemplateState;
 use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
 
 class PlusOperatorElement extends ArithmeticOperatorElement {
@@ -21,9 +22,9 @@ class PlusOperatorElement extends ArithmeticOperatorElement {
         return 2;
     }
     
-    public function simplify(array &$vars) {
-        $this->left = $this->left->simplify($vars);
-        $this->right = $this->right->simplify($vars);
+    public function simplify(TemplateState $tpl) {
+        $this->left = $this->left->simplify($tpl);
+        $this->right = $this->right->simplify($tpl);
         
         if ($this->left instanceof PrimitiveElement && $this->right instanceof PrimitiveElement)
             if (is_string($this->left->getValue()) && is_string($this->right->getValue()))

@@ -13,26 +13,24 @@
 
 namespace SmoothPHP\Framework\Templates\Elements\Operators;
 
+use SmoothPHP\Framework\Templates\TemplateState;
 use SmoothPHP\Framework\Templates\Elements\Element;
-
 use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
 
 class FunctionOperatorElement extends Element {
     private $functionName;
     private $args;
     
-    public function __construct(Element $functionName, array $args) {
+    public function __construct($functionName, array $args) {
         $this->functionName = $functionName;
         $this->args = $args;
     }
     
-    public function simplify(array &$vars) {
-        $this->functionName = $this->functionName->simplify($vars);
-
+    public function simplify(TemplateState $tpl) {
         $simpleArgs = true;
         $primitiveArgs = array();
         for($i = 0; $i < count($this->args); $i++) {
-            $this->args[$i] = $this->args[$i]->simplify($vars);
+            $this->args[$i] = $this->args[$i]->simplify($tpl);
             
             if (!($this->args[$i] instanceof PrimitiveElement))
                 $simpleArgs = false;
@@ -40,8 +38,8 @@ class FunctionOperatorElement extends Element {
                 $primitiveArgs[] = $this->args[$i]->getValue();
         }
 
-        if ($this->functionName instanceof PrimitiveElement && $simpleArgs) {
-            return new PrimitiveElement(call_user_func_array($this->functionName->getValue(), $primitiveArgs));
+        if ($simpleArgs) {
+            return new PrimitiveElement(call_user_func_array($this->functionName, $primitiveArgs));
         } else
             return $this;
     }

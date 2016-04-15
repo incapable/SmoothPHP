@@ -13,6 +13,8 @@
 
 namespace SmoothPHP\Framework\Templates;
 
+use SmoothPHP\Framework\Templates\Elements\Chain;
+use SmoothPHP\Framework\Templates\Elements\Commands\BlockElement;
 use SmoothPHP\Framework\Templates\Elements\Operators\ArithmeticOperatorElement;
 
 class TemplateCompiler {
@@ -30,20 +32,22 @@ class TemplateCompiler {
     
     public function compile($file) {
         $lexer = new TemplateLexer(file_get_contents($file));
-        $output = array();
-        $this->read($lexer, $output);
-        $vars = array();
-        for($i = 0; $i < count($output); $i++)
-            $output[$i] = $output[$i]->simplify($vars);
-        return $output;
+        
+        $chain = new Chain();
+        $this->read($lexer, $chain);
+        
+        $tpl = new TemplateState();
+        $chain = $chain->simplify($tpl);
+        
+        return $chain;
     }
     
-    private function read(TemplateLexer $lexer, array &$output, $stackEnd = null) {
+    private function read(TemplateLexer $lexer, Chain $chain, $stackEnd = null) {
         $rawString = '';
         
-        $finishString = function() use (&$output, &$rawString) {
+        $finishString = function() use (&$chain, &$rawString) {
             if (strlen(trim($rawString)) > 0)
-                $output[] = new Elements\PrimitiveElement($rawString);
+                $chain->addElement (new Elements\PrimitiveElement($rawString));
             $rawString = '';
         };
         
@@ -68,7 +72,7 @@ class TemplateCompiler {
                 
                 $finishString();
                 
-                $this->handleCommand(new TemplateLexer($command), $lexer, $output);
+                $this->handleCommand(new TemplateLexer($command), $lexer, $chain);
             } else {
                 $char = $lexer->next();
                 if ($char !== false)
@@ -110,17 +114,17 @@ class TemplateCompiler {
         }
     }
    
-    private function handleCommand(TemplateLexer $command, TemplateLexer $lexer, array &$output, $stackEnd = null) {
+    private function handleCommand(TemplateLexer $command, TemplateLexer $lexer, Chain $chain, $stackEnd = null) {
         $command->skipWhitespace();
 
         if ($stackEnd != null && $command->peek($stackEnd)) {
             return;
         } else if ($command->peek('(')) {
-            $elements = array();
+            $elements = new Chain();
             $this->handleCommand($command, $lexer, $elements, ')');
-            $output[] = new Elements\ParenthesisElement(self::flatten($elements));
+            $chain->addElement(new Elements\ParenthesisElement(self::flatten($elements)));
         } else if ($command->peek('$')) {
-            $output[] = new Elements\Commands\VariableElement($this->readAlphaNumeric($command));
+            $chain->addElement(new Elements\Commands\VariableElement($this->readAlphaNumeric($command)));
         } else {
             $next = $this->readAlphaNumeric($command);
 
@@ -131,32 +135,54 @@ class TemplateCompiler {
                     $varName = $this->readAlphaNumeric($command);
 
                     $command->skipWhitespace();
-                    $value = array();
+                    $value = new Chain();
                     $this->handleCommand($command, $lexer, $value, $stackEnd);
-                    $output[] = new Elements\Commands\AssignElement($varName, self::flatten($value));
+                    $chain->addElement(new Elements\Commands\AssignElement($varName, self::flatten($value)));
                     break;
                 }
                 case 'if': {
-                    $condition = array();
+                    $condition = new Chain();
                     $this->handleCommand($command, $lexer, $condition, $stackEnd);
-                    $body = array();
+                    $body = new Chain();
                     $this->read($lexer, $body, '{/if}');
-                    $output[] = new Elements\Commands\IfElement(self::flatten($condition), self::flatten($body));
+                    $chain->addElement(new Elements\Commands\IfElement(self::flatten($condition), self::flatten($body)));
+                    break;
+                }
+                case 'block': {
+                    $args = new Chain();
+                    $this->handleCommand($command, $lexer, $args);
+                    $args = $args->getAll();
+                    
+                    $usage = BlockElement::USAGE_UNSPECIFIED;
+                    if (isset($args[1])) {
+                        $args[1] = $args[1]->simplify(new TemplateState());
+                        switch($args[1]->getValue()) {
+                            case 'prepend':
+                                $usage = BlockElement::USAGE_PREPEND;
+                                break;
+                            case 'append':
+                                $usage = BlockElement::USAGE_APPEND;
+                        }
+                    }
+                    
+                    $body = new Chain();
+                    $this->read($lexer, $body, '{/block}');
+                    $chain->addElement(new BlockElement($args[0], $usage, self::flatten($body)));
                     break;
                 }
                 default: {
                     if (strlen(trim($next)) > 0) {
-                        $output[] = new Elements\PrimitiveElement($next, true);
+                        $chain->addElement(new Elements\PrimitiveElement($next, true));
                         if ($command->peek('(')) {
                             // Function call
-                            $name = array_pop($output);
+                            $name = $chain->pop();
                             if (!($name instanceof Elements\PrimitiveElement))
                                 throw new TemplateCompileException("Attempting to call a function without a name.");
-                            $args = array();
+                            $args = new Chain();
                             do {
                                 $this->handleCommand($command, $lexer, $args, ')');
                             } while($command->skipWhitespace() || $command->peek(','));
-                            $output[] = new Elements\Operators\FunctionOperatorElement($name, $args);
+                            $chain->addElement(new Elements\Operators\FunctionOperatorElement($name->getValue(), $args));
                         }
                     } else {
                         $command->skipWhitespace();
@@ -165,7 +191,7 @@ class TemplateCompiler {
                             case '"':
                                 $strStart = $command->next();
                                 $str = $this->readRaw($command, $strStart, '\\' . $strStart);
-                                $output[] = new Elements\PrimitiveElement($str);
+                                $chain->addElement(new Elements\PrimitiveElement($str));
                                 break;
                             
                             case '+':
@@ -173,38 +199,36 @@ class TemplateCompiler {
                                 $op = $command->next();
                                 $command->skipWhitespace();
 
-                                $right = array();
+                                $right = new Chain();
                                 $this->handleCommand($command, $lexer, $right, ')');
-                                $output[] = ArithmeticOperatorElement::determineOrder(array_pop($output), self::flatten($right), new $this->operators[$op]);
+                                $chain->addElement(ArithmeticOperatorElement::determineOrder($chain->pop(), self::flatten($right), new $this->operators[$op]));
                                 break;
                                 
                             case '=':
                                 $command->next();
                                 if ($command->peek('=')) {
-                                    $right = array();
+                                    $right = new Chain();
                                     $this->handleCommand($command, $lexer, $right, $stackEnd);
-                                    $output[] = new Elements\Operators\EqualsOperatorElement(array_pop($output), self::flatten($right));
+                                    $chain->addElement(new Elements\Operators\EqualsOperatorElement($chain->pop(), self::flatten($right)));
                                 } else {
-                                    $assignTo = array_pop($output);
+                                    $assignTo = $chain->pop();
                                     if (!($assignTo instanceof Elements\Commands\VariableElement))
                                         throw new TemplateCompileException("Attempting to assign a value to a non-variable.");
                                     
-                                    $right = array();
+                                    $right = new Chain();
                                     $this->handleCommand($command, $lexer, $right, $stackEnd);
-                                    $output[] = new Elements\Commands\AssignElement($assignTo->getVarName(), self::flatten($right));
+                                    $chain->addElement(new Elements\Commands\AssignElement($assignTo->getVarName(), self::flatten($right)));
                                 }
                                 break;
                             case '!':
                                 $command->next();
                                 if ($command->peek('=')) {
-                                    $right = array();
+                                    $right = new Chain();
                                     $this->handleCommand($command, $lexer, $right, $stackEnd);
-                                    $output[] = new Elements\Operators\InEqualsOperatorElement(array_pop($output), self::flatten($right));
+                                    $chain->addElement(new Elements\Operators\InEqualsOperatorElement($chain->pop(), self::flatten($right)));
                                 }
                                 break;
                             default:
-                                var_dump($stackEnd);
-                                var_dump($command->remainder());
                                 if (strlen($command->peekSingle()) > 0)
                                     throw new TemplateCompileException("Unknown operator '" . $command->peekSingle() . "'");
                         }
@@ -215,15 +239,18 @@ class TemplateCompiler {
         
         $command->skipWhitespace();
         if ($command->peekSingle() && $command->peekSingle() != ',') // Do we have more to read?
-            $this->handleCommand($command, $lexer, $output, $stackEnd);
+            $this->handleCommand($command, $lexer, $chain, $stackEnd);
         return;
     }
     
-    private static function flatten($pieces) {
-        if (is_array($pieces) && count($pieces) == 1)
-            return self::flatten(current($pieces));
-        else
-            return $pieces;
+    private static function flatten($chain) {
+        if ($chain instanceof Chain) {
+            $all = $chain->getAll();
+            if (count($all) == 1)
+                return self::flatten(current($all));
+        }
+        
+        return $chain;
     }
     
 }

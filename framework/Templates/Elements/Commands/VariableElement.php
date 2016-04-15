@@ -13,6 +13,7 @@
 
 namespace SmoothPHP\Framework\Templates\Elements\Commands;
 
+use SmoothPHP\Framework\Templates\TemplateState;
 use SmoothPHP\Framework\Templates\Elements\Element;
 
 class VariableElement extends Element {
@@ -26,9 +27,9 @@ class VariableElement extends Element {
         return $this->varName;
     }
     
-    public function simplify(array &$vars) {
-        if (isset($vars[$this->varName]))
-            return $vars[$this->varName];
+    public function simplify(TemplateState $tpl) {
+        if (isset($tpl->vars[$this->varName]))
+            return $tpl->vars[$this->varName]->simplify($tpl);
         else
             return $this;
     }
