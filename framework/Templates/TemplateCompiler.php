@@ -32,6 +32,9 @@ class TemplateCompiler {
         $lexer = new TemplateLexer(file_get_contents($file));
         $output = array();
         $this->read($lexer, $output);
+        $vars = array();
+        for($i = 0; $i < count($output); $i++)
+            $output[$i] = $output[$i]->simplify($vars);
         return $output;
     }
     
@@ -40,7 +43,7 @@ class TemplateCompiler {
         
         $finishString = function() use (&$output, &$rawString) {
             if (strlen(trim($rawString)) > 0)
-                $output[] = new Elements\StringElement($rawString);
+                $output[] = new Elements\PrimitiveElement($rawString);
             $rawString = '';
         };
         
@@ -143,11 +146,11 @@ class TemplateCompiler {
                 }
                 default: {
                     if (strlen(trim($next)) > 0) {
-                        $output[] = new Elements\StringElement($next);
+                        $output[] = new Elements\PrimitiveElement($next, true);
                         if ($command->peek('(')) {
                             // Function call
                             $name = array_pop($output);
-                            if (!($name instanceof Elements\StringElement))
+                            if (!($name instanceof Elements\PrimitiveElement))
                                 throw new TemplateCompileException("Attempting to call a function without a name.");
                             $args = array();
                             do {
@@ -162,7 +165,7 @@ class TemplateCompiler {
                             case '"':
                                 $strStart = $command->next();
                                 $str = $this->readRaw($command, $strStart, '\\' . $strStart);
-                                $output[] = new Elements\StringElement($str);
+                                $output[] = new Elements\PrimitiveElement($str);
                                 break;
                             
                             case '+':

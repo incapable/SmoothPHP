@@ -15,19 +15,34 @@ namespace SmoothPHP\Framework\Templates\Elements\Operators;
 
 use SmoothPHP\Framework\Templates\Elements\Element;
 
+use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
+
 class FunctionOperatorElement extends Element {
     private $functionName;
     private $args;
     
-    public function __construct($functionName, array $args) {
+    public function __construct(Element $functionName, array $args) {
         $this->functionName = $functionName;
         $this->args = $args;
     }
     
-    public function asPHP() {
-        $args = array();
-        foreach($this->args as $arg)
-            $args[] = $arg->asPHP();
-        return sprintf('%s(%s)', $this->functionName->asPHP(), implode(',', $args));
+    public function simplify(array &$vars) {
+        $this->functionName = $this->functionName->simplify($vars);
+
+        $simpleArgs = true;
+        $primitiveArgs = array();
+        for($i = 0; $i < count($this->args); $i++) {
+            $this->args[$i] = $this->args[$i]->simplify($vars);
+            
+            if (!($this->args[$i] instanceof PrimitiveElement))
+                $simpleArgs = false;
+            else
+                $primitiveArgs[] = $this->args[$i]->getValue();
+        }
+
+        if ($this->functionName instanceof PrimitiveElement && $simpleArgs) {
+            return new PrimitiveElement(call_user_func_array($this->functionName->getValue(), $primitiveArgs));
+        } else
+            return $this;
     }
 }

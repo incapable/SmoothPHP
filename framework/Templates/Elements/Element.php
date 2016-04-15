@@ -15,4 +15,6 @@ namespace SmoothPHP\Framework\Templates\Elements;
 
 abstract class Element {
     
+    abstract function simplify(array &$vars);
+    
 }

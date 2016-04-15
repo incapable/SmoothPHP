@@ -13,10 +13,20 @@
 
 namespace SmoothPHP\Framework\Templates\Elements;
 
+use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
+
 class ParenthesisElement extends Element {
-    private $elements;
+    private $element;
     
-    public function __construct($elements) {
-        $this->elements = $elements;
+    public function __construct(Element $element) {
+        $this->element = $element;
+    }
+    
+    public function simplify(array &$vars) {
+        $this->element = $this->element->simplify($vars);
+        if ($this->element instanceof PrimitiveElement) {
+            return $this->element;
+        } else
+            return $this;
     }
 }

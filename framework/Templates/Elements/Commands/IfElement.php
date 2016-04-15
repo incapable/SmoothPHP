@@ -14,6 +14,7 @@
 namespace SmoothPHP\Framework\Templates\Elements\Commands;
 
 use SmoothPHP\Framework\Templates\Elements\Element;
+use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
 
 class IfElement extends Element{
     private $condition;
@@ -22,5 +23,18 @@ class IfElement extends Element{
     public function __construct($condition, $body) {
         $this->condition = $condition;
         $this->body = $body;
+    }
+    
+    public function simplify(array &$vars) {
+        $this->condition = $this->condition->simplify($vars);
+        $this->body = $this->body->simplify($vars);
+        
+        if ($this->condition instanceof PrimitiveElement) {
+            if ($this->condition->getValue())
+                return $this->body;
+            else
+                return new PrimitiveElement('');
+        } else
+            return $this;
     }
 }

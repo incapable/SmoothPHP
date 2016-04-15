@@ -25,4 +25,11 @@ class VariableElement extends Element {
     public function getVarName() {
         return $this->varName;
     }
+    
+    public function simplify(array &$vars) {
+        if (isset($vars[$this->varName]))
+            return $vars[$this->varName];
+        else
+            return $this;
+    }
 }

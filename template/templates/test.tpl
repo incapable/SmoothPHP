@@ -1,1 +1,4 @@
-{test(25, 'hoi', getvar())}
+{$test = fal + se}
+{if $test}
+    hallo
+{/if}

@@ -14,6 +14,7 @@
 namespace SmoothPHP\Framework\Templates\Elements\Operators;
 
 use SmoothPHP\Framework\Templates\Elements\Element;
+use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
 
 class EqualsOperatorElement extends Element {
     private $left, $right;
@@ -21,5 +22,15 @@ class EqualsOperatorElement extends Element {
     public function __construct($left, $right) {
         $this->left = $left;
         $this->right = $right;
+    }
+    
+    public function simplify(array &$vars) {
+        $this->left = $this->left->simplify($vars);
+        $this->right = $this->right->simplify($vars);
+        
+        if ($this->left instanceof PrimitiveElement && $this->right instanceof PrimitiveElement)
+            return new PrimitiveElement($this->left->getValue() == $this->right->getValue());
+        else
+            return $this;
     }
 }
