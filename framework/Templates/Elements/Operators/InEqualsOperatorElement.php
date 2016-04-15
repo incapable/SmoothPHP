@@ -13,12 +13,24 @@
 
 namespace SmoothPHP\Framework\Templates\Elements\Operators;
 
-use SmoothPHP\Framework\Templates\TemplateState;
+use SmoothPHP\Framework\Templates\TemplateCompiler;
+use SmoothPHP\Framework\Templates\Compiler\TemplateLexer;
+use SmoothPHP\Framework\Templates\Elements\Chain;
+use SmoothPHP\Framework\Templates\Compiler\TemplateState;
 use SmoothPHP\Framework\Templates\Elements\Element;
 use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
 
 class InEqualsOperatorElement extends Element {
     private $left, $right;
+    
+    public static function handle(TemplateCompiler $compiler, TemplateLexer $command, TemplateLexer $lexer, Chain $chain, $stackEnd) {
+        $command->next();
+        if ($command->peek('=')) {
+            $right = new Chain();
+            $compiler->handleCommand($command, $lexer, $right, $stackEnd);
+            $chain->addElement(new self($chain->pop(), TemplateCompiler::flatten($right)));
+        }
+    }
     
     public function __construct($left, $right) {
         $this->left = $left;

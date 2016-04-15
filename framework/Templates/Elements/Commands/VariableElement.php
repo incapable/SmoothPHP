@@ -13,7 +13,7 @@
 
 namespace SmoothPHP\Framework\Templates\Elements\Commands;
 
-use SmoothPHP\Framework\Templates\TemplateState;
+use SmoothPHP\Framework\Templates\Compiler\TemplateState;
 use SmoothPHP\Framework\Templates\Elements\Element;
 
 class VariableElement extends Element {

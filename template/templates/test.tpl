@@ -2,8 +2,7 @@
 
 {block "main"}
     Hi there!
-{/block}
-
-{block $blName}
-    Hi there replaced!
+    {$var = (5+3) * pow(2,3)}
+    {if 4 == 4}{/if}
+    {if 4 != 5}{/if}
 {/block}

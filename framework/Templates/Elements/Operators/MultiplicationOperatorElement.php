@@ -13,7 +13,7 @@
 
 namespace SmoothPHP\Framework\Templates\Elements\Operators;
 
-use SmoothPHP\Framework\Templates\TemplateState;
+use SmoothPHP\Framework\Templates\Compiler\TemplateState;
 use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
 
 class MultiplicationOperatorElement extends ArithmeticOperatorElement {

@@ -13,7 +13,7 @@
 
 namespace SmoothPHP\Framework\Templates\Elements;
 
-use SmoothPHP\Framework\Templates\TemplateState;
+use SmoothPHP\Framework\Templates\Compiler\TemplateState;
 use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
 
 class Chain extends Element {
@@ -55,7 +55,10 @@ class Chain extends Element {
         if (strlen(trim($str)) > 0)
             $chain[] = new PrimitiveElement($str);
         
-        if (count($chain) == 1)
+        $count = count($chain);
+        if ($count == 0)
+            return new PrimitiveElement();
+        else if ($count == 1)
             return current($chain);
         else {
             $this->chain = $chain;

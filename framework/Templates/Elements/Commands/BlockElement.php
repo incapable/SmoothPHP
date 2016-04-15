@@ -13,11 +13,14 @@
 
 namespace SmoothPHP\Framework\Templates\Elements\Commands;
 
-use SmoothPHP\Framework\Templates\TemplateState;
+use SmoothPHP\Framework\Templates\TemplateCompiler;
+use SmoothPHP\Framework\Templates\Compiler\TemplateLexer;
+
+use SmoothPHP\Framework\Templates\Compiler\TemplateState;
 use SmoothPHP\Framework\Templates\Elements\Chain;
 use SmoothPHP\Framework\Templates\Elements\Element;
 use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
-use SmoothPHP\Framework\Templates\TemplateCompileException;
+use SmoothPHP\Framework\Templates\Compiler\TemplateCompileException;
 
 class BlockElement extends Element {
     const USAGE_UNSPECIFIED = 0;
@@ -28,6 +31,28 @@ class BlockElement extends Element {
     private $usage;
     private $body;
     
+    public static function handle(TemplateCompiler $compiler, TemplateLexer $command, TemplateLexer $lexer, Chain $chain) {
+        $args = new Chain();
+        $compiler->handleCommand($command, $lexer, $args);
+        $args = $args->getAll();
+
+        $usage = self::USAGE_UNSPECIFIED;
+        if (isset($args[1])) {
+            $args[1] = $args[1]->simplify(new TemplateState());
+            switch($args[1]->getValue()) {
+                case 'prepend':
+                    $usage = self::USAGE_PREPEND;
+                    break;
+                case 'append':
+                    $usage = self::USAGE_APPEND;
+            }
+        }
+
+        $body = new Chain();
+        $compiler->read($lexer, $body, '{/block}');
+        $chain->addElement(new self($args[0], $usage, TemplateCompiler::flatten($body)));
+    }
+    
     public function __construct(Element $name, $usage, Element $body) {
         $this->name = $name;
         $this->usage = $usage;
@@ -35,6 +60,9 @@ class BlockElement extends Element {
     }
     
     public function simplify(TemplateState $tpl) {
+        if ($tpl->finishing)
+            return $this->body;
+        
         $this->name = $this->name->simplify($tpl);
         $this->body = $this->body->simplify($tpl);
         
@@ -66,6 +94,6 @@ class BlockElement extends Element {
             $blockEl->body = $chain->simplify($tpl);
         }
         
-        return new PrimitiveElement('');
+        return new PrimitiveElement();
     }
 }

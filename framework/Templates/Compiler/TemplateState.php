@@ -11,14 +11,16 @@
  * Description
  */
 
-namespace SmoothPHP\Framework\Templates;
+namespace SmoothPHP\Framework\Templates\Compiler;
 
 class TemplateState {
     public $vars;
     public $blocks;
+    public $finishing;
     
     public function __construct() {
         $this->vars = array();
         $this->blocks = array();
+        $this->finishing = false;
     }
 }

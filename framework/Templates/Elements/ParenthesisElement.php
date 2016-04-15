@@ -13,7 +13,7 @@
 
 namespace SmoothPHP\Framework\Templates\Elements;
 
-use SmoothPHP\Framework\Templates\TemplateState;
+use SmoothPHP\Framework\Templates\Compiler\TemplateState;
 use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
 
 class ParenthesisElement extends Element {

@@ -15,10 +15,31 @@ namespace SmoothPHP\Framework\Templates\Elements\Operators;
 
 use SmoothPHP\Framework\Templates\Elements\Element;
 
+use SmoothPHP\Framework\Templates\TemplateCompiler;
+use SmoothPHP\Framework\Templates\Elements\Chain;
+use SmoothPHP\Framework\Templates\Compiler\TemplateLexer;
+
 abstract class ArithmeticOperatorElement extends Element {
     protected $left, $right;
     
     protected abstract function getPriority();
+    
+    public static function handle(TemplateCompiler $compiler, TemplateLexer $command, TemplateLexer $lexer, Chain $chain) {
+        $op;
+        switch($command->next()) {
+            case '+':
+                $op = new PlusOperatorElement();
+                break;
+            case '*':
+                $op = new MultiplicationOperatorElement();
+                break;
+        }
+        $command->skipWhitespace();
+
+        $right = new Chain();
+        $compiler->handleCommand($command, $lexer, $right, ')');
+        $chain->addElement(ArithmeticOperatorElement::determineOrder($chain->pop(), TemplateCompiler::flatten($right), $op));
+    }
     
     public static function determineOrder(Element $previous, Element $next, ArithmeticOperatorElement $op) {
         if ($previous instanceof ArithmeticOperatorElement && $previous->getPriority() <= $op->getPriority()) {
@@ -39,4 +60,5 @@ abstract class ArithmeticOperatorElement extends Element {
             return $op;
         }
     }
+    
 }

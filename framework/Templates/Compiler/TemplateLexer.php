@@ -11,7 +11,7 @@
  * Lexer class that is capable of iterating through the provided source and lookaheads.
  */
 
-namespace SmoothPHP\Framework\Templates;
+namespace SmoothPHP\Framework\Templates\Compiler;
 
 class TemplateLexer {
     private $pointer;
@@ -64,7 +64,32 @@ class TemplateLexer {
             return false;
     }
     
-    public function remainder() {
-        return substr($this->content, $this->pointer);
+    public function readAlphaNumeric() {
+        $rawString = '';
+        
+        while(true) {
+            if (ctype_alnum($this->peekSingle()))
+                $rawString .= $this->content[$this->pointer++];
+            else
+                return $rawString;
+        }
+    }
+    
+    public function readRaw($stackEnd = null, $stackEscape = null) {
+        $rawString = '';
+        
+        while(true) {
+            if ($stackEscape != null && $this->peek($stackEscape)) {
+                $rawString .= $stackEnd;
+            } else if ($stackEnd != null && $this->peek($stackEnd)) {
+                return $rawString;
+            } else {
+                $char = $this->next();
+                if ($char !== false)
+                    $rawString .= $char;
+                else
+                    return $rawString;
+            }
+        }
     }
 }

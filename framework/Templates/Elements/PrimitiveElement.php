@@ -13,12 +13,20 @@
 
 namespace SmoothPHP\Framework\Templates\Elements;
 
-use SmoothPHP\Framework\Templates\TemplateState;
+use SmoothPHP\Framework\Templates\TemplateCompiler;
+use SmoothPHP\Framework\Templates\Compiler\TemplateLexer;
+use SmoothPHP\Framework\Templates\Compiler\TemplateState;
 
 class PrimitiveElement extends Element {
     private $value;
     
-    public function __construct($value, $tryParse = false) {
+    public static function handle(TemplateCompiler $compiler, TemplateLexer $command, TemplateLexer $lexer, Chain $chain) {
+        $strStart = $command->next();
+        $str = $command->readRaw($strStart, '\\' . $strStart);
+        $chain->addElement(new self($str));
+    }
+    
+    public function __construct($value = '', $tryParse = false) {
         if ($tryParse && is_string($value)) {
             if (is_numeric($value))
                 $value = $value + 0;
