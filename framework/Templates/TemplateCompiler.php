@@ -19,6 +19,15 @@ class TemplateCompiler {
     const DELIMITER_START = '{';
     const DELIMITER_END = '}';
     
+    private $operators;
+    
+    public function __construct() {
+        $this->operators = array(
+            '+' => Elements\Operators\PlusOperatorElement::class,
+            '*' => Elements\Operators\MultiplicationOperatorElement::class
+        );
+    }
+    
     public function compile($file) {
         $lexer = new TemplateLexer(file_get_contents($file));
         $output = array();
@@ -48,7 +57,7 @@ class TemplateCompiler {
                 $command = '';
                 while(!$lexer->peek(self::DELIMITER_END)) {
                     $char = $lexer->next();
-                    if ($char)
+                    if ($char !== false)
                         $command .= $char;
                     else
                         throw new TemplateCompileException("Template syntax error, unfinished command: " . self::DELIMITER_START . $command);
@@ -59,7 +68,7 @@ class TemplateCompiler {
                 $this->handleCommand(new TemplateLexer($command), $lexer, $output);
             } else {
                 $char = $lexer->next();
-                if ($char)
+                if ($char !== false)
                     $rawString .= $char;
                 else {
                     $finishString();
@@ -69,15 +78,17 @@ class TemplateCompiler {
         }
     }
     
-    private function readRaw(TemplateLexer $lexer, $stackEnd = null) {
+    private function readRaw(TemplateLexer $lexer, $stackEnd = null, $stackEscape = null) {
         $rawString = '';
         
         while(true) {
-            if ($stackEnd != null && $lexer->peek($stackEnd)) {
+            if ($stackEscape != null && $lexer->peek($stackEscape)) {
+                $rawString .= $stackEnd;
+            } else if ($stackEnd != null && $lexer->peek($stackEnd)) {
                 return $rawString;
             } else {
                 $char = $lexer->next();
-                if ($char)
+                if ($char !== false)
                     $rawString .= $char;
                 else
                     return $rawString;
@@ -89,8 +100,7 @@ class TemplateCompiler {
         $rawString = '';
         
         while(true) {
-            $char = $lexer->peekSingle();
-            if (ctype_alnum($char))
+            if (ctype_alnum($lexer->peekSingle()))
                 $rawString .= $lexer->next();
             else
                 return $rawString;
@@ -120,9 +130,8 @@ class TemplateCompiler {
                     $command->skipWhitespace();
                     $value = array();
                     $this->handleCommand($command, $lexer, $value, $stackEnd);
-
                     $output[] = new Elements\Commands\AssignElement($varName, self::flatten($value));
-                    return;
+                    break;
                 }
                 case 'if': {
                     $condition = array();
@@ -133,36 +142,42 @@ class TemplateCompiler {
                     break;
                 }
                 default: {
-                    if (strlen(trim($next)) > 0)
+                    if (strlen(trim($next)) > 0) {
                         $output[] = new Elements\StringElement($next);
-                    else {
+                        if ($command->peek('(')) {
+                            // Function call
+                            $name = array_pop($output);
+                            if (!($name instanceof Elements\StringElement))
+                                throw new TemplateCompileException("Attempting to call a function without a name.");
+                            $args = array();
+                            do {
+                                $this->handleCommand($command, $lexer, $args, ')');
+                            } while($command->skipWhitespace() || $command->peek(','));
+                            $output[] = new Elements\Operators\FunctionOperatorElement($name, $args);
+                        }
+                    } else {
                         $command->skipWhitespace();
                         switch($command->peekSingle()) {
+                            case '\'':
+                            case '"':
+                                $strStart = $command->next();
+                                $str = $this->readRaw($command, $strStart, '\\' . $strStart);
+                                $output[] = new Elements\StringElement($str);
+                                break;
+                            
                             case '+':
-                                $command->next();
-                                $command->skipWhitespace();
-
-                                $right = array();
-                                $this->handleCommand($command, $lexer, $right, $stackEnd);
-                                $right = self::flatten($right);
-                                $priority = ArithmeticOperatorElement::determineOrder(new Elements\Operators\PlusOperatorElement(array_pop($output), $right), $right);
-                                $output[] = $priority;
-                                break;
                             case '*':
-                                $command->next();
+                                $op = $command->next();
                                 $command->skipWhitespace();
 
                                 $right = array();
-                                $this->handleCommand($command, $lexer, $right, $stackEnd);
-                                $right = self::flatten($right);
-                                $priority = ArithmeticOperatorElement::determineOrder(new Elements\Operators\MultiplicationOperatorElement(array_pop($output), $right), $right);
-                                $output[] = $priority;
+                                $this->handleCommand($command, $lexer, $right, ')');
+                                $output[] = ArithmeticOperatorElement::determineOrder(array_pop($output), self::flatten($right), new $this->operators[$op]);
                                 break;
+                                
                             case '=':
                                 $command->next();
                                 if ($command->peek('=')) {
-                                    $command->next();
-                                    
                                     $right = array();
                                     $this->handleCommand($command, $lexer, $right, $stackEnd);
                                     $output[] = new Elements\Operators\EqualsOperatorElement(array_pop($output), self::flatten($right));
@@ -179,13 +194,14 @@ class TemplateCompiler {
                             case '!':
                                 $command->next();
                                 if ($command->peek('=')) {
-                                    $command->next();
-                                    
                                     $right = array();
                                     $this->handleCommand($command, $lexer, $right, $stackEnd);
                                     $output[] = new Elements\Operators\InEqualsOperatorElement(array_pop($output), self::flatten($right));
                                 }
+                                break;
                             default:
+                                var_dump($stackEnd);
+                                var_dump($command->remainder());
                                 if (strlen($command->peekSingle()) > 0)
                                     throw new TemplateCompileException("Unknown operator '" . $command->peekSingle() . "'");
                         }
@@ -194,8 +210,10 @@ class TemplateCompiler {
             }
         }
         
-        if ($command->peekSingle()) // Do we have more to read?
+        $command->skipWhitespace();
+        if ($command->peekSingle() && $command->peekSingle() != ',') // Do we have more to read?
             $this->handleCommand($command, $lexer, $output, $stackEnd);
+        return;
     }
     
     private static function flatten($pieces) {

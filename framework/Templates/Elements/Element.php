@@ -14,4 +14,5 @@
 namespace SmoothPHP\Framework\Templates\Elements;
 
 abstract class Element {
+    
 }

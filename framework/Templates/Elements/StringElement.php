@@ -19,4 +19,8 @@ class StringElement extends Element {
     public function __construct($string) {
         $this->string = $string;
     }
+    
+    public function getValue() {
+        return $this->string;
+    }
 }

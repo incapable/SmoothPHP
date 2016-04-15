@@ -16,23 +16,27 @@ namespace SmoothPHP\Framework\Templates\Elements\Operators;
 use SmoothPHP\Framework\Templates\Elements\Element;
 
 abstract class ArithmeticOperatorElement extends Element {
-    private $left, $right;
-    
-    public function __construct($left, $right) {
-        $this->left = $left;
-        $this->right = $right;
-    }
+    protected $left, $right;
     
     protected abstract function getPriority();
     
-    public static function determineOrder(ArithmeticOperatorElement $high, Element $low) {
-        if ($low instanceof ArithmeticOperatorElement && $high->getPriority() > $low->getPriority()) {
-            $right = $low->right;
-            $low->right = $high;
-            $high->right = $right;
-            return $low;
+    public static function determineOrder(Element $previous, Element $next, ArithmeticOperatorElement $op) {
+        if ($previous instanceof ArithmeticOperatorElement && $previous->getPriority() <= $op->getPriority()) {
+            $left = $previous->left;
+            $previous->left = $op;
+            $op->left = $left;
+            $op->right = $next;
+            return $previous;
+        } else if ($next instanceof ArithmeticOperatorElement && $next->getPriority() < $op->getPriority()) {
+            $left = $next->left;
+            $next->left = $op;
+            $op->left = $previous;
+            $op->right = $left;
+            return $next;
         } else {
-            return $high;
+            $op->left = $previous;
+            $op->right = $next;
+            return $op;
         }
     }
 }
