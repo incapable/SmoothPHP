@@ -31,7 +31,8 @@ class TemplateCompiler {
         $this->commands = array(
             'assign' => Elements\Commands\AssignElement::class,
             'block' => BlockElement::class,
-            'if' => Elements\Commands\IfElement::class
+            'if' => Elements\Commands\IfElement::class,
+            'while' => Elements\Commands\WhileElement::class
         );
         $this->operators = array(
             '+' => ArithmeticOperatorElement::class,

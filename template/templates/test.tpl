@@ -2,7 +2,9 @@
 
 {block "main"}
     Hi there!
-    {$var = (5+3) * pow(2,3)}
-    {if 4 == 4}{/if}
-    {if 4 != 5}{/if}
+    {$i = 0}
+    {while $i != 25}
+        {$i}
+        {$i = $i + 1}
+    {/while}
 {/block}
