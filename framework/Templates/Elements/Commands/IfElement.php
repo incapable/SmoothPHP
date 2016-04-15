@@ -29,7 +29,7 @@ class IfElement extends Element{
         $condition = new Chain();
         $compiler->handleCommand($command, $lexer, $condition, $stackEnd);
         $body = new Chain();
-        $compiler->read($lexer, $body, '{/if}');
+        $compiler->read($lexer, $body, TemplateCompiler::DELIMITER_START . '/if' . TemplateCompiler::DELIMITER_END);
         $chain->addElement(new self(TemplateCompiler::flatten($condition), TemplateCompiler::flatten($body)));
     }
     

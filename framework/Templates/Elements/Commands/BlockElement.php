@@ -49,7 +49,7 @@ class BlockElement extends Element {
         }
 
         $body = new Chain();
-        $compiler->read($lexer, $body, '{/block}');
+        $compiler->read($lexer, $body, TemplateCompiler::DELIMITER_START . '/block' . TemplateCompiler::DELIMITER_END);
         $chain->addElement(new self($args[0], $usage, TemplateCompiler::flatten($body)));
     }
     
