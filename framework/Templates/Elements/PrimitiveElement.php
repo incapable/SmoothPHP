@@ -13,15 +13,27 @@
 
 namespace SmoothPHP\Framework\Templates\Elements;
 
+use SmoothPHP\Framework\Templates\TemplateCompileException;
+
 class PrimitiveElement extends Element {
     private $value;
     
     public function __construct($value, $tryParse = false) {
         if ($tryParse && is_string($value)) {
-            if ($value == 'false') 
-                $value = false;
-            else if (is_numeric($value))
+            if (is_numeric($value))
                 $value = $value + 0;
+            else {
+                switch($value) {
+                    case "true":
+                        $value = true;
+                        break;
+                    case "false":
+                        $value = false;
+                        break;
+                    default:
+                        throw new TemplateCompileException("Unexpected value '" . $value . "'");
+                }
+            }
         }
         $this->value = $value;
     }

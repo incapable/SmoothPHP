@@ -1,4 +1,4 @@
-{$test = fal + se}
+{$test = false}
 {if $test}
     hallo
 {/if}
