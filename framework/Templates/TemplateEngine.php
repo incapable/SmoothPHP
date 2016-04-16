@@ -13,31 +13,30 @@
 
 namespace SmoothPHP\Framework\Templates;
 
+use SmoothPHP\Framework\Cache\CacheProvider;
+
 class TemplateEngine {
     private $compiler;
     
+    private $compileCache;
+    
     public function __construct() {
         $this->compiler = new TemplateCompiler();
+        $this->compileCache = new CacheProvider('ctpl', 'ctpl',
+            function($fileName) {
+                return $this->compiler->compile($fileName);
+            },
+            function($fileName) {
+                return unserialize(gzinflate(file_get_contents($fileName)));
+            },
+            function($fileName, $data) {
+                file_put_contents($fileName, gzdeflate(serialize($data)));
+            }
+        );
     }
     
     public function fetch($templateName) {
-        $file = __ROOT__ . '/src/templates/' . $templateName . '.tpl';
-        $md5 = md5_file($file);
-        $dir = __ROOT__ . '/cache/ctpl/';
-        $cache = $dir . $templateName . '.' . $md5 . '.ctpl';
-        
-        if (!is_dir($dir))
-            mkdir($dir, 0755, true);
-        
-        if (file_exists($cache))
-            return unserialize(gzinflate(file_get_contents($cache)));
-        else {
-            foreach(glob($dir . $templateName . '.*.ctpl') as $old)
-                unlink($old);
-            $ctpl = $this->compiler->compile($file);
-            file_put_contents($cache, gzdeflate(serialize($ctpl)));
-            return $ctpl;
-        }
+        return $this->compileCache->fetch(sprintf('%s/src/templates/%s.tpl', __ROOT__, $templateName));
     }
     
 }
