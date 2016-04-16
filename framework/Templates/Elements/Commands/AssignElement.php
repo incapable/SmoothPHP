@@ -24,7 +24,7 @@ class AssignElement extends Element {
     private $varName;
     private $value;
 
-    public static function handle(TemplateCompiler $compiler, TemplateLexer $command, TemplateLexer $lexer, Chain $chain) {
+    public static function handle(TemplateCompiler $compiler, TemplateLexer $command, TemplateLexer $lexer, Chain $chain, $stackEnd) {
         $command->skipWhitespace();
         $command->peek('$');
         $varName = $command->readAlphaNumeric();
