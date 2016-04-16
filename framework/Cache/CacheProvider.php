@@ -46,8 +46,11 @@ class CacheProvider {
 
             if ($lock->lock()) {
                 array_map('unlink', glob(sprintf($this->cacheFileFormat, $fileName, '*')));
+
                 $newCache = call_user_func($this->cacheBuilder, $sourceFile);
                 call_user_func($this->writeCache, $cacheFile, $newCache);
+
+                $lock->unlock();
                 return $newCache;
             } else
                 return call_user_func($this->readCache, $cacheFile);
