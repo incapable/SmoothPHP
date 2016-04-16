@@ -28,6 +28,11 @@ class Lock {
             mkdir($dirname, CacheProvider::PERMS, true);
     }
 
+    public function __destruct() {
+        if ($this->owned && $this->handle)
+            $this->unlock();
+    }
+
     public function lock($waitForRelease = true) {
         $this->handle = fopen(sprintf('%scache/locks/%s.lock', __ROOT__, $this->key), 'c+');
         $this->owned = flock($this->handle, LOCK_EX | LOCK_NB, $waitForRelease);
@@ -45,5 +50,7 @@ class Lock {
         flock($this->handle, LOCK_UN);
         fclose($this->handle);
         unlink(sprintf('%scache/locks/%s.lock', __ROOT__, $this->key));
+
+        $this->handle = null;
     }
 }
