@@ -14,10 +14,11 @@
 namespace SmoothPHP\Framework\Templates\Elements\Commands;
 
 use SmoothPHP\Framework\Templates\Compiler\TemplateLexer;
-use SmoothPHP\Framework\Templates\Compiler\TemplateState;
+use SmoothPHP\Framework\Templates\Compiler\CompilerState;
 use SmoothPHP\Framework\Templates\Elements\Chain;
 use SmoothPHP\Framework\Templates\Elements\Element;
 use SmoothPHP\Framework\Templates\TemplateCompiler;
+use SmoothPHP\Framework\Templates\Compiler\PHPBuilder;
 
 class WhileElement extends Element {
     private $condition;
@@ -31,12 +32,21 @@ class WhileElement extends Element {
         $chain->addElement(new self(TemplateCompiler::flatten($condition), TemplateCompiler::flatten($body)));
     }
 
-    public function __construct($condition, Element $body) {
+    public function __construct(Element $condition, Element $body) {
         $this->condition = $condition;
         $this->body = $body;
     }
 
-    public function simplify(TemplateState $tpl) {
+    public function optimize(CompilerState $tpl) {
+        $this->condition = $this->condition->optimize($tpl);
+        $this->body = $this->body->optimize($tpl);
         return $this;
+    }
+
+    public function writePHP(PHPBuilder $php) {
+        $php->openPHP();
+        $php->append(sprintf('while (%s) {', $this->condition->createPHP($php)));
+        $php->append($this->body->writePHP($php));
+        $php->append('};');
     }
 }

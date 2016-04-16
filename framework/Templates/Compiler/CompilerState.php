@@ -13,7 +13,7 @@
 
 namespace SmoothPHP\Framework\Templates\Compiler;
 
-class TemplateState {
+class CompilerState {
     public $vars;
     public $blocks;
     public $finishing;

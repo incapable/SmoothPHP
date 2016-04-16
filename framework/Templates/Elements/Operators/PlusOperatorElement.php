@@ -13,8 +13,9 @@
 
 namespace SmoothPHP\Framework\Templates\Elements\Operators;
 
-use SmoothPHP\Framework\Templates\Compiler\TemplateState;
+use SmoothPHP\Framework\Templates\Compiler\CompilerState;
 use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
+use SmoothPHP\Framework\Templates\Compiler\PHPBuilder;
 
 class PlusOperatorElement extends ArithmeticOperatorElement {
 
@@ -22,9 +23,9 @@ class PlusOperatorElement extends ArithmeticOperatorElement {
         return 2;
     }
 
-    public function simplify(TemplateState $tpl) {
-        $this->left = $this->left->simplify($tpl);
-        $this->right = $this->right->simplify($tpl);
+    public function optimize(CompilerState $tpl) {
+        $this->left = $this->left->optimize($tpl);
+        $this->right = $this->right->optimize($tpl);
 
         if ($this->left instanceof PrimitiveElement && $this->right instanceof PrimitiveElement)
             if (is_string($this->left->getValue()) && is_string($this->right->getValue()))
@@ -35,4 +36,8 @@ class PlusOperatorElement extends ArithmeticOperatorElement {
             return $this;
     }
 
+    public function writePHP(PHPBuilder $php) {
+        $php->openPHP();
+        $php->append(sprintf('(%s + %s)', $this->left->writePHP($php), $this->right->writePHP($php)));
+    }
 }

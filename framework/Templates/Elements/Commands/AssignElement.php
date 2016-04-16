@@ -14,11 +14,12 @@
 namespace SmoothPHP\Framework\Templates\Elements\Commands;
 
 use SmoothPHP\Framework\Templates\Compiler\TemplateLexer;
-use SmoothPHP\Framework\Templates\Compiler\TemplateState;
+use SmoothPHP\Framework\Templates\Compiler\CompilerState;
 use SmoothPHP\Framework\Templates\Elements\Chain;
 use SmoothPHP\Framework\Templates\Elements\Element;
 use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
 use SmoothPHP\Framework\Templates\TemplateCompiler;
+use SmoothPHP\Framework\Templates\Compiler\PHPBuilder;
 
 class AssignElement extends Element {
     private $varName;
@@ -41,12 +42,17 @@ class AssignElement extends Element {
         $this->value = $value;
     }
 
-    public function simplify(TemplateState $tpl) {
-        $this->value = $this->value->simplify($tpl);
+    public function optimize(CompilerState $tpl) {
+        $this->value = $this->value->optimize($tpl);
 
         if ($this->value instanceof PrimitiveElement)
             $tpl->vars[$this->varName] = $this->value;
 
         return $this;
+    }
+
+    public function writePHP(PHPBuilder $php) {
+        $php->openPHP();
+        $php->append(sprintf('$%s = %s;', $this->varName, $this->value->writePHP($php)));
     }
 }

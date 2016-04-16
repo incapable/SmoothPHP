@@ -15,11 +15,12 @@ namespace SmoothPHP\Framework\Templates\Elements\Commands;
 
 use SmoothPHP\Framework\Templates\Compiler\TemplateCompileException;
 use SmoothPHP\Framework\Templates\Compiler\TemplateLexer;
-use SmoothPHP\Framework\Templates\Compiler\TemplateState;
+use SmoothPHP\Framework\Templates\Compiler\CompilerState;
 use SmoothPHP\Framework\Templates\Elements\Chain;
 use SmoothPHP\Framework\Templates\Elements\Element;
 use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
 use SmoothPHP\Framework\Templates\TemplateCompiler;
+use SmoothPHP\Framework\Templates\Compiler\PHPBuilder;
 
 class BlockElement extends Element {
     const USAGE_UNSPECIFIED = 0;
@@ -37,7 +38,7 @@ class BlockElement extends Element {
 
         $usage = self::USAGE_UNSPECIFIED;
         if (isset($args[1])) {
-            $args[1] = $args[1]->simplify(new TemplateState());
+            $args[1] = $args[1]->simplify(new CompilerState());
             switch ($args[1]->getValue()) {
                 case 'prepend':
                     $usage = self::USAGE_PREPEND;
@@ -58,12 +59,12 @@ class BlockElement extends Element {
         $this->body = $body;
     }
 
-    public function simplify(TemplateState $tpl) {
+    public function optimize(CompilerState $tpl) {
         if ($tpl->finishing)
             return $this->body;
 
-        $this->name = $this->name->simplify($tpl);
-        $this->body = $this->body->simplify($tpl);
+        $this->name = $this->name->optimize($tpl);
+        $this->body = $this->body->optimize($tpl);
 
         if (!($this->name instanceof PrimitiveElement))
             throw new TemplateCompileException("Could not determine block name at compile-time.");
@@ -90,9 +91,13 @@ class BlockElement extends Element {
                 $chain->addElement($blockEl->body);
                 $chain->addElement($this->body);
             }
-            $blockEl->body = $chain->simplify($tpl);
+            $blockEl->body = $chain->optimize($tpl);
         }
 
         return new PrimitiveElement();
+    }
+
+    public function writePHP(PHPBuilder $php) {
+        throw new TemplateCompileException("Block being written.");
     }
 }

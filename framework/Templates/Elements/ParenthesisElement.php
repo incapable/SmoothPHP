@@ -13,7 +13,8 @@
 
 namespace SmoothPHP\Framework\Templates\Elements;
 
-use SmoothPHP\Framework\Templates\Compiler\TemplateState;
+use SmoothPHP\Framework\Templates\Compiler\CompilerState;
+use SmoothPHP\Framework\Templates\Compiler\PHPBuilder;
 
 class ParenthesisElement extends Element {
     private $element;
@@ -22,11 +23,15 @@ class ParenthesisElement extends Element {
         $this->element = $element;
     }
 
-    public function simplify(TemplateState $tpl) {
-        $this->element = $this->element->simplify($tpl);
+    public function optimize(CompilerState $tpl) {
+        $this->element = $this->element->optimize($tpl);
         if ($this->element instanceof PrimitiveElement) {
             return $this->element;
         } else
             return $this;
+    }
+
+    public function writePHP(PHPBuilder $php) {
+        $this->element->writePHP($php);
     }
 }

@@ -14,8 +14,9 @@
 namespace SmoothPHP\Framework\Templates\Elements;
 
 use SmoothPHP\Framework\Templates\Compiler\TemplateLexer;
-use SmoothPHP\Framework\Templates\Compiler\TemplateState;
+use SmoothPHP\Framework\Templates\Compiler\CompilerState;
 use SmoothPHP\Framework\Templates\TemplateCompiler;
+use SmoothPHP\Framework\Templates\Compiler\PHPBuilder;
 
 class PrimitiveElement extends Element {
     private $value;
@@ -48,8 +49,15 @@ class PrimitiveElement extends Element {
         return $this->value;
     }
 
-    public function simplify(TemplateState $tpl) {
+    public function optimize(CompilerState $tpl) {
         return $this;
+    }
+
+    public function writePHP(PHPBuilder $php) {
+        $value = $this->value;
+        if ($php->isPHPTagOpen())
+            $value = is_string($value) ? sprintf("'%s'", str_replace('\'', '\\\'', $value)) : $value;
+        $php->append($value);
     }
 
 }

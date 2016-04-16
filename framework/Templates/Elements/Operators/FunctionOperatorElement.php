@@ -13,10 +13,11 @@
 
 namespace SmoothPHP\Framework\Templates\Elements\Operators;
 
-use SmoothPHP\Framework\Templates\Compiler\TemplateState;
+use SmoothPHP\Framework\Templates\Compiler\CompilerState;
 use SmoothPHP\Framework\Templates\Elements\Chain;
 use SmoothPHP\Framework\Templates\Elements\Element;
 use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
+use SmoothPHP\Framework\Templates\Compiler\PHPBuilder;
 
 class FunctionOperatorElement extends Element {
     private $functionName;
@@ -27,7 +28,7 @@ class FunctionOperatorElement extends Element {
         $this->args = $args;
     }
 
-    public function simplify(TemplateState $tpl) {
+    public function optimize(CompilerState $tpl) {
         $simpleArgs = true;
         $args = $this->args->getAll();
         $primitiveArgs = array();
@@ -44,5 +45,12 @@ class FunctionOperatorElement extends Element {
             return new PrimitiveElement(call_user_func_array($this->functionName, $primitiveArgs));
         } else
             return $this;
+    }
+
+    public function writePHP(PHPBuilder $php) {
+        $php->openPHP();
+        $php->append(sprintf('%s(%s)', $this->functionName, explode(',', array_map(function(Element $arg) use ($php) {
+            return $arg->writePHP($php);
+        }, $this->args))));
     }
 }

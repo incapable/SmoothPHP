@@ -13,8 +13,9 @@
 
 namespace SmoothPHP\Framework\Templates\Elements\Commands;
 
-use SmoothPHP\Framework\Templates\Compiler\TemplateState;
+use SmoothPHP\Framework\Templates\Compiler\CompilerState;
 use SmoothPHP\Framework\Templates\Elements\Element;
+use SmoothPHP\Framework\Templates\Compiler\PHPBuilder;
 
 class VariableElement extends Element {
     private $varName;
@@ -27,10 +28,15 @@ class VariableElement extends Element {
         return $this->varName;
     }
 
-    public function simplify(TemplateState $tpl) {
+    public function optimize(CompilerState $tpl) {
         if (isset($tpl->vars[$this->varName]))
             return $tpl->vars[$this->varName]->simplify($tpl);
         else
             return $this;
+    }
+
+    public function writePHP(PHPBuilder $php) {
+        $php->openPHP();
+        $php->append(sprintf('$%s', $this->varName));
     }
 }

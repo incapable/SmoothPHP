@@ -24,7 +24,6 @@ abstract class ArithmeticOperatorElement extends Element {
     protected abstract function getPriority();
 
     public static function handle(TemplateCompiler $compiler, TemplateLexer $command, TemplateLexer $lexer, Chain $chain) {
-        $op;
         switch ($command->next()) {
             case '+':
                 $op = new PlusOperatorElement();

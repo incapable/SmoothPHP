@@ -22,7 +22,7 @@ class CacheProvider {
     private $cacheBuilder;
     private $readCache, $writeCache;
 
-    public function __construct($folder, $ext = null, callable $cacheBuilder, callable $readCache = null, callable $writeCache = null) {
+    public function __construct($folder, $ext = null, callable $cacheBuilder = null, callable $readCache = null, callable $writeCache = null) {
         $ext = $ext ?: $folder;
         $this->cacheFileFormat = sprintf('%scache/%s/%s.%s.%s', __ROOT__, $folder, '%s', '%s', $ext);
 
@@ -31,7 +31,9 @@ class CacheProvider {
         $this->writeCache = $writeCache ?: 'file_put_contents';
     }
 
-    public function fetch($sourceFile) {
+    public function fetch($sourceFile, callable $cacheBuilder = null) {
+        $cacheBuilder = $cacheBuilder ?: $this->cacheBuilder;
+
         $fileName = str_replace(array('/', '\\'), array('_', '_'), str_replace(__ROOT__, '', $sourceFile));
         $checksum = md5_file($sourceFile);
 
@@ -42,12 +44,12 @@ class CacheProvider {
         if (file_exists(sprintf($cacheFile)))
             return call_user_func($this->readCache, $cacheFile);
         else {
-            $lock = new Lock($fileName);
+            $lock = new Lock(mt_rand(0, 1000));
 
             if ($lock->lock()) {
                 array_map('unlink', glob(sprintf($this->cacheFileFormat, $fileName, '*')));
 
-                $newCache = call_user_func($this->cacheBuilder, $sourceFile);
+                $newCache = call_user_func($cacheBuilder, $sourceFile);
                 call_user_func($this->writeCache, $cacheFile, $newCache);
 
                 $lock->unlock();

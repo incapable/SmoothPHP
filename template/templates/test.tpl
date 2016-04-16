@@ -5,5 +5,8 @@
 </head>
 <body>
 {block "main"} {/block}
+{if $var == 5}
+    {5 + 3}
+{/if}
 </body>
 </html>

@@ -15,13 +15,14 @@ namespace SmoothPHP\Framework\Templates\Elements\Operators;
 
 use SmoothPHP\Framework\Templates\Compiler\TemplateCompileException;
 use SmoothPHP\Framework\Templates\Compiler\TemplateLexer;
-use SmoothPHP\Framework\Templates\Compiler\TemplateState;
+use SmoothPHP\Framework\Templates\Compiler\CompilerState;
 use SmoothPHP\Framework\Templates\Elements\Chain;
 use SmoothPHP\Framework\Templates\Elements\Commands\AssignElement;
 use SmoothPHP\Framework\Templates\Elements\Commands\VariableElement;
 use SmoothPHP\Framework\Templates\Elements\Element;
 use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
 use SmoothPHP\Framework\Templates\TemplateCompiler;
+use SmoothPHP\Framework\Templates\Compiler\PHPBuilder;
 
 class EqualsOperatorElement extends Element {
     private $left, $right;
@@ -43,18 +44,27 @@ class EqualsOperatorElement extends Element {
         }
     }
 
-    public function __construct($left, $right) {
+    public function __construct(Element $left, Element $right) {
         $this->left = $left;
         $this->right = $right;
     }
 
-    public function simplify(TemplateState $tpl) {
-        $this->left = $this->left->simplify($tpl);
-        $this->right = $this->right->simplify($tpl);
+    public function optimize(CompilerState $tpl) {
+        $this->left = $this->left->optimize($tpl);
+        $this->right = $this->right->optimize($tpl);
 
         if ($this->left instanceof PrimitiveElement && $this->right instanceof PrimitiveElement)
             return new PrimitiveElement($this->left->getValue() == $this->right->getValue());
         else
             return $this;
+    }
+
+    public function writePHP(PHPBuilder $php) {
+        $php->openPHP();
+        $php->append('(');
+        $this->left->writePHP($php);
+        $php->append(' == ');
+        $this->right->writePHP($php);
+        $php->append(')');
     }
 }

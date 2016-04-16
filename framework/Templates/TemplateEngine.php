@@ -14,11 +14,13 @@
 namespace SmoothPHP\Framework\Templates;
 
 use SmoothPHP\Framework\Cache\CacheProvider;
+use SmoothPHP\Framework\Templates\Compiler\PHPBuilder;
 
 class TemplateEngine {
     private $compiler;
 
     private $compileCache;
+    private $phpCache;
 
     public function __construct() {
         $this->compiler = new TemplateCompiler();
@@ -33,10 +35,19 @@ class TemplateEngine {
                 file_put_contents($fileName, gzdeflate(serialize($data)));
             }
         );
+        $this->phpCache = new CacheProvider('tplcache_php', 'php');
     }
 
     public function fetch($templateName) {
-        return $this->compileCache->fetch(sprintf('%s/src/templates/%s.tpl', __ROOT__, $templateName));
+        $path = sprintf('%s/src/templates/%s.tpl', __ROOT__, $templateName);
+        return $this->phpCache->fetch($path,
+            function() use ($path) {
+                $doc = new PHPBuilder();
+                $this->compileCache->fetch($path)->writePHP($doc);
+                $doc->closePHP();
+                return $doc->getPHP();
+            }
+        );
     }
 
 }

@@ -13,10 +13,13 @@
 
 namespace SmoothPHP\Framework\Templates\Elements;
 
-use SmoothPHP\Framework\Templates\Compiler\TemplateState;
+use SmoothPHP\Framework\Templates\Compiler\CompilerState;
+use SmoothPHP\Framework\Templates\Compiler\PHPBuilder;
 
 abstract class Element {
 
-    abstract function simplify(TemplateState $tpl);
+    abstract function optimize(CompilerState $tpl);
+
+    abstract function writePHP(PHPBuilder $php);
 
 }

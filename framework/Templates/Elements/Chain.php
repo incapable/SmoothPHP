@@ -13,7 +13,8 @@
 
 namespace SmoothPHP\Framework\Templates\Elements;
 
-use SmoothPHP\Framework\Templates\Compiler\TemplateState;
+use SmoothPHP\Framework\Templates\Compiler\CompilerState;
+use SmoothPHP\Framework\Templates\Compiler\PHPBuilder;
 
 class Chain extends Element {
     private $chain;
@@ -34,12 +35,12 @@ class Chain extends Element {
         return $this->chain;
     }
 
-    public function simplify(TemplateState $tpl) {
+    public function optimize(CompilerState $tpl) {
         $chain = array();
         $str = '';
 
         foreach ($this->chain as $piece) {
-            $piece = $piece->simplify($tpl);
+            $piece = $piece->optimize($tpl);
             if ($piece instanceof PrimitiveElement)
                 $str .= $piece->getValue();
             else {
@@ -63,5 +64,11 @@ class Chain extends Element {
             $this->chain = $chain;
             return $this;
         }
+    }
+
+    public function writePHP(PHPBuilder $php) {
+        array_map(function(Element $piece) use ($php) {
+            $piece->writePHP($php);
+        }, $this->chain);
     }
 }

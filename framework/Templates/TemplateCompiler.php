@@ -50,10 +50,10 @@ class TemplateCompiler {
         $chain = new Chain();
         $this->read($lexer, $chain);
 
-        $tpl = new Compiler\TemplateState();
-        $chain = $chain->simplify($tpl);
+        $tpl = new Compiler\CompilerState();
+        $chain = $chain->optimize($tpl);
         $tpl->finishing = true;
-        $chain = $chain->simplify($tpl);
+        $chain = $chain->optimize($tpl);
 
         return $chain;
     }
