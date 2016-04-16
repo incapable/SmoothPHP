@@ -14,15 +14,14 @@
 namespace SmoothPHP\Framework\Templates\Elements;
 
 use SmoothPHP\Framework\Templates\Compiler\TemplateState;
-use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
 
 class ParenthesisElement extends Element {
     private $element;
-    
+
     public function __construct(Element $element) {
         $this->element = $element;
     }
-    
+
     public function simplify(TemplateState $tpl) {
         $this->element = $this->element->simplify($tpl);
         if ($this->element instanceof PrimitiveElement) {

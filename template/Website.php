@@ -11,12 +11,12 @@
  * Default WebPrototype implementation, named "Website" by default as defined in /public/index.php
  */
 
-use SmoothPHP\Framework\Core\WebPrototype;
 use SmoothPHP\Framework\Core\Kernel;
+use SmoothPHP\Framework\Core\WebPrototype;
 use SmoothPHP\Framework\Flow\Routing\RouteDatabase;
 
 class Website extends WebPrototype {
-    
+
     public function initialize(Kernel $kernel) {
         $config = $kernel->getConfig();
 
@@ -25,7 +25,7 @@ class Website extends WebPrototype {
         $config->mysql_user = 'root';
         $config->mysql_password = 'root';
     }
-    
+
     public function registerRoutes(RouteDatabase $routes) {
         $routes->register(array(
             'name' => 'index',

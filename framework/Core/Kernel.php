@@ -13,45 +13,45 @@
 
 namespace SmoothPHP\Framework\Core;
 
-use SmoothPHP\Framework\Flow\Routing\RouteDatabase;
-use SmoothPHP\Framework\Flow\Requests\Request;
-use SmoothPHP\Framework\Templates\TemplateEngine;
 use SmoothPHP\Framework\Database\MySQL;
+use SmoothPHP\Framework\Flow\Requests\Request;
+use SmoothPHP\Framework\Flow\Routing\RouteDatabase;
+use SmoothPHP\Framework\Templates\TemplateEngine;
 
 class Kernel {
     // Site data
     private $config;
     private $routeDatabase;
-    
+
     // Runtime
     private $templateEngine;
     private $mysql;
-    
+
     public function __construct() {
         $this->config = new Config();
         $this->routeDatabase = new RouteDatabase();
         $this->templateEngine = new TemplateEngine();
     }
-    
+
     public function loadPrototype(WebPrototype $prototype) {
         $prototype->initialize($this);
         $prototype->registerRoutes($this->routeDatabase);
     }
-    
+
     /**
      * @return Config
      */
     public function &getConfig() {
         return $this->config;
     }
-    
+
     /**
      * @return TemplateEngine
      */
     public function getTemplateEngine() {
         return $this->templateEngine;
     }
-    
+
     /**
      * @return MySQL
      */
@@ -62,7 +62,7 @@ class Kernel {
             $this->mysql = new MySQL($this->config);
         return $this->mysql;
     }
-    
+
     /**
      * @return \SmoothPHP\Framework\Flow\Responses\Response|boolean
      */
@@ -72,5 +72,5 @@ class Kernel {
             return false;
         return $resolvedRoute->buildResponse($this, $request);
     }
-    
+
 }

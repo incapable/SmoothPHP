@@ -18,24 +18,24 @@ use SmoothPHP\Framework\Flow\Requests\Request;
 
 class TemplateResponse extends Response {
     private $built;
-    
+
     public function __construct($controllerResponse) {
         parent::__construct($controllerResponse);
     }
-    
+
     public function build(Kernel $kernel, Request $request) {
         ob_start();
         var_dump($kernel->getTemplateEngine()->fetch($this->controllerResponse));
         $this->built = ob_get_clean();
     }
-    
+
     protected function sendHeaders() {
         parent::sendHeaders();
         header('Content-Type: text/html; charset=utf-8');
     }
-    
+
     protected function sendBody() {
         echo $this->built;
     }
-    
+
 }

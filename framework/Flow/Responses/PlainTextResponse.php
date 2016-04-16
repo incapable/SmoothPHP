@@ -17,16 +17,17 @@ use SmoothPHP\Framework\Core\Kernel;
 use SmoothPHP\Framework\Flow\Requests\Request;
 
 class PlainTextResponse extends Response {
-    
-    public function build(Kernel $kernel, Request $request) {}
-    
+
+    public function build(Kernel $kernel, Request $request) {
+    }
+
     protected function sendHeaders() {
         parent::sendHeaders();
         header('Content-Type: text/plain; charset=utf-8');
     }
-    
+
     protected function sendBody() {
         echo $this->controllerResponse;
     }
-    
+
 }

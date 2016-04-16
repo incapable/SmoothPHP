@@ -14,32 +14,31 @@
 namespace SmoothPHP\Framework\Templates\Elements;
 
 use SmoothPHP\Framework\Templates\Compiler\TemplateState;
-use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
 
 class Chain extends Element {
     private $chain;
-    
+
     public function __construct() {
         $this->chain = array();
     }
-    
+
     public function addElement(Element $element) {
         $this->chain[] = $element;
     }
-    
+
     public function pop() {
         return array_pop($this->chain);
     }
-    
+
     public function getAll() {
         return $this->chain;
     }
-    
+
     public function simplify(TemplateState $tpl) {
         $chain = array();
         $str = '';
-        
-        foreach($this->chain as $piece) {
+
+        foreach ($this->chain as $piece) {
             $piece = $piece->simplify($tpl);
             if ($piece instanceof PrimitiveElement)
                 $str .= $piece->getValue();
@@ -51,10 +50,10 @@ class Chain extends Element {
                 $chain[] = $piece;
             }
         }
-        
+
         if (strlen(trim($str)) > 0)
             $chain[] = new PrimitiveElement($str);
-        
+
         $count = count($chain);
         if ($count == 0)
             return new PrimitiveElement();

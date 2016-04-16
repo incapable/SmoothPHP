@@ -30,7 +30,7 @@ class Request {
     }
 
     public function __get($scope) {
-        switch($scope) {
+        switch ($scope) {
             case "get":
             case "post":
             case "server":

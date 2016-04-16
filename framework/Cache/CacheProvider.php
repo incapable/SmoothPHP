@@ -30,15 +30,15 @@ class CacheProvider {
         $this->readCache = $readCache ?: 'file_get_contents';
         $this->writeCache = $writeCache ?: 'file_put_contents';
     }
-    
+
     public function fetch($sourceFile) {
         $fileName = str_replace(array('/', '\\'), array('_', '_'), str_replace(__ROOT__, '', $sourceFile));
         $checksum = md5_file($sourceFile);
-        
+
         $cacheFile = sprintf($this->cacheFileFormat, $fileName, $checksum);
         if (!is_dir(dirname($cacheFile)))
             mkdir(dirname($cacheFile), self::PERMS, true);
-        
+
         if (file_exists(sprintf($cacheFile)))
             return call_user_func($this->readCache, $cacheFile);
         else {

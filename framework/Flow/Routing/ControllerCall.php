@@ -14,13 +14,13 @@
 namespace SmoothPHP\Framework\Flow\Routing;
 
 use SmoothPHP\Framework\Core\Kernel;
-use SmoothPHP\Framework\Flow\Requests\Request;
 use SmoothPHP\Framework\Database\MySQL;
+use SmoothPHP\Framework\Flow\Requests\Request;
 
 class ControllerCall {
     private $request, $kernel, $mysql;
     private $parameters;
-    
+
     private $callable;
     private $controllerArgs;
 
@@ -32,9 +32,9 @@ class ControllerCall {
         $method = new \ReflectionMethod($controller, $call);
         $i = -1;
 
-        foreach($method->getParameters() as $parameter) {
+        foreach ($method->getParameters() as $parameter) {
             $className = $parameter->getClass() ? $parameter->getClass()->name : null;
-            switch($className) {
+            switch ($className) {
                 case Request::class:
                     $this->controllerArgs[] = &$this->request;
                     break;
@@ -63,7 +63,7 @@ class ControllerCall {
             $this->mysql = $kernel->getMySQL();
 
         $i = 0;
-        foreach($args as $arg) {
+        foreach ($args as $arg) {
             $this->parameters[$i++] = $arg;
         }
 

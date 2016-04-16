@@ -16,46 +16,46 @@ namespace SmoothPHP\Framework\Templates\Compiler;
 class TemplateLexer {
     private $pointer;
     private $content;
-    
+
     public function __construct($content) {
         $this->content = $content;
         $this->pointer = 0;
     }
-    
+
     public function next() {
         if ($this->pointer == strlen($this->content))
             return false;
         return $this->content[$this->pointer++];
     }
-    
+
     public function isAnyOf() {
         if ($this->pointer == strlen($this->content))
             return false;
 
         return in_array($this->content[$this->pointer], func_get_args());
     }
-    
+
     public function isWhitespace() {
         return $this->isAnyOf(' ', "\n", "\r", "\t");
     }
-    
+
     public function skipWhitespace() {
-        while($this->isWhitespace())
+        while ($this->isWhitespace())
             if (!$this->next())
                 return;
     }
-    
+
     public function peekSingle() {
         if ($this->pointer == strlen($this->content))
             return false;
         return $this->content[$this->pointer];
     }
-    
+
     public function peek($compare) {
         $length = strlen($compare);
-        if ( ( $this->pointer + $length ) > strlen($this->content) )
+        if (($this->pointer + $length) > strlen($this->content))
             return false;
-        
+
         $characters = substr($this->content, $this->pointer, $length);
         if (strtolower($characters) === strtolower($compare)) {
             $this->pointer += $length;
@@ -63,22 +63,22 @@ class TemplateLexer {
         } else
             return false;
     }
-    
+
     public function readAlphaNumeric() {
         $rawString = '';
-        
-        while(true) {
+
+        while (true) {
             if (ctype_alnum($this->peekSingle()))
                 $rawString .= $this->content[$this->pointer++];
             else
                 return $rawString;
         }
     }
-    
+
     public function readRaw($stackEnd = null, $stackEscape = null) {
         $rawString = '';
-        
-        while(true) {
+
+        while (true) {
             if ($stackEscape != null && $this->peek($stackEscape)) {
                 $rawString .= $stackEnd;
             } else if ($stackEnd != null && $this->peek($stackEnd)) {

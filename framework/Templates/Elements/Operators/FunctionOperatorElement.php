@@ -21,19 +21,19 @@ use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
 class FunctionOperatorElement extends Element {
     private $functionName;
     private $args;
-    
+
     public function __construct($functionName, Chain $args) {
         $this->functionName = $functionName;
         $this->args = $args;
     }
-    
+
     public function simplify(TemplateState $tpl) {
         $simpleArgs = true;
         $args = $this->args->getAll();
         $primitiveArgs = array();
-        for($i = 0; $i < count($args); $i++) {
+        for ($i = 0; $i < count($args); $i++) {
             $args[$i] = $args[$i]->simplify($tpl);
-            
+
             if (!($args[$i] instanceof PrimitiveElement))
                 $simpleArgs = false;
             else

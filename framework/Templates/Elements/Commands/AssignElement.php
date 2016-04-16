@@ -13,18 +13,17 @@
 
 namespace SmoothPHP\Framework\Templates\Elements\Commands;
 
-use SmoothPHP\Framework\Templates\TemplateCompiler;
 use SmoothPHP\Framework\Templates\Compiler\TemplateLexer;
-use SmoothPHP\Framework\Templates\Elements\Chain;
-
 use SmoothPHP\Framework\Templates\Compiler\TemplateState;
+use SmoothPHP\Framework\Templates\Elements\Chain;
 use SmoothPHP\Framework\Templates\Elements\Element;
 use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
+use SmoothPHP\Framework\Templates\TemplateCompiler;
 
 class AssignElement extends Element {
     private $varName;
     private $value;
-    
+
     public static function handle(TemplateCompiler $compiler, TemplateLexer $command, TemplateLexer $lexer, Chain $chain) {
         $command->skipWhitespace();
         $command->peek('$');
@@ -36,18 +35,18 @@ class AssignElement extends Element {
         $chain->addElement(new self($varName, TemplateCompiler::flatten($value)));
 
     }
-    
+
     public function __construct($varName, Element $value) {
         $this->varName = $varName;
         $this->value = $value;
     }
-    
+
     public function simplify(TemplateState $tpl) {
         $this->value = $this->value->simplify($tpl);
-        
+
         if ($this->value instanceof PrimitiveElement)
             $tpl->vars[$this->varName] = $this->value;
-        
+
         return $this;
     }
 }

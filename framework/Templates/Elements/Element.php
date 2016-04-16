@@ -16,7 +16,7 @@ namespace SmoothPHP\Framework\Templates\Elements;
 use SmoothPHP\Framework\Templates\Compiler\TemplateState;
 
 abstract class Element {
-    
+
     abstract function simplify(TemplateState $tpl);
-    
+
 }

@@ -20,7 +20,7 @@ use SmoothPHP\Framework\Flow\Responses\Response;
 class ResolvedRoute {
     private $route;
     private $parameters;
-    
+
     public function __construct(array &$route, array $parameters) {
         $this->route = $route;
         $this->parameters = $parameters;
@@ -28,10 +28,10 @@ class ResolvedRoute {
 
     public function buildResponse(Kernel $kernel, Request $request) {
         $response = $this->route['controllercall']->performCall($kernel, $request, $this->parameters);
-        
+
         if (!($response instanceof Response))
             $response = new $this->route['content-type']($response);
-        
+
         $response->build($kernel, $request);
         return $response;
     }

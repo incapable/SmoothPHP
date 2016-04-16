@@ -15,24 +15,24 @@ namespace SmoothPHP\Framework\Core\ClassLoader;
 
 class BasicClassLoader {
     private $prefixes;
-    
+
     public function __construct() {
         $this->prefixes = array();
         $this->prefixes['SmoothPHP\Framework'] = __ROOT__ . 'framework/';
         $this->prefixes[''] = __ROOT__ . '/src/';
     }
-    
+
     public function register() {
         spl_autoload_register(array($this, 'loadClass'), true, false);
     }
-    
+
     public function loadClass($class) {
         if ($file = $this->findClassFile($class))
             require_once $file;
-        
+
         return $file;
     }
-    
+
     protected function findClassFile($class) {
         if ($class[0] == '\\')
             $class = substr($class, 1);
@@ -59,11 +59,11 @@ class BasicClassLoader {
 
         if ($file = stream_resolve_include_path($classPath))
             return $file;
-        
+
         // Regular means don't work
         $next = strstr($class, '\\');
         if ($next)
             return $this->findClassFile($next);
     }
-    
+
 }

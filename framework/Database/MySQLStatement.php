@@ -14,7 +14,6 @@
 namespace SmoothPHP\Framework\Database;
 
 class MySQLStatement {
-    
-    
-    
+
+
 }

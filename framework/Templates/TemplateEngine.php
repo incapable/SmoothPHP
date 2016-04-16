@@ -17,26 +17,26 @@ use SmoothPHP\Framework\Cache\CacheProvider;
 
 class TemplateEngine {
     private $compiler;
-    
+
     private $compileCache;
-    
+
     public function __construct() {
         $this->compiler = new TemplateCompiler();
         $this->compileCache = new CacheProvider('ctpl', 'ctpl',
-            function($fileName) {
+            function ($fileName) {
                 return $this->compiler->compile($fileName);
             },
-            function($fileName) {
+            function ($fileName) {
                 return unserialize(gzinflate(file_get_contents($fileName)));
             },
-            function($fileName, $data) {
+            function ($fileName, $data) {
                 file_put_contents($fileName, gzdeflate(serialize($data)));
             }
         );
     }
-    
+
     public function fetch($templateName) {
         return $this->compileCache->fetch(sprintf('%s/src/templates/%s.tpl', __ROOT__, $templateName));
     }
-    
+
 }

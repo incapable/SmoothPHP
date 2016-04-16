@@ -13,8 +13,8 @@
 
 namespace SmoothPHP\Framework\Templates;
 
-use SmoothPHP\Framework\Templates\Compiler\TemplateLexer;
 use SmoothPHP\Framework\Templates\Compiler\TemplateCompileException;
+use SmoothPHP\Framework\Templates\Compiler\TemplateLexer;
 use SmoothPHP\Framework\Templates\Elements\Chain;
 use SmoothPHP\Framework\Templates\Elements\Commands\BlockElement;
 use SmoothPHP\Framework\Templates\Elements\Operators\ArithmeticOperatorElement;
@@ -22,9 +22,9 @@ use SmoothPHP\Framework\Templates\Elements\Operators\ArithmeticOperatorElement;
 class TemplateCompiler {
     const DELIMITER_START = '{';
     const DELIMITER_END = '}';
-    
+
     private $commands, $operators;
-    
+
     public function __construct() {
         // All these commands and operators will have the following method called:
         // static handle(TemplateCompiler, TemplateLexer $command, TemplateLexer $lexer, Chain, $stackEnd);
@@ -43,51 +43,51 @@ class TemplateCompiler {
             '!' => Elements\Operators\InEqualsOperatorElement::class
         );
     }
-    
+
     public function compile($file) {
         $lexer = new TemplateLexer(file_get_contents($file));
-        
+
         $chain = new Chain();
         $this->read($lexer, $chain);
-        
+
         $tpl = new Compiler\TemplateState();
         $chain = $chain->simplify($tpl);
         $tpl->finishing = true;
         $chain = $chain->simplify($tpl);
-        
+
         return $chain;
     }
-    
+
     public function read(TemplateLexer $lexer, Chain $chain, $stackEnd = null) {
         $rawString = '';
-        
-        $finishString = function() use (&$chain, &$rawString) {
+
+        $finishString = function () use (&$chain, &$rawString) {
             if (strlen(trim($rawString)) > 0)
-                $chain->addElement (new Elements\PrimitiveElement($rawString));
+                $chain->addElement(new Elements\PrimitiveElement($rawString));
             $rawString = '';
         };
-        
-        while(true) {
-            if ( $stackEnd !== null && $lexer->peek($stackEnd) ) {
+
+        while (true) {
+            if ($stackEnd !== null && $lexer->peek($stackEnd)) {
                 $finishString();
                 return;
-            } else if ( $lexer->peek(self::DELIMITER_START) ) {
+            } else if ($lexer->peek(self::DELIMITER_START)) {
                 if ($lexer->isWhitespace()) {
                     $rawString .= self::DELIMITER_START;
                     continue;
                 }
-                
+
                 $command = '';
-                while(!$lexer->peek(self::DELIMITER_END)) {
+                while (!$lexer->peek(self::DELIMITER_END)) {
                     $char = $lexer->next();
                     if ($char !== false)
                         $command .= $char;
                     else
                         throw new TemplateCompileException("Template syntax error, unfinished command: " . self::DELIMITER_START . $command);
                 }
-                
+
                 $finishString();
-                
+
                 $this->handleCommand(new TemplateLexer($command), $lexer, $chain);
             } else {
                 $char = $lexer->next();
@@ -100,7 +100,7 @@ class TemplateCompiler {
             }
         }
     }
-   
+
     public function handleCommand(TemplateLexer $command, TemplateLexer $lexer, Chain $chain, $stackEnd = null) {
         $command->skipWhitespace();
 
@@ -127,7 +127,7 @@ class TemplateCompiler {
                     $args = new Chain();
                     do {
                         $this->handleCommand($command, $lexer, $args, ')');
-                    } while($command->skipWhitespace() || $command->peek(','));
+                    } while ($command->skipWhitespace() || $command->peek(','));
                     $chain->addElement(new Elements\Operators\FunctionOperatorElement($name->getValue(), $args));
                 }
             } else {
@@ -138,21 +138,21 @@ class TemplateCompiler {
                     throw new TemplateCompileException("Unknown operator '" . $command->peekSingle() . "'");
             }
         }
-        
+
         $command->skipWhitespace();
         if ($command->peekSingle() && $command->peekSingle() != ',') // Do we have more to read?
             $this->handleCommand($command, $lexer, $chain, $stackEnd);
         return;
     }
-    
+
     public static function flatten($chain) {
         if ($chain instanceof Chain) {
             $all = $chain->getAll();
             if (count($all) == 1)
                 return self::flatten(current($all));
         }
-        
+
         return $chain;
     }
-    
+
 }

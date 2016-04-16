@@ -24,18 +24,18 @@ class RouteDatabase {
     private $defaults;
     private $routes;
     private $resolveCache;
-    
+
     public function __construct() {
         $this->routes = array();
         $this->resolveCache = array();
-        
+
         $this->defaults = array(
             'method' => 'GET',
             'subdomain' => self::WILDCARD_INPUT,
             'content-type' => PlainTextResponse::class
         );
     }
-    
+
     public function register(array $routeOptions) {
         $routeOpts = array_merge($this->defaults, $routeOptions);
 
@@ -44,7 +44,7 @@ class RouteDatabase {
         $path = array_values(array_filter($path, 'strlen'));
 
         $currentRecursive = &$this->resolveCache;
-        for($i = 0; $i < count($path); $i++) {
+        for ($i = 0; $i < count($path); $i++) {
             $pathPart = $path[$i];
 
             if ($pathPart == self::VARARGS_INPUT && $i < (count($path) - 1))
@@ -85,7 +85,7 @@ class RouteDatabase {
 
         return new ResolvedRoute($routeOpts, $parameters);
     }
-    
+
     private function findRoute($depth, array &$cacheLevel, array &$query, array &$parameters) {
         if ($depth === count($query)) { // Are we at the end of the query?
             if (isset($cacheLevel[self::HANDLER]))
@@ -121,5 +121,5 @@ class RouteDatabase {
             return false;
         }
     }
-    
+
 }

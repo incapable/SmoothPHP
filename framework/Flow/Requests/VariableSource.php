@@ -16,24 +16,24 @@ namespace SmoothPHP\Framework\Flow\Requests;
 class VariableSource {
     private $source;
     private $filter;
-    
+
     public function __construct(array $source) {
         $this->source = $source;
         $this->filter = FILTER_DEFAULT;
     }
-    
+
     public function get($varName, $filter = FILTER_DEFAULT) {
         if ($filter == FILTER_DEFAULT)
             $filter = $this->filter;
 
         if (!isset($this->source[$varName]))
             return $filter == FILTER_VALIDATE_BOOLEAN ? null : false;
-        
+
         $value = trim($this->source[$varName]);
         $options = array(
             'flags' => 0
         );
-        switch($filter) {
+        switch ($filter) {
             case FILTER_VALIDATE_INT:
                 $options['flags'] |= FILTER_FLAG_ALLOW_HEX | FILTER_FLAG_ALLOW_OCTAL;
                 break;
@@ -50,10 +50,10 @@ class VariableSource {
 
         return filter_var($value, $filter, $options);
     }
-    
+
     public function __get($varName) {
         $filter = FILTER_DEFAULT;
-        switch($varName) {
+        switch ($varName) {
             case "int":
                 $filter = FILTER_VALIDATE_INT;
                 break;
@@ -70,14 +70,14 @@ class VariableSource {
                 $filter = FILTER_VALIDATE_URL;
                 break;
         }
-        
+
         if ($filter != FILTER_DEFAULT) {
             $filteredSource = new VariableSource($this->source);
             $filteredSource->filter = $filter;
             return $filteredSource;
         }
-        
+
         return $this->get($varName, $filter);
     }
-    
+
 }

@@ -17,11 +17,10 @@ use SmoothPHP\Framework\Core\Config;
 
 class MySQL {
     private $connection;
-    
+
     public function __construct(Config $config) {
         $this->connection = new \mysqli($config->mysql_host, $config->mysql_user, $config->mysql_password, $config->mysql_database);
     }
 
-    
-    
+
 }

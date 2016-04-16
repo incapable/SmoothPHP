@@ -13,20 +13,19 @@
 
 namespace SmoothPHP\Framework\Templates\Elements\Operators;
 
-use SmoothPHP\Framework\Templates\TemplateCompiler;
-use SmoothPHP\Framework\Templates\Compiler\TemplateLexer;
-use SmoothPHP\Framework\Templates\Elements\Chain;
 use SmoothPHP\Framework\Templates\Compiler\TemplateCompileException;
-use SmoothPHP\Framework\Templates\Elements\Commands\VariableElement;
-use SmoothPHP\Framework\Templates\Elements\Commands\AssignElement;
-
+use SmoothPHP\Framework\Templates\Compiler\TemplateLexer;
 use SmoothPHP\Framework\Templates\Compiler\TemplateState;
+use SmoothPHP\Framework\Templates\Elements\Chain;
+use SmoothPHP\Framework\Templates\Elements\Commands\AssignElement;
+use SmoothPHP\Framework\Templates\Elements\Commands\VariableElement;
 use SmoothPHP\Framework\Templates\Elements\Element;
 use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
+use SmoothPHP\Framework\Templates\TemplateCompiler;
 
 class EqualsOperatorElement extends Element {
     private $left, $right;
-    
+
     public static function handle(TemplateCompiler $compiler, TemplateLexer $command, TemplateLexer $lexer, Chain $chain, $stackEnd) {
         $command->next();
         if ($command->peek('=')) {
@@ -43,16 +42,16 @@ class EqualsOperatorElement extends Element {
             $chain->addElement(new AssignElement($assignTo->getVarName(), TemplateCompiler::flatten($right)));
         }
     }
-    
+
     public function __construct($left, $right) {
         $this->left = $left;
         $this->right = $right;
     }
-    
+
     public function simplify(TemplateState $tpl) {
         $this->left = $this->left->simplify($tpl);
         $this->right = $this->right->simplify($tpl);
-        
+
         if ($this->left instanceof PrimitiveElement && $this->right instanceof PrimitiveElement)
             return new PrimitiveElement($this->left->getValue() == $this->right->getValue());
         else
