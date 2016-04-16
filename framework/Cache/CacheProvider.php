@@ -13,6 +13,8 @@
 
 namespace SmoothPHP\Framework\Cache;
 
+use SmoothPHP\Framework\Core\Lock;
+
 class CacheProvider {
     const PERMS = 0755;
 
@@ -40,10 +42,15 @@ class CacheProvider {
         if (file_exists(sprintf($cacheFile)))
             return call_user_func($this->readCache, $cacheFile);
         else {
-            array_map('unlink', glob(sprintf($this->cacheFileFormat, $fileName, '*')));
-            $newCache = call_user_func($this->cacheBuilder, $sourceFile);
-            call_user_func($this->writeCache, $cacheFile, $newCache);
-            return $newCache;
+            $lock = new Lock($fileName);
+
+            if ($lock->lock()) {
+                array_map('unlink', glob(sprintf($this->cacheFileFormat, $fileName, '*')));
+                $newCache = call_user_func($this->cacheBuilder, $sourceFile);
+                call_user_func($this->writeCache, $cacheFile, $newCache);
+                return $newCache;
+            } else
+                return call_user_func($this->readCache, $cacheFile);
         }
     }
 }
