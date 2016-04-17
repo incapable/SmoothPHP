@@ -33,7 +33,7 @@ class FunctionOperatorElement extends Element {
         $args = $this->args->getAll();
         $primitiveArgs = array();
         for ($i = 0; $i < count($args); $i++) {
-            $args[$i] = $args[$i]->simplify($tpl);
+            $args[$i] = $args[$i]->optimize($tpl);
 
             if (!($args[$i] instanceof PrimitiveElement))
                 $simpleArgs = false;
@@ -49,9 +49,18 @@ class FunctionOperatorElement extends Element {
 
     public function writePHPInChain(PHPBuilder $php, $isChainPiece = false) {
         $php->openPHP();
-        $php->append(sprintf('%s(%s)', $this->functionName, explode(',', array_map(function (Element $arg) use ($php) {
-            return $arg->writePHP($php);
-        }, $this->args))));
+        $php->append($this->functionName);
+        $php->append('(');
+
+        $args = $this->args->getAll();
+        $last = end($args);
+        array_map(function (Element $arg) use ($php, $last) {
+            $arg->writePHP($php);
+            if ($arg != $last)
+                $php->append(',');
+        }, $args);
+
+        $php->append(')');
         if ($isChainPiece)
             $php->append(';');
     }
