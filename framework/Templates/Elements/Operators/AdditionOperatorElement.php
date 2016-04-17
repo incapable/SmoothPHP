@@ -17,7 +17,7 @@ use SmoothPHP\Framework\Templates\Compiler\CompilerState;
 use SmoothPHP\Framework\Templates\Compiler\PHPBuilder;
 use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
 
-class PlusOperatorElement extends ArithmeticOperatorElement {
+class AdditionOperatorElement extends ArithmeticOperatorElement {
 
     public function getPriority() {
         return 2;

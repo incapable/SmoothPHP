@@ -36,7 +36,9 @@ class TemplateCompiler {
         );
         $this->operators = array(
             '+' => ArithmeticOperatorElement::class,
+            '-' => ArithmeticOperatorElement::class,
             '*' => ArithmeticOperatorElement::class,
+            '/' => ArithmeticOperatorElement::class,
             '\'' => Elements\PrimitiveElement::class,
             '"' => Elements\PrimitiveElement::class,
             '=' => Elements\Operators\EqualsOperatorElement::class,

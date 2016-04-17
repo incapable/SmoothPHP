@@ -26,11 +26,16 @@ abstract class ArithmeticOperatorElement extends Element {
     public static function handle(TemplateCompiler $compiler, TemplateLexer $command, TemplateLexer $lexer, Chain $chain) {
         switch ($command->next()) {
             case '+':
-                $op = new PlusOperatorElement();
+                $op = new AdditionOperatorElement();
+                break;
+            case '-':
+                $op = new SubstractionOperatorElement();
                 break;
             case '*':
                 $op = new MultiplicationOperatorElement();
                 break;
+            case '/':
+                $op = new DivisionOperatorElement();
         }
         $command->skipWhitespace();
 
