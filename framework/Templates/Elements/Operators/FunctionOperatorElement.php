@@ -55,13 +55,13 @@ class FunctionOperatorElement extends Element {
             if (!($args[$i] instanceof PrimitiveElement))
                 $simpleArgs = false;
             else
-                $primitiveArgs[] = $args[$i]->getValue();
+                $resolvedArgs[] = $args[$i]->getValue();
         }
 
         $this->args = $optimizedChain;
 
         if (in_array($this->functionName, self::$cacheableFunctions) && $simpleArgs) {
-            return new PrimitiveElement(call_user_func_array($this->functionName, $primitiveArgs));
+            return new PrimitiveElement(call_user_func_array($this->functionName, $resolvedArgs));
         } else
             return $this;
     }
