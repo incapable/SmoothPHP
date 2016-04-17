@@ -13,16 +13,16 @@
 
 namespace SmoothPHP\Framework\Templates\Elements\Operators;
 
+use SmoothPHP\Framework\Templates\Compiler\CompilerState;
+use SmoothPHP\Framework\Templates\Compiler\PHPBuilder;
 use SmoothPHP\Framework\Templates\Compiler\TemplateCompileException;
 use SmoothPHP\Framework\Templates\Compiler\TemplateLexer;
-use SmoothPHP\Framework\Templates\Compiler\CompilerState;
 use SmoothPHP\Framework\Templates\Elements\Chain;
 use SmoothPHP\Framework\Templates\Elements\Commands\AssignElement;
 use SmoothPHP\Framework\Templates\Elements\Commands\VariableElement;
 use SmoothPHP\Framework\Templates\Elements\Element;
 use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
 use SmoothPHP\Framework\Templates\TemplateCompiler;
-use SmoothPHP\Framework\Templates\Compiler\PHPBuilder;
 
 class EqualsOperatorElement extends Element {
     private $left, $right;

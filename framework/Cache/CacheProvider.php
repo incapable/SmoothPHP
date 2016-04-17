@@ -44,7 +44,7 @@ class CacheProvider {
         if (file_exists(sprintf($cacheFile)))
             return call_user_func($this->readCache, $cacheFile);
         else {
-            $lock = new Lock(mt_rand(0, 1000));
+            $lock = new Lock(pathinfo($cacheFile, PATHINFO_BASENAME));
 
             if ($lock->lock()) {
                 array_map('unlink', glob(sprintf($this->cacheFileFormat, $fileName, '*')));

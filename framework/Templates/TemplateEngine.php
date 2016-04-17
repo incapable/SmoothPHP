@@ -41,7 +41,7 @@ class TemplateEngine {
     public function fetch($templateName) {
         $path = sprintf('%s/src/templates/%s.tpl', __ROOT__, $templateName);
         return $this->phpCache->fetch($path,
-            function() use ($path) {
+            function () use ($path) {
                 $doc = new PHPBuilder();
                 $this->compileCache->fetch($path)->writePHP($doc);
                 $doc->closePHP();

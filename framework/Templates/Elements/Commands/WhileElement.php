@@ -13,12 +13,12 @@
 
 namespace SmoothPHP\Framework\Templates\Elements\Commands;
 
-use SmoothPHP\Framework\Templates\Compiler\TemplateLexer;
 use SmoothPHP\Framework\Templates\Compiler\CompilerState;
+use SmoothPHP\Framework\Templates\Compiler\PHPBuilder;
+use SmoothPHP\Framework\Templates\Compiler\TemplateLexer;
 use SmoothPHP\Framework\Templates\Elements\Chain;
 use SmoothPHP\Framework\Templates\Elements\Element;
 use SmoothPHP\Framework\Templates\TemplateCompiler;
-use SmoothPHP\Framework\Templates\Compiler\PHPBuilder;
 
 class WhileElement extends Element {
     private $condition;

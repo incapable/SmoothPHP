@@ -6,7 +6,7 @@
 <body>
 {block "main"} {/block}
 {if $var == 5}
-    {5 + 3}
+    {2 + 2 * 5}
 {/if}
 </body>
 </html>

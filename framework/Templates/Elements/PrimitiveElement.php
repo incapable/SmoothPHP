@@ -13,10 +13,10 @@
 
 namespace SmoothPHP\Framework\Templates\Elements;
 
-use SmoothPHP\Framework\Templates\Compiler\TemplateLexer;
 use SmoothPHP\Framework\Templates\Compiler\CompilerState;
-use SmoothPHP\Framework\Templates\TemplateCompiler;
 use SmoothPHP\Framework\Templates\Compiler\PHPBuilder;
+use SmoothPHP\Framework\Templates\Compiler\TemplateLexer;
+use SmoothPHP\Framework\Templates\TemplateCompiler;
 
 class PrimitiveElement extends Element {
     private $value;
@@ -53,7 +53,10 @@ class PrimitiveElement extends Element {
         return $this;
     }
 
-    public function writePHP(PHPBuilder $php) {
+    public function writePHPInChain(PHPBuilder $php, $isChainPiece = false) {
+        if ($isChainPiece)
+            $php->closePHP();
+        
         $value = $this->value;
         if ($php->isPHPTagOpen())
             $value = is_string($value) ? sprintf("'%s'", str_replace('\'', '\\\'', $value)) : $value;

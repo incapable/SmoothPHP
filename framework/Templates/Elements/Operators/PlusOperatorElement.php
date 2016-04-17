@@ -14,8 +14,8 @@
 namespace SmoothPHP\Framework\Templates\Elements\Operators;
 
 use SmoothPHP\Framework\Templates\Compiler\CompilerState;
-use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
 use SmoothPHP\Framework\Templates\Compiler\PHPBuilder;
+use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
 
 class PlusOperatorElement extends ArithmeticOperatorElement {
 

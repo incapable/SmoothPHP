@@ -67,8 +67,8 @@ class Chain extends Element {
     }
 
     public function writePHP(PHPBuilder $php) {
-        array_map(function(Element $piece) use ($php) {
-            $piece->writePHP($php);
+        array_map(function (Element $piece) use ($php) {
+            $piece->writePHPInChain($php, true);
         }, $this->chain);
     }
 }

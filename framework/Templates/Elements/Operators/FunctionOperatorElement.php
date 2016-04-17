@@ -14,10 +14,10 @@
 namespace SmoothPHP\Framework\Templates\Elements\Operators;
 
 use SmoothPHP\Framework\Templates\Compiler\CompilerState;
+use SmoothPHP\Framework\Templates\Compiler\PHPBuilder;
 use SmoothPHP\Framework\Templates\Elements\Chain;
 use SmoothPHP\Framework\Templates\Elements\Element;
 use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
-use SmoothPHP\Framework\Templates\Compiler\PHPBuilder;
 
 class FunctionOperatorElement extends Element {
     private $functionName;
@@ -47,10 +47,12 @@ class FunctionOperatorElement extends Element {
             return $this;
     }
 
-    public function writePHP(PHPBuilder $php) {
+    public function writePHPInChain(PHPBuilder $php, $isChainPiece = false) {
         $php->openPHP();
-        $php->append(sprintf('%s(%s)', $this->functionName, explode(',', array_map(function(Element $arg) use ($php) {
+        $php->append(sprintf('%s(%s)', $this->functionName, explode(',', array_map(function (Element $arg) use ($php) {
             return $arg->writePHP($php);
         }, $this->args))));
+        if ($isChainPiece)
+            $php->append(';');
     }
 }

@@ -20,6 +20,12 @@ abstract class Element {
 
     abstract function optimize(CompilerState $tpl);
 
-    abstract function writePHP(PHPBuilder $php);
+    public function writePHP(PHPBuilder $php) {
+        $this->writePHPInChain($php);
+    }
+
+    public function writePHPInChain(PHPBuilder $php, $isChainPiece = false) {
+        $this->writePHP($php);
+    }
 
 }
