@@ -18,15 +18,15 @@ use SmoothPHP\Framework\Flow\Requests\Request;
 
 class TemplateResponse extends Response {
     private $built;
+    private $args;
 
-    public function __construct($controllerResponse) {
+    public function __construct($controllerResponse, array $args = array()) {
         parent::__construct($controllerResponse);
+        $this->args = $args;
     }
 
     public function build(Kernel $kernel, Request $request) {
-        ob_start();
-        var_dump($kernel->getTemplateEngine()->fetch($this->controllerResponse));
-        $this->built = ob_get_clean();
+        $this->built = $kernel->getTemplateEngine()->fetch($this->controllerResponse, $this->args);
     }
 
     protected function sendHeaders() {

@@ -58,7 +58,7 @@ class PrimitiveElement extends Element {
             $php->closePHP();
 
         $value = $this->value;
-        if ($php->isPHPTagOpen())
+        if ($php->isTagOpen())
             $value = is_string($value) ? sprintf("'%s'", str_replace('\'', '\\\'', $value)) : $value;
         $php->append($value);
     }

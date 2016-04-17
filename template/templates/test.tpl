@@ -3,5 +3,5 @@
 {$var = 255}
 
 {block "main"}
-    New body with {$var|test}! :D
+    New body with {$var|dechex}! :D
 {/block}

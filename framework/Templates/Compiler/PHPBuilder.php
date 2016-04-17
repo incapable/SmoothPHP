@@ -17,29 +17,29 @@ namespace SmoothPHP\Framework\Templates\Compiler;
 class PHPBuilder {
     private $content;
 
-    private $phpTagOpen;
+    private $isTagOpen;
 
     public function __construct() {
         $this->content = '';
-        $this->phpTagOpen = false;
+        $this->isTagOpen = true; // eval() starts with PHP-tags opened
     }
 
     public function openPHP() {
-        if (!$this->phpTagOpen) {
-            $this->phpTagOpen = true;
+        if (!$this->isTagOpen) {
+            $this->isTagOpen = true;
             $this->content .= '<?php ';
         }
     }
 
     public function closePHP() {
-        if ($this->phpTagOpen) {
-            $this->phpTagOpen = false;
+        if ($this->isTagOpen) {
+            $this->isTagOpen = false;
             $this->content .= ' ?>';
         }
     }
 
-    public function isPHPTagOpen() {
-        return $this->phpTagOpen;
+    public function isTagOpen() {
+        return $this->isTagOpen;
     }
 
     public function append($code) {

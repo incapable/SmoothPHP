@@ -15,6 +15,7 @@ namespace SmoothPHP\Framework\Templates;
 
 use SmoothPHP\Framework\Cache\CacheProvider;
 use SmoothPHP\Framework\Templates\Compiler\PHPBuilder;
+use SmoothPHP\Framework\Templates\Runtime\FinalRuntime;
 
 class TemplateEngine {
     private $compiler;
@@ -24,6 +25,7 @@ class TemplateEngine {
 
     public function __construct() {
         $this->compiler = new TemplateCompiler();
+
         $this->compileCache = new CacheProvider('ctpl', 'ctpl',
             function ($fileName) {
                 return $this->compiler->compile($fileName);
@@ -35,12 +37,12 @@ class TemplateEngine {
                 file_put_contents($fileName, gzdeflate(serialize($data)));
             }
         );
-        $this->phpCache = new CacheProvider('tplcache_php', 'php');
+        $this->phpCache = new CacheProvider('phpcache', 'php');
     }
 
-    public function fetch($templateName) {
+    public function fetch($templateName, array $args) {
         $path = sprintf('%ssrc/templates/%s', __ROOT__, $templateName);
-        return $this->phpCache->fetch($path,
+        $php = $this->phpCache->fetch($path,
             function () use ($path) {
                 $doc = new PHPBuilder();
                 $this->compileCache->fetch($path)->writePHP($doc);
@@ -48,6 +50,11 @@ class TemplateEngine {
                 return $doc->getPHP();
             }
         );
+
+        $_smooth_tpl = new FinalRuntime($args);
+        ob_start();
+        eval($php);
+        return ob_get_clean();
     }
 
 }
