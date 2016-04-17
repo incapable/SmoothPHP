@@ -30,12 +30,13 @@ class Kernel {
     public function __construct() {
         $this->config = new Config();
         $this->routeDatabase = new RouteDatabase();
-        $this->templateEngine = new TemplateEngine();
     }
 
     public function loadPrototype(WebPrototype $prototype) {
         $prototype->initialize($this);
         $prototype->registerRoutes($this->routeDatabase);
+        define('__DEBUG__', $this->config->debug);
+        $this->templateEngine = new TemplateEngine();
     }
 
     /**

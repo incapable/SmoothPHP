@@ -7,10 +7,16 @@
  * Copyright (C) 2016 Rens Rikkerink
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * * * *
- * CacheExpiredException.php
- * Exception thrown if an element is accessed which is expired.
+ * TemplateRuntime.php
+ * Description
  */
 
-namespace SmoothPHP\Framework\Cache;
+namespace SmoothPHP\Framework\Templates;
 
-class CacheExpiredException extends \Exception {}
+class TemplateRuntime {
+    public $args;
+
+    public function __construct() {
+        $this->args = array();
+    }
+}

@@ -13,20 +13,18 @@
 
 namespace SmoothPHP\Framework\Templates;
 
-use SmoothPHP\Framework\Cache\CacheProvider;
-use SmoothPHP\Framework\Templates\Compiler\PHPBuilder;
-use SmoothPHP\Framework\Templates\Runtime\FinalRuntime;
+use SmoothPHP\Framework\Cache\FileCacheProvider;
+use SmoothPHP\Framework\Cache\RuntimeCacheProvider;
 
 class TemplateEngine {
     private $compiler;
 
-    private $compileCache;
-    private $phpCache;
+    private $runtimeCache;
 
     public function __construct() {
         $this->compiler = new TemplateCompiler();
 
-        $this->compileCache = new CacheProvider('ctpl', 'ctpl',
+        $compileCache = new FileCacheProvider('ctpl', 'ctpl',
             function ($fileName) {
                 return $this->compiler->compile($fileName);
             },
@@ -37,25 +35,14 @@ class TemplateEngine {
                 file_put_contents($fileName, gzdeflate(serialize($data)));
             }
         );
-        $this->phpCache = new CacheProvider('phpcache', 'php');
+        $this->runtimeCache = RuntimeCacheProvider::create(function($fileName) use ($compileCache) {
+            return $compileCache->fetch($fileName);
+        });
     }
 
     public function fetch($templateName, array $args) {
         $path = sprintf('%ssrc/templates/%s', __ROOT__, $templateName);
-        $php = $this->phpCache->fetch($path,
-            function () use ($path) {
-                $doc = new PHPBuilder();
-                $this->compileCache->fetch($path)->writePHP($doc);
-                $doc->closePHP();
-
-                return $doc->getPHP();
-            }
-        );
-
-        $_smooth_tpl = new FinalRuntime($args);
-        ob_start();
-        eval($php);
-        return ob_get_clean();
+        $template = $this->runtimeCache->fetch($path);
     }
 
 }

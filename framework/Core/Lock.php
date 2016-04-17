@@ -13,7 +13,7 @@
 
 namespace SmoothPHP\Framework\Core;
 
-use SmoothPHP\Framework\Cache\CacheProvider;
+use SmoothPHP\Framework\Cache\FileCacheProvider;
 
 class Lock {
     private $key;
@@ -25,7 +25,7 @@ class Lock {
 
         $dirname = __ROOT__ . 'cache/locks/';
         if (!is_dir($dirname))
-            mkdir($dirname, CacheProvider::PERMS, true);
+            mkdir($dirname, FileCacheProvider::PERMS, true);
     }
 
     public function __destruct() {
