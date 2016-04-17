@@ -45,8 +45,11 @@ class WhileElement extends Element {
 
     public function writePHP(PHPBuilder $php) {
         $php->openPHP();
-        $php->append(sprintf('while (%s) {', $this->condition->createPHP($php)));
-        $php->append($this->body->writePHP($php));
-        $php->append('};');
+        $php->append('while (');
+        $this->condition->writePHP($php);
+        $php->append(') {');
+        $this->body->writePHPInChain($php, true);
+        $php->openPHP();
+        $php->append('}');
     }
 }
