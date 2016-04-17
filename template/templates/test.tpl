@@ -5,8 +5,9 @@
 </head>
 <body>
 {block "main"} {/block}
-{if getvar($test) == 5}
-    {doStuff($bla, getAnotherVar($bla))}
+{if getvar() == 5}
+    {doStuff()}
+    {pow(2,3)}
 {/if}
 </body>
 </html>
