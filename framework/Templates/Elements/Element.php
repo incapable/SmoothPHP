@@ -8,7 +8,7 @@
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * * * *
  * Element.php
- * 
+ * An abstract template element.
  */
 
 namespace SmoothPHP\Framework\Templates\Elements;

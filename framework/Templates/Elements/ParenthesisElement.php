@@ -8,13 +8,14 @@
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * * * *
  * ParenthesisElement.php
- * A list of output elements that are executed before their result is used.
+ * Used as a temporary language construct
  */
 
 namespace SmoothPHP\Framework\Templates\Elements;
 
 use SmoothPHP\Framework\Templates\Compiler\CompilerState;
 use SmoothPHP\Framework\Templates\Compiler\PHPBuilder;
+use SmoothPHP\Framework\Templates\Compiler\TemplateCompileException;
 
 class ParenthesisElement extends Element {
     private $element;
@@ -25,13 +26,10 @@ class ParenthesisElement extends Element {
 
     public function optimize(CompilerState $tpl) {
         $this->element = $this->element->optimize($tpl);
-        if ($this->element instanceof PrimitiveElement) {
-            return $this->element;
-        } else
-            return $this;
+        return $this->element;
     }
 
     public function writePHP(PHPBuilder $php) {
-        $this->element->writePHP($php);
+        throw new TemplateCompileException("Parenthesis being written.");
     }
 }

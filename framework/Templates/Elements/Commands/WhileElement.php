@@ -8,7 +8,7 @@
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * * * *
  * WhileElement.php
- * Description
+ * Looped conditional block, continues outputting the body until the condition evaluates to false
  */
 
 namespace SmoothPHP\Framework\Templates\Elements\Commands;

@@ -8,7 +8,7 @@
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * * * *
  * BlockElement.php
- * Description
+ * Template block, which can be replaced, prepended and appended on later moments in the code without losing its position.
  */
 
 namespace SmoothPHP\Framework\Templates\Elements\Commands;

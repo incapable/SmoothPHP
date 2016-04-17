@@ -8,7 +8,7 @@
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * * * *
  * Chain.php
- * Description
+ * Represents several elements as 1 total 'body'.
  */
 
 namespace SmoothPHP\Framework\Templates\Elements;

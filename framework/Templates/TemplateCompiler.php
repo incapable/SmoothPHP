@@ -52,7 +52,7 @@ class TemplateCompiler {
 
         $chain = new Chain();
         $this->read($lexer, $chain);
-        
+
         $tpl = new Compiler\CompilerState();
         $chain = $chain->optimize($tpl);
         $tpl->finishing = true;

@@ -8,7 +8,7 @@
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * * * *
  * IncludeElement.php
- * Description
+ * Includes another template file on the current position.
  */
 
 namespace SmoothPHP\Framework\Templates\Elements\Commands;

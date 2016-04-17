@@ -7,7 +7,7 @@
  * Copyright (C) 2016 Rens Rikkerink
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * * * *
- * PlusOperatorElement.php
+ * AdditionOperatorElement.php
  * Handles adding 2 elements (+)
  */
 

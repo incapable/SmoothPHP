@@ -7,8 +7,8 @@
  * Copyright (C) 2016 Rens Rikkerink
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * * * *
- * StringElement.php
- * Template element of a 'raw' string.
+ * PrimitiveElement.php
+ * Primitive element, whose value can be directly output to the PHP file.
  */
 
 namespace SmoothPHP\Framework\Templates\Elements;

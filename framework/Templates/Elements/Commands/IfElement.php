@@ -8,7 +8,7 @@
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * * * *
  * IfCommand.php
- * Description
+ * Conditional block, will only output if the condition evaluates to true.
  */
 
 namespace SmoothPHP\Framework\Templates\Elements\Commands;
