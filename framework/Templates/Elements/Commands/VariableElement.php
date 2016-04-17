@@ -37,6 +37,6 @@ class VariableElement extends Element {
 
     public function writePHP(PHPBuilder $php) {
         $php->openPHP();
-        $php->append(sprintf('$%s', $this->varName));
+        $php->append(sprintf('$_smooth_tpl->get_var(\'%s\')', $this->varName));
     }
 }

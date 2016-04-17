@@ -53,8 +53,8 @@ class AssignElement extends Element {
 
     public function writePHP(PHPBuilder $php) {
         $php->openPHP();
-        $php->append(sprintf('$%s = ', $this->varName));
+        $php->append(sprintf('$_smooth_tpl->set_var(\'%s\', ', $this->varName));
         $this->value->writePHP($php);
-        $php->append(';');
+        $php->append(');');
     }
 }

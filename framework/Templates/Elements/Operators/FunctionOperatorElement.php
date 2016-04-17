@@ -67,16 +67,23 @@ class FunctionOperatorElement extends Element {
     }
 
     public function writePHPInChain(PHPBuilder $php, $isChainPiece = false) {
-        $php->openPHP();
-        $php->append($this->functionName);
-        $php->append('(');
-
         $args = $this->args->getAll();
+
+        $php->openPHP();
+        if (function_exists($this->functionName)) {
+            $php->append($this->functionName);
+            $php->append('(');
+        } else {
+            $php->append('$_smooth_tpl->call_function(\'');
+            $php->append($this->functionName);
+            $php->append(count($args) == 0 ? '\'' : '\', ');
+        }
+
         $last = end($args);
         array_map(function (Element $arg) use ($php, $last) {
             $arg->writePHP($php);
             if ($arg != $last)
-                $php->append(',');
+                $php->append(', ');
         }, $args);
 
         $php->append(')');
