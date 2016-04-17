@@ -53,6 +53,8 @@ class AssignElement extends Element {
 
     public function writePHP(PHPBuilder $php) {
         $php->openPHP();
-        $php->append(sprintf('$%s = %s;', $this->varName, $this->value->writePHP($php)));
+        $php->append(sprintf('$%s = ', $this->varName));
+        $this->value->writePHP($php);
+        $php->append(';');
     }
 }
