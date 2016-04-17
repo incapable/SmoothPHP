@@ -56,7 +56,7 @@ class PrimitiveElement extends Element {
     public function writePHPInChain(PHPBuilder $php, $isChainPiece = false) {
         if ($isChainPiece)
             $php->closePHP();
-        
+
         $value = $this->value;
         if ($php->isPHPTagOpen())
             $value = is_string($value) ? sprintf("'%s'", str_replace('\'', '\\\'', $value)) : $value;
