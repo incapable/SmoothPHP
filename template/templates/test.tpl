@@ -7,5 +7,5 @@
     <br />
     {pow(2,3) * 5}
     <br />
-    {$ctrl->testInt() == 10}
+    {pow(sqrt(2), $ctrl->getSelf()->testInt())}
 {/block}

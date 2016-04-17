@@ -110,7 +110,7 @@ class TemplateCompiler {
         $command->skipWhitespace();
 
         if ($stackEnd != null && $command->peek($stackEnd)) {
-            return;
+            return true;
         } else if ($command->peek('(')) {
             $elements = new Chain();
             $this->handleCommand($command, $lexer, $elements, ')');
@@ -124,6 +124,7 @@ class TemplateCompiler {
                 call_user_func(array($this->commands[$next], 'handle'), $this, $command, $lexer, $chain, $stackEnd);
             else if (strlen(trim($next)) > 0) {
                 $chain->addElement(new Elements\PrimitiveElement($next, true));
+
                 if ($command->peek('(')) {
                     // Function call
                     $name = $chain->pop();
@@ -136,7 +137,8 @@ class TemplateCompiler {
 
                     $args = new Chain();
                     do {
-                        $this->handleCommand($command, $lexer, $args, ')');
+                        if ($this->handleCommand($command, $lexer, $args, ')'))
+                            break;
                     } while ($command->skipWhitespace() || $command->peek(','));
 
                     $function = new Elements\Operators\FunctionOperatorElement($name->getValue(), $args);
@@ -158,8 +160,12 @@ class TemplateCompiler {
 
         $command->skipWhitespace();
         if ($command->peekSingle() && $command->peekSingle() != ',') // Do we have more to read?
-            $this->handleCommand($command, $lexer, $chain, $stackEnd);
-        return;
+            return $this->handleCommand($command, $lexer, $chain, $stackEnd);
+
+        if ($stackEnd != null)
+            return $command->peek($stackEnd);
+        else
+            return false;
     }
 
     public static function flatten($chain) {

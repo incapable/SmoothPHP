@@ -18,6 +18,10 @@ class TestController {
         return 'test method called!';
     }
 
+    public function getSelf() {
+        return $this;
+    }
+
     public function testInt() {
         return 10;
     }
