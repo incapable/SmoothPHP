@@ -68,7 +68,8 @@ class TemplateLexer {
         $rawString = '';
 
         while (true) {
-            if (ctype_alnum($this->peekSingle()))
+            $char = $this->peekSingle();
+            if (ctype_alnum($char) || $char === '_')
                 $rawString .= $this->content[$this->pointer++];
             else
                 return $rawString;

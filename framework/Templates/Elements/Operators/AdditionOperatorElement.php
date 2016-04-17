@@ -14,7 +14,6 @@
 namespace SmoothPHP\Framework\Templates\Elements\Operators;
 
 use SmoothPHP\Framework\Templates\Compiler\CompilerState;
-use SmoothPHP\Framework\Templates\Compiler\PHPBuilder;
 use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
 
 class AdditionOperatorElement extends ArithmeticOperatorElement {
@@ -34,10 +33,5 @@ class AdditionOperatorElement extends ArithmeticOperatorElement {
                 return new PrimitiveElement($this->left->getValue() + $this->right->getValue());
         else
             return $this;
-    }
-
-    public function writePHP(PHPBuilder $php) {
-        $php->openPHP();
-        $php->append(sprintf('(%s + %s)', $this->left->writePHP($php), $this->right->writePHP($php)));
     }
 }

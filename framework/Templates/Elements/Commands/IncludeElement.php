@@ -15,7 +15,6 @@ namespace SmoothPHP\Framework\Templates\Elements\Commands;
 
 use SmoothPHP\Framework\Cache\CacheExpiredException;
 use SmoothPHP\Framework\Templates\Compiler\CompilerState;
-use SmoothPHP\Framework\Templates\Compiler\PHPBuilder;
 use SmoothPHP\Framework\Templates\Compiler\TemplateCompileException;
 use SmoothPHP\Framework\Templates\Compiler\TemplateLexer;
 use SmoothPHP\Framework\Templates\Elements\Chain;
@@ -53,12 +52,9 @@ class IncludeElement extends Element {
         return $this;
     }
 
-    public function writePHP(PHPBuilder $php) {
+    public function output(CompilerState $tpl) {
         if (md5_file($this->file) != $this->md5)
             throw new CacheExpiredException();
-
-        $php->openPHP();
-        $php->append(sprintf('$_smooth_tpl->verify_cache(\'%s\', \'%s\');', $this->file, $this->md5));
     }
 
 }

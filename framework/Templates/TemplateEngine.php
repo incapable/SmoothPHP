@@ -15,6 +15,8 @@ namespace SmoothPHP\Framework\Templates;
 
 use SmoothPHP\Framework\Cache\FileCacheProvider;
 use SmoothPHP\Framework\Cache\RuntimeCacheProvider;
+use SmoothPHP\Framework\Templates\Compiler\CompilerState;
+use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
 
 class TemplateEngine {
     private $compiler;
@@ -35,7 +37,7 @@ class TemplateEngine {
                 file_put_contents($fileName, gzdeflate(serialize($data)));
             }
         );
-        $this->runtimeCache = RuntimeCacheProvider::create(function($fileName) use ($compileCache) {
+        $this->runtimeCache = RuntimeCacheProvider::create(function ($fileName) use ($compileCache) {
             return $compileCache->fetch($fileName);
         });
     }
@@ -43,6 +45,15 @@ class TemplateEngine {
     public function fetch($templateName, array $args) {
         $path = sprintf('%ssrc/templates/%s', __ROOT__, $templateName);
         $template = $this->runtimeCache->fetch($path);
+        
+        $state = new CompilerState();
+        $state->vars = array_map(function ($arg) {
+            return new PrimitiveElement($arg);
+        }, $args);
+
+        ob_start();
+        $template->output($state);
+        return ob_get_clean();
     }
 
 }

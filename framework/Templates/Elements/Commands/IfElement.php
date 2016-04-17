@@ -14,12 +14,13 @@
 namespace SmoothPHP\Framework\Templates\Elements\Commands;
 
 use SmoothPHP\Framework\Templates\Compiler\CompilerState;
-use SmoothPHP\Framework\Templates\Compiler\PHPBuilder;
+use SmoothPHP\Framework\Templates\Compiler\TemplateCompileException;
 use SmoothPHP\Framework\Templates\Compiler\TemplateLexer;
 use SmoothPHP\Framework\Templates\Elements\Chain;
 use SmoothPHP\Framework\Templates\Elements\Element;
 use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
 use SmoothPHP\Framework\Templates\TemplateCompiler;
+use SmoothPHP\Framework\Templates\TemplateRuntime;
 
 class IfElement extends Element {
     private $condition;
@@ -51,13 +52,13 @@ class IfElement extends Element {
             return $this;
     }
 
-    public function writePHP(PHPBuilder $php) {
-        $php->openPHP();
-        $php->append('if (');
-        $this->condition->writePHP($php);
-        $php->append(') {');
-        $this->body->writePHPInChain($php, true);
-        $php->openPHP();
-        $php->append('}');
+    public function output(CompilerState $tpl) {
+        $result = $this->condition->optimize($tpl);
+
+        if (!($result instanceof PrimitiveElement))
+            throw new TemplateCompileException("Could not deduce if condition at runtime.");
+
+        if ($result->getValue())
+            $this->body->output($tpl);
     }
 }

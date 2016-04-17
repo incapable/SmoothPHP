@@ -14,12 +14,13 @@
 namespace SmoothPHP\Framework\Templates\Elements\Commands;
 
 use SmoothPHP\Framework\Templates\Compiler\CompilerState;
-use SmoothPHP\Framework\Templates\Compiler\PHPBuilder;
+use SmoothPHP\Framework\Templates\Compiler\TemplateCompileException;
 use SmoothPHP\Framework\Templates\Compiler\TemplateLexer;
 use SmoothPHP\Framework\Templates\Elements\Chain;
 use SmoothPHP\Framework\Templates\Elements\Element;
 use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
 use SmoothPHP\Framework\Templates\TemplateCompiler;
+use SmoothPHP\Framework\Templates\TemplateRuntime;
 
 class AssignElement extends Element {
     private $varName;
@@ -51,10 +52,10 @@ class AssignElement extends Element {
         return $this;
     }
 
-    public function writePHP(PHPBuilder $php) {
-        $php->openPHP();
-        $php->append(sprintf('$_smooth_tpl->set_var(\'%s\', ', $this->varName));
-        $this->value->writePHP($php);
-        $php->append(');');
+    public function output(CompilerState $tpl) {
+        $this->optimize($tpl);
+
+        if (!($this->value instanceof PrimitiveElement))
+            throw new TemplateCompileException("Value could not be deduced.");
     }
 }

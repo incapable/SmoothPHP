@@ -14,7 +14,6 @@
 namespace SmoothPHP\Framework\Templates\Elements\Operators;
 
 use SmoothPHP\Framework\Templates\Compiler\CompilerState;
-use SmoothPHP\Framework\Templates\Compiler\PHPBuilder;
 use SmoothPHP\Framework\Templates\Compiler\TemplateCompileException;
 use SmoothPHP\Framework\Templates\Compiler\TemplateLexer;
 use SmoothPHP\Framework\Templates\Elements\Chain;
@@ -59,12 +58,12 @@ class EqualsOperatorElement extends Element {
             return $this;
     }
 
-    public function writePHP(PHPBuilder $php) {
-        $php->openPHP();
-        $php->append('(');
-        $this->left->writePHP($php);
-        $php->append(' == ');
-        $this->right->writePHP($php);
-        $php->append(')');
+    public function output(CompilerState $tpl) {
+        $result = $this->optimize($tpl);
+
+        if (!($result instanceof PrimitiveElement))
+            throw new TemplateCompileException("Could not arithmetic values at runtime.");
+
+        $result->output($tpl);
     }
 }

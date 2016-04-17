@@ -14,8 +14,6 @@
 namespace SmoothPHP\Framework\Templates\Elements;
 
 use SmoothPHP\Framework\Templates\Compiler\CompilerState;
-use SmoothPHP\Framework\Templates\Compiler\PHPBuilder;
-use SmoothPHP\Framework\Templates\Compiler\TemplateCompileException;
 
 class ParenthesisElement extends Element {
     private $element;
@@ -29,7 +27,7 @@ class ParenthesisElement extends Element {
         return $this->element;
     }
 
-    public function writePHP(PHPBuilder $php) {
-        throw new TemplateCompileException("Parenthesis being written.");
+    public function output(CompilerState $tpl) {
+        $this->element->output($tpl);
     }
 }

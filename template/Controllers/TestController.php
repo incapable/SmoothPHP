@@ -8,7 +8,7 @@ class TestController {
 
     public function index() {
         return new TemplateResponse('test.tpl', array(
-            'var' => 10
+            'var' => 255
         ));
     }
 

@@ -14,7 +14,6 @@
 namespace SmoothPHP\Framework\Templates\Elements;
 
 use SmoothPHP\Framework\Templates\Compiler\CompilerState;
-use SmoothPHP\Framework\Templates\Compiler\PHPBuilder;
 use SmoothPHP\Framework\Templates\Compiler\TemplateLexer;
 use SmoothPHP\Framework\Templates\TemplateCompiler;
 
@@ -53,14 +52,8 @@ class PrimitiveElement extends Element {
         return $this;
     }
 
-    public function writePHPInChain(PHPBuilder $php, $isChainPiece = false) {
-        if ($isChainPiece)
-            $php->closePHP();
-
-        $value = $this->value;
-        if ($php->isTagOpen())
-            $value = is_string($value) ? sprintf("'%s'", str_replace('\'', '\\\'', $value)) : $value;
-        $php->append($value);
+    public function output(CompilerState $tpl) {
+        echo $this->value;
     }
 
 }

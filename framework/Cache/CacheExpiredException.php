@@ -13,4 +13,5 @@
 
 namespace SmoothPHP\Framework\Cache;
 
-class CacheExpiredException extends \Exception {}
+class CacheExpiredException extends \Exception {
+}

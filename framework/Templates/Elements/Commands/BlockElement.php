@@ -14,13 +14,13 @@
 namespace SmoothPHP\Framework\Templates\Elements\Commands;
 
 use SmoothPHP\Framework\Templates\Compiler\CompilerState;
-use SmoothPHP\Framework\Templates\Compiler\PHPBuilder;
 use SmoothPHP\Framework\Templates\Compiler\TemplateCompileException;
 use SmoothPHP\Framework\Templates\Compiler\TemplateLexer;
 use SmoothPHP\Framework\Templates\Elements\Chain;
 use SmoothPHP\Framework\Templates\Elements\Element;
 use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
 use SmoothPHP\Framework\Templates\TemplateCompiler;
+use SmoothPHP\Framework\Templates\TemplateRuntime;
 
 class BlockElement extends Element {
     const USAGE_UNSPECIFIED = 0;
@@ -38,7 +38,7 @@ class BlockElement extends Element {
 
         $usage = self::USAGE_UNSPECIFIED;
         if (isset($args[1])) {
-            $args[1] = $args[1]->simplify(new CompilerState());
+            $args[1] = $args[1]->optimize(new CompilerState());
             switch ($args[1]->getValue()) {
                 case 'prepend':
                     $usage = self::USAGE_PREPEND;
@@ -97,7 +97,7 @@ class BlockElement extends Element {
         return new PrimitiveElement();
     }
 
-    public function writePHP(PHPBuilder $php) {
-        throw new TemplateCompileException("Block being written.");
+    public function output(CompilerState $tpl) {
+        // Do nothing
     }
 }

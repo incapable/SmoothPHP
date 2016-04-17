@@ -14,7 +14,6 @@
 namespace SmoothPHP\Framework\Templates\Elements;
 
 use SmoothPHP\Framework\Templates\Compiler\CompilerState;
-use SmoothPHP\Framework\Templates\Compiler\PHPBuilder;
 
 class Chain extends Element {
     private $chain;
@@ -66,9 +65,9 @@ class Chain extends Element {
         }
     }
 
-    public function writePHP(PHPBuilder $php) {
-        array_map(function (Element $piece) use ($php) {
-            $piece->writePHPInChain($php, true);
+    public function output(CompilerState $tpl) {
+        array_map(function (Element $piece) use ($tpl) {
+            $piece->output($tpl);
         }, $this->chain);
     }
 }
