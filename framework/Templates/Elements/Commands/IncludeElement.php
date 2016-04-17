@@ -54,7 +54,7 @@ class IncludeElement extends Element {
     }
 
     public function writePHP(PHPBuilder $php) {
-        if (!md5_file($this->file) == $this->md5)
+        if (md5_file($this->file) != $this->md5)
             throw new CacheExpiredException();
 
         $php->openPHP();

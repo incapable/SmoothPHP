@@ -47,6 +47,7 @@ class TemplateEngine {
                 $doc = new PHPBuilder();
                 $this->compileCache->fetch($path)->writePHP($doc);
                 $doc->closePHP();
+
                 return $doc->getPHP();
             }
         );

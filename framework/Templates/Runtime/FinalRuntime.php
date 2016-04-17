@@ -23,7 +23,7 @@ class FinalRuntime extends TemplateRuntime {
     }
 
     public function verify_cache($file, $md5) {
-        if (!md5_file($file) == $md5)
+        if (md5_file($file) != $md5)
             throw new CacheExpiredException();
     }
 
