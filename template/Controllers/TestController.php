@@ -7,7 +7,7 @@ use SmoothPHP\Framework\Flow\Responses\TemplateResponse;
 class TestController {
 
     public function index() {
-        return new TemplateResponse('test');
+        return new TemplateResponse('test.tpl');
     }
 
 }

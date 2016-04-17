@@ -29,7 +29,7 @@ class IncludeElement {
         if (!($args[0] instanceof PrimitiveElement))
             throw new TemplateCompileException("Include file path could not be resolved at parse time.");
 
-        $path = sprintf('%s/src/templates/%s.tpl', __ROOT__, $args[0]->getValue());
+        $path = sprintf('%s/src/templates/%s', __ROOT__, $args[0]->getValue());
 
         $include = new Chain();
         $compiler->read(new TemplateLexer(file_get_contents($path)), $include);

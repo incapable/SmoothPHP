@@ -1,4 +1,4 @@
-{include "base"}
+{include "base.tpl"}
 
 {$var = 5}
 
