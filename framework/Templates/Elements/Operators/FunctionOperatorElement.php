@@ -18,12 +18,21 @@ use SmoothPHP\Framework\Templates\Compiler\PHPBuilder;
 use SmoothPHP\Framework\Templates\Elements\Chain;
 use SmoothPHP\Framework\Templates\Elements\Element;
 use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
+use SmoothPHP\Framework\Templates\TemplateCompiler;
+use SmoothPHP\Framework\Templates\Compiler\TemplateLexer;
 
 class FunctionOperatorElement extends Element {
     private static $cacheableFunctions;
 
     private $functionName;
     private $args;
+
+    public static function handle(TemplateCompiler $compiler, TemplateLexer $command, TemplateLexer $lexer, Chain $chain) {
+        $command->next();
+        $args = new Chain();
+        $args->addElement($chain->pop());
+        $chain->addElement(new self($command->readAlphaNumeric(), $args));
+    }
 
     public function __construct($functionName, Chain $args) {
         if (!isset(self::$cacheableFunctions))
@@ -82,7 +91,9 @@ class FunctionOperatorElement extends Element {
             /* String functions */
             'addcslashes', 'addslashes', 'chop', 'chr', 'chunk_split', 'convert_cyr_string', 'convert_uudecode', 'convert_uuencode', 'count_chars', 'crc32', 'explode', 'hebrev', 'hebrevc', 'html_entity_decode', 'htmlentities', 'htmlspecialchars_decode', 'htmlspecialchars', 'implode', 'join', 'lcfirst', 'levenshtein', 'localeconv', 'ltrim', 'md5', 'metaphone', 'money_format', 'nl2br', 'number_format', 'ord', 'parse_str', 'print', 'printf', 'quoted_printable_decode', 'quoted_printable_encode', 'quotemeta', 'rtrim', 'sha1', 'similar_text', 'soundex', 'sprintf', 'sscanf', 'str_getcsv', 'str_ireplacce', 'str_pad', 'str_repeat', 'str_replace', 'str_rot13', 'str_shuffle', 'str_word_count', 'strcasecmp', 'strchr', 'strcmp', 'strcoll', 'strcspn', 'strip_tags', 'stripcslashes', 'stripos', 'stripslashes', 'stristr', 'strlen', 'strnatcasecmp', 'strnatcmp', 'strncasecmp', 'strncmp', 'strpbrk', 'strpos', 'strrchr', 'strrev', 'strripos', 'strrpos', 'strspn', 'strstr', 'strtok', 'strtolower', 'strtoupper', 'strtr', 'substr_compare', 'substr_count', 'subtr_replace', 'substr', 'trim', 'ucfirst', 'ucwords', 'vsprintf', 'wordwrap',
             /* Variable functions */
-            'boolval', 'doubleval', 'empty', 'floatval', 'gettype', 'intval', 'is_array', 'is_bool', 'is_callable', 'is_double', 'is_float', 'is_int', 'is_integer', 'is_long', 'is_null', 'is_numeric', 'is_object', 'is_real', 'is_resource', 'is_scalar', 'is_string', 'isset', 'print_r', 'strval', 'var_dump'
+            'boolval', 'doubleval', 'empty', 'floatval', 'gettype', 'intval', 'is_array', 'is_bool', 'is_callable', 'is_double', 'is_float', 'is_int', 'is_integer', 'is_long', 'is_null', 'is_numeric', 'is_object', 'is_real', 'is_resource', 'is_scalar', 'is_string', 'isset', 'print_r', 'strval', 'var_dump',
+            /* Uncategorized functions */
+            'urlencode'
         );
     }
 }

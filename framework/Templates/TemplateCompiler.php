@@ -43,7 +43,8 @@ class TemplateCompiler {
             '\'' => Elements\PrimitiveElement::class,
             '"' => Elements\PrimitiveElement::class,
             '=' => Elements\Operators\EqualsOperatorElement::class,
-            '!' => Elements\Operators\InEqualsOperatorElement::class
+            '!' => Elements\Operators\InEqualsOperatorElement::class,
+            '|' => Elements\Operators\FunctionOperatorElement::class
         );
     }
 

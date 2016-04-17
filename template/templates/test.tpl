@@ -1,7 +1,7 @@
 {include "base.tpl"}
 
-{$var = 5}
+{$var = 255}
 
 {block "main"}
-    New body with {$var}! :D
+    New body with {$var|dechex}! :D
 {/block}
