@@ -32,7 +32,12 @@ abstract class ArithmeticOperatorElement extends Element {
                 $op = new AdditionOperatorElement();
                 break;
             case '-':
-                $op = new SubstractionOperatorElement();
+                $command->skipWhitespace();
+                if ($command->peek('>')) {
+                    $chain->addElement(new DereferenceOperatorElement($chain->pop()));
+                    return;
+                } else
+                    $op = new SubstractionOperatorElement();
                 break;
             case '*':
                 $op = new MultiplicationOperatorElement();
@@ -69,7 +74,7 @@ abstract class ArithmeticOperatorElement extends Element {
 
     public function output(CompilerState $tpl) {
         $result = $this->optimize($tpl);
-
+        
         if (!($result instanceof PrimitiveElement))
             throw new TemplateCompileException("Could not arithmetic values at runtime.");
 

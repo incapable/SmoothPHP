@@ -93,4 +93,8 @@ class TemplateLexer {
             }
         }
     }
+
+    public function remainder() {
+        return substr($this->content, $this->pointer);
+    }
 }

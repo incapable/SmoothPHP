@@ -17,10 +17,12 @@ class CompilerState {
     public $vars;
     public $blocks;
     public $finishing;
+    public $performCalls;
 
     public function __construct() {
         $this->vars = array();
         $this->blocks = array();
         $this->finishing = false;
+        $this->performCalls = false;
     }
 }

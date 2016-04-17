@@ -1,8 +1,11 @@
 {include "base.tpl"}
 
 {block "main"}
-    New body with {$var|dechex}! :D
-    {if $var == 255}
-        It is!
-    {/if}
+    {$ctrl->testVar}
+    <br />
+    {$ctrl->test()}
+    <br />
+    {pow(2,3) * 5}
+    <br />
+    {$ctrl->testInt() == 10}
 {/block}

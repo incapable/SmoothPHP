@@ -45,8 +45,9 @@ class TemplateEngine {
     public function fetch($templateName, array $args) {
         $path = sprintf('%ssrc/templates/%s', __ROOT__, $templateName);
         $template = $this->runtimeCache->fetch($path);
-        
+
         $state = new CompilerState();
+        $state->performCalls = true;
         $state->vars = array_map(function ($arg) {
             return new PrimitiveElement($arg);
         }, $args);

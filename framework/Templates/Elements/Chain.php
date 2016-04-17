@@ -26,6 +26,14 @@ class Chain extends Element {
         $this->chain[] = $element;
     }
 
+    public function previous($count = 1) {
+        $index = count($this->chain) - $count;
+        if (isset($this->chain[$index]))
+            return $this->chain[$index];
+        else
+            return null;
+    }
+
     public function pop() {
         return array_pop($this->chain);
     }

@@ -42,6 +42,30 @@ class FunctionOperatorElement extends Element {
         $this->args = $args;
     }
 
+    public function __wakeup() {
+        if (!isset(self::$cacheableFunctions))
+            self::fillCacheableFunctions();
+    }
+
+    public function getFunctionName() {
+        return $this->functionName;
+    }
+
+    public function getPrimitiveArgs(CompilerState $tpl) {
+        $args = array();
+
+        foreach ($this->args->getAll() as $arg) {
+            $arg = $arg->optimize($tpl);
+
+            if (!($arg instanceof PrimitiveElement))
+                throw new TemplateCompileException("Could not deduce function argument at runtime.");
+
+            $args[] = $arg->getValue();
+        }
+
+        return $args;
+    }
+
     public function optimize(CompilerState $tpl) {
         $simpleArgs = true;
         $args = $this->args->getAll();
@@ -60,25 +84,14 @@ class FunctionOperatorElement extends Element {
 
         $this->args = $optimizedChain;
 
-        if (in_array($this->functionName, self::$cacheableFunctions) && $simpleArgs) {
+        if ($tpl->performCalls || (in_array($this->functionName, self::$cacheableFunctions) && $simpleArgs)) {
             return new PrimitiveElement(call_user_func_array($this->functionName, $resolvedArgs));
         } else
             return $this;
     }
 
     public function output(CompilerState $tpl) {
-        $args = array();
-
-        foreach ($this->args->getAll() as $arg) {
-            $arg = $arg->optimize($tpl);
-
-            if (!($arg instanceof PrimitiveElement))
-                throw new TemplateCompileException("Could not deduce function argument at runtime.");
-
-            $args[] = $arg->getValue();
-        }
-
-        echo call_user_func_array($this->functionName, $args);
+        echo call_user_func_array($this->functionName, $this->getPrimitiveArgs($tpl));
     }
 
     private static function fillCacheableFunctions() {

@@ -18,6 +18,7 @@ use SmoothPHP\Framework\Templates\Compiler\TemplateLexer;
 use SmoothPHP\Framework\Templates\Elements\Chain;
 use SmoothPHP\Framework\Templates\Elements\Commands\BlockElement;
 use SmoothPHP\Framework\Templates\Elements\Operators\ArithmeticOperatorElement;
+use SmoothPHP\Framework\Templates\Elements\Operators\DereferenceOperatorElement;
 
 class TemplateCompiler {
     const DELIMITER_START = '{';
@@ -128,11 +129,23 @@ class TemplateCompiler {
                     $name = $chain->pop();
                     if (!($name instanceof Elements\PrimitiveElement))
                         throw new TemplateCompileException("Attempting to call a function without a name.");
+
+                    $deref = false;
+                    if ($chain->previous() instanceof DereferenceOperatorElement)
+                        $deref = $chain->previous();
+
                     $args = new Chain();
                     do {
                         $this->handleCommand($command, $lexer, $args, ')');
                     } while ($command->skipWhitespace() || $command->peek(','));
-                    $chain->addElement(new Elements\Operators\FunctionOperatorElement($name->getValue(), $args));
+
+                    $function = new Elements\Operators\FunctionOperatorElement($name->getValue(), $args);
+                    if ($deref !== false)
+                        $deref->setRight($function);
+                    else
+                        $chain->addElement($function);
+                } else if ($chain->previous(2) instanceof DereferenceOperatorElement) {
+                    $chain->previous(2)->setRight($chain->pop());
                 }
             } else {
                 $command->skipWhitespace();
