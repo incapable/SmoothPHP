@@ -17,7 +17,7 @@ class ImmediateCacheProvider extends RuntimeCacheProvider {
 
     public function fetch($sourceFile, callable $cacheBuilder = null) {
         $cacheBuilder = $cacheBuilder ?: $this->cacheBuilder;
-        return $cacheBuilder(realpath($sourceFile));
+        return $cacheBuilder($sourceFile);
     }
 
 }
