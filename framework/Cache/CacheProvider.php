@@ -41,21 +41,26 @@ class CacheProvider {
         if (!is_dir(dirname($cacheFile)))
             mkdir(dirname($cacheFile), self::PERMS, true);
 
-        if (file_exists(sprintf($cacheFile)))
-            return call_user_func($this->readCache, $cacheFile);
-        else {
-            $lock = new Lock(pathinfo($cacheFile, PATHINFO_BASENAME));
-
-            if ($lock->lock()) {
-                array_map('unlink', glob(sprintf($this->cacheFileFormat, $fileName, '*')));
-
-                $newCache = call_user_func($cacheBuilder, $sourceFile);
-                call_user_func($this->writeCache, $cacheFile, $newCache);
-
-                $lock->unlock();
-                return $newCache;
-            } else
+        // Try reading the cache
+        try {
+            if (file_exists($cacheFile))
                 return call_user_func($this->readCache, $cacheFile);
+        } catch (CacheExpiredException $e) {
         }
+
+        // If we get to this point, the above return has not returned.
+        // Which means we have to generate a new cache
+        $lock = new Lock(pathinfo($cacheFile, PATHINFO_BASENAME));
+
+        if ($lock->lock()) {
+            array_map('unlink', glob(sprintf($this->cacheFileFormat, $fileName, '*')));
+
+            $newCache = call_user_func($cacheBuilder, $sourceFile);
+            call_user_func($this->writeCache, $cacheFile, $newCache);
+
+            $lock->unlock();
+            return $newCache;
+        } else
+            return call_user_func($this->readCache, $cacheFile);
     }
 }
