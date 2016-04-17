@@ -30,7 +30,7 @@ class VariableElement extends Element {
 
     public function optimize(CompilerState $tpl) {
         if (isset($tpl->vars[$this->varName]))
-            return $tpl->vars[$this->varName]->simplify($tpl);
+            return $tpl->vars[$this->varName]->optimize($tpl);
         else
             return $this;
     }

@@ -29,6 +29,7 @@ class TemplateCompiler {
         // All these commands and operators will have the following method called:
         // static handle(TemplateCompiler, TemplateLexer $command, TemplateLexer $lexer, Chain, $stackEnd);
         $this->commands = array(
+            'include' => Elements\Commands\IncludeElement::class,
             'assign' => Elements\Commands\AssignElement::class,
             'block' => BlockElement::class,
             'if' => Elements\Commands\IfElement::class,
@@ -51,7 +52,7 @@ class TemplateCompiler {
 
         $chain = new Chain();
         $this->read($lexer, $chain);
-
+        
         $tpl = new Compiler\CompilerState();
         $chain = $chain->optimize($tpl);
         $tpl->finishing = true;
