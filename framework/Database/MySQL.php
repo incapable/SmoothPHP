@@ -19,8 +19,12 @@ class MySQL {
     private $connection;
 
     public function __construct(Config $config) {
-        $this->connection = new \mysqli($config->mysql_host, $config->mysql_user, $config->mysql_password, $config->mysql_database);
+        $prefix = ini_get('mysqli.allow_persistent') ? 'p:' : '';
+        $this->connection = new \mysqli($prefix . $config->mysql_host, $config->mysql_user, $config->mysql_password, $config->mysql_database);
     }
 
+    public function prepare($query) {
+        $pquery = $this->connection->prepare($query);
+    }
 
 }
