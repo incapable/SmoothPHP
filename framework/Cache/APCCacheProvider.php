@@ -16,7 +16,7 @@ namespace SmoothPHP\Framework\Cache;
 use SmoothPHP\Framework\Core\Lock;
 
 class APCCacheProvider extends RuntimeCacheProvider {
-    protected static $apcKey;
+    private static $apcKey;
 
     private $cacheFetch, $cacheStore;
 
