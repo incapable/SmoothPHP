@@ -23,8 +23,14 @@ class MySQL {
         $this->connection = new \mysqli($prefix . $config->mysql_host, $config->mysql_user, $config->mysql_password, $config->mysql_database);
     }
 
-    public function prepare($query) {
-        $pquery = $this->connection->prepare($query);
+    public function prepare($query, $returnsData = true) {
+        return $returnsData ? new MySQLStatementWithResult($this->connection, $query)
+            : new MySQLStatementWithoutResult($this->connection, $query);
+    }
+
+    public static function checkError($source) {
+        if ($source->errno)
+            throw new MySQLException($source->error);
     }
 
 }

@@ -13,7 +13,37 @@
 
 namespace SmoothPHP\Framework\Database;
 
-class MySQLStatement {
+abstract class MySQLStatement {
+    protected $stmt;
+    private $args;
 
+    public function __construct(\mysqli $connection, $query) {
+        $this->args = array();
+        $params = array('');
+        $query = preg_replace_callback('/%(d|f|s)/', function (array $matches) use (&$params) {
+            $params[0] .= $matches[1];
+            $this->args[] = null;
+            $params[] = &$this->args[count($this->args) - 1];
+            return '?';
+        }, $query);
 
+        $this->stmt = $connection->prepare($query);
+        MySQL::checkError($connection);
+
+        call_user_func_array(array($this->stmt, 'bind_param'), $params);
+        MySQL::checkError($this->stmt);
+    }
+
+    public function execute() {
+        $args = func_get_args();
+        for ($i = 0; $i < count($args); $i++)
+            $this->args[$i] = $args[$i];
+
+        $this->stmt->execute();
+        MySQL::checkError($this->stmt);
+
+        return $this->createResult();
+    }
+
+    protected abstract function createResult();
 }

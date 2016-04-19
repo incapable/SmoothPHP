@@ -2,10 +2,10 @@
 
 {block "main"}
     {$ctrl->testVar}
-    <br />
+    <br/>
     {$ctrl->test()}
-    <br />
+    <br/>
     {pow(2,3) * 5}
-    <br />
+    <br/>
     {pow(sqrt(2), $ctrl->getSelf()->testInt())}
 {/block}

@@ -74,7 +74,7 @@ abstract class ArithmeticOperatorElement extends Element {
 
     public function output(CompilerState $tpl) {
         $result = $this->optimize($tpl);
-        
+
         if (!($result instanceof PrimitiveElement))
             throw new TemplateCompileException("Could not arithmetic values at runtime.");
 
