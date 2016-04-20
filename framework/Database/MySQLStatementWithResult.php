@@ -20,7 +20,7 @@ class MySQLStatementWithResult extends MySQLStatement {
 
         $result = $this->stmt->get_result();
 
-        while($data = $result->fetch_assoc())
+        while ($data = $result->fetch_assoc())
             $resultList[] = $data;
 
         $this->stmt->free_result();

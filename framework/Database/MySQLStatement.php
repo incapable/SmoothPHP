@@ -36,6 +36,10 @@ abstract class MySQLStatement {
         }
     }
 
+    public function getStatement() {
+        return $this->stmt;
+    }
+
     public function execute() {
         $args = func_get_args();
         for ($i = 0; $i < count($args); $i++)

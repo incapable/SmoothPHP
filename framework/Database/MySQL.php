@@ -14,6 +14,7 @@
 namespace SmoothPHP\Framework\Database;
 
 use SmoothPHP\Framework\Core\Config;
+use SmoothPHP\Framework\Database\Mapper\MySQLObjectMapper;
 
 class MySQL {
     private $connection;
@@ -30,6 +31,14 @@ class MySQL {
 
     public function execute($query, array $params = array()) {
         $this->prepare($query, false)->execute($params);
+    }
+
+    public function fetch($query, array $params = array()) {
+        return $this->prepare($query, true)->execute($params);
+    }
+
+    public function map($clazz) {
+        return new MySQLObjectMapper($this, $clazz);
     }
 
     public static function checkError($source) {
