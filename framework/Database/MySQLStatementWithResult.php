@@ -14,31 +14,17 @@
 namespace SmoothPHP\Framework\Database;
 
 class MySQLStatementWithResult extends MySQLStatement {
-    private $results;
-
-    public function __construct(\mysqli $connection, $query) {
-        parent::__construct($connection, $query);
-        $this->results = array();
-
-        $references = array();
-        foreach ($this->stmt->result_metadata()->fetch_fields() as $field) {
-            $this->results[$field->name] = null;
-            $references[] = &$this->results[$field->name];
-        }
-
-        call_user_func_array(array($this->stmt, 'bind_result'), $references);
-    }
 
     public function createResult() {
         $resultList = array();
 
-        while ($this->stmt->fetch()) {
-            $resultList[] = array_map(function ($val) {
-                return $val;
-            }, $this->results);
-        }
+        $result = $this->stmt->get_result();
+
+        while($data = $result->fetch_assoc())
+            $resultList[] = $data;
 
         $this->stmt->free_result();
+        $this->stmt->reset();
 
         return new MySQLResult($resultList);
     }

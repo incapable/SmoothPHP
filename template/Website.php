@@ -24,17 +24,6 @@ class Website extends WebPrototype {
         $config->mysql_database = 'test';
         $config->mysql_user = 'root';
         $config->mysql_password = 'root';
-
-        $mysql = new \SmoothPHP\Framework\Database\MySQL($config);
-
-        $insert = $mysql->prepare('INSERT INTO `table` (text) VALUES (%s)', false);
-        $insert->execute('koekje');
-        $insert->execute('more');
-
-        $query = $mysql->prepare('SELECT * FROM `table`');
-        $data = $query->execute();
-
-        var_dump($data);
     }
 
     public function registerRoutes(RouteDatabase $routes) {
