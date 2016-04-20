@@ -13,8 +13,8 @@
 
 namespace SmoothPHP\Framework\Templates;
 
-use SmoothPHP\Framework\Cache\FileCacheProvider;
-use SmoothPHP\Framework\Cache\RuntimeCacheProvider;
+use SmoothPHP\Framework\Cache\Builder\FileCacheProvider;
+use SmoothPHP\Framework\Cache\Builder\RuntimeCacheProvider;
 use SmoothPHP\Framework\Templates\Compiler\CompilerState;
 use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
 

@@ -7,11 +7,14 @@
  * Copyright (C) 2016 Rens Rikkerink
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * * * *
- * CacheExpiredException.php
- * Exception thrown if an element is accessed which is expired.
+ * CacheProvider.php
+ * Description
  */
 
-namespace SmoothPHP\Framework\Cache;
+namespace SmoothPHP\Framework\Cache\Builder;
 
-class CacheExpiredException extends \Exception {
+abstract class CacheProvider {
+
+    abstract function fetch($sourceFile, callable $cacheBuilder = null);
+
 }

@@ -11,7 +11,7 @@
  * Description
  */
 
-namespace SmoothPHP\Framework\Cache;
+namespace SmoothPHP\Framework\Cache\Builder;
 
 use SmoothPHP\Framework\Core\Lock;
 
