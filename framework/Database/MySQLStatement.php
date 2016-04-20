@@ -30,8 +30,10 @@ abstract class MySQLStatement {
         $this->stmt = $connection->prepare($query);
         MySQL::checkError($connection);
 
-        call_user_func_array(array($this->stmt, 'bind_param'), $params);
-        MySQL::checkError($this->stmt);
+        if (count($params) > 1) {
+            call_user_func_array(array($this->stmt, 'bind_param'), $params);
+            MySQL::checkError($this->stmt);
+        }
     }
 
     public function execute() {

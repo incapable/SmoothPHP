@@ -30,8 +30,17 @@ class MySQLStatementWithResult extends MySQLStatement {
     }
 
     public function createResult() {
-        // TODO
-        return null;
+        $resultList = array();
+
+        while ($this->stmt->fetch()) {
+            $resultList[] = array_map(function ($val) {
+                return $val;
+            }, $this->results);
+        }
+
+        $this->stmt->free_result();
+
+        return new MySQLResult($resultList);
     }
 
 }

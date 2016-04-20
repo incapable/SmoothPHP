@@ -28,6 +28,10 @@ class MySQL {
             : new MySQLStatementWithoutResult($this->connection, $query);
     }
 
+    public function execute($query, array $params = array()) {
+        $this->prepare($query, false)->execute($params);
+    }
+
     public static function checkError($source) {
         if ($source->errno)
             throw new MySQLException($source->error);
