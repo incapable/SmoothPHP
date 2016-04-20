@@ -8,7 +8,7 @@
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * * * *
  * MySQLResult.php
- * Description
+ * Wrapper for MySQL result arrays
  */
 
 namespace SmoothPHP\Framework\Database;

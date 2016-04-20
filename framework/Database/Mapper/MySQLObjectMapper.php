@@ -7,8 +7,8 @@
  * Copyright (C) 2016 Rens Rikkerink
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * * * *
- * MappedMySQLObject.php
- * Description
+ * MySQLObjectMapper.php
+ * Class that sets up the queries to fetch and insert/update database rows for a PHP object.
  */
 
 namespace SmoothPHP\Framework\Database\Mapper;
@@ -112,12 +112,20 @@ class MySQLObjectMapper {
         }
 
         $params = array();
+        $idField = null;
         for ($i = 0; $i < 2; $i++)
-            foreach ($this->fields as $field)
+            foreach ($this->fields as $field) {
+                /* @var $field \ReflectionProperty */
                 if ($i == 0 || $field->getName() != 'id')
                     $params[] = $field->getValue($object);
+                else
+                    $idField = $field;
+            }
 
         call_user_func_array(array($this->insert->statement, 'execute'), $params);
+        $id = $this->insert->statement->getStatement()->insert_id;
+        if ($id != 0)
+            $idField->setValue($object, $id);
     }
 
 }

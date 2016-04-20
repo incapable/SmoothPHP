@@ -8,7 +8,7 @@
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * * * *
  * MappedMySQLObject.php
- * Description
+ * Superclass for all MySQL-mapped objects
  */
 
 namespace SmoothPHP\Framework\Database\Mapper;

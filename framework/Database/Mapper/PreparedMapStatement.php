@@ -8,7 +8,7 @@
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * * * *
  * PreparedMapStatement.php
- * Description
+ * Internal class used by the object mapper to store data
  */
 
 namespace SmoothPHP\Framework\Database\Mapper;

@@ -8,7 +8,7 @@
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * * * *
  * MySQLStatementWithoutResult.php
- * Description
+ * Prepared MySQL statement that does not produce a result
  */
 
 namespace SmoothPHP\Framework\Database;
@@ -17,7 +17,7 @@ namespace SmoothPHP\Framework\Database;
 class MySQLStatementWithoutResult extends MySQLStatement {
 
     public function createResult() {
-        return $this->stmt->affected_rows;
+        return $this->stmt->insert_id;
     }
 
 }

@@ -8,7 +8,7 @@
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * * * *
  * MySQLException.php
- * Description
+ * Exception thrown if any MySQL error occurs
  */
 
 namespace SmoothPHP\Framework\Database;

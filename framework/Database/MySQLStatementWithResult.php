@@ -8,7 +8,7 @@
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * * * *
  * MySQLStatementWithResult.php
- * Description
+ * Prepared MySQL statement that produces a result
  */
 
 namespace SmoothPHP\Framework\Database;
