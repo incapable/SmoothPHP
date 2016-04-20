@@ -13,6 +13,7 @@
 
 namespace SmoothPHP\Framework\Templates;
 
+use SmoothPHP\Framework\Cache\Assets\Template as Assets;
 use SmoothPHP\Framework\Templates\Compiler\TemplateCompileException;
 use SmoothPHP\Framework\Templates\Compiler\TemplateLexer;
 use SmoothPHP\Framework\Templates\Elements\Chain;
@@ -34,7 +35,11 @@ class TemplateCompiler {
             'assign' => Elements\Commands\AssignElement::class,
             'block' => BlockElement::class,
             'if' => Elements\Commands\IfElement::class,
-            'while' => Elements\Commands\WhileElement::class
+            'while' => Elements\Commands\WhileElement::class,
+
+            'image' => Assets\ImageElement::class,
+            'javascript' => Assets\JSElement::class,
+            'css' => Assets\CSSElement::class
         );
         $this->operators = array(
             '+' => ArithmeticOperatorElement::class,
