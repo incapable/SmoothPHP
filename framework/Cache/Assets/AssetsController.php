@@ -8,7 +8,7 @@
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * * * *
  * AssetsController.php
- * Description
+ * Controller used for all js/css/image accesses.
  */
 
 namespace SmoothPHP\Framework\Cache\Assets;

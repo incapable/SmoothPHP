@@ -8,7 +8,7 @@
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * * * *
  * APCCacheProvider.php
- * Description
+ * RAM-cache provider, capable of storing values that are often used in RAM
  */
 
 namespace SmoothPHP\Framework\Cache\Builder;

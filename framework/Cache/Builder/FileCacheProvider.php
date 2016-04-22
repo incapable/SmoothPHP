@@ -7,8 +7,8 @@
  * Copyright (C) 2016 Rens Rikkerink
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * * * *
- * CacheProvider.php
- * Description
+ * FileCacheProvider.php
+ * CacheProvider using files in the /cache/ folder.
  */
 
 namespace SmoothPHP\Framework\Cache\Builder;

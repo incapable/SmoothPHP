@@ -8,7 +8,7 @@
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * * * *
  * AssetsRegister.php
- * Description
+ * Register for all assets, used to add more assets to the template without direct access to said template.
  */
 
 namespace SmoothPHP\Framework\Cache\Assets;

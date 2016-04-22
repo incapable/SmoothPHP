@@ -8,7 +8,7 @@
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * * * *
  * ImmediateCacheProvider.php
- * Description
+ * CacheProvider that serves as a fallback option in case APC is not available.
  */
 
 namespace SmoothPHP\Framework\Cache\Builder;

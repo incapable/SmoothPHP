@@ -8,7 +8,7 @@
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * * * *
  * CacheProvider.php
- * Description
+ * Abstract cache provider
  */
 
 namespace SmoothPHP\Framework\Cache\Builder;

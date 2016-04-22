@@ -8,7 +8,7 @@
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * * * *
  * RuntimeCacheProvider.php
- * Description
+ * Abstract cache provider for RAM-storage.
  */
 
 namespace SmoothPHP\Framework\Cache\Builder;

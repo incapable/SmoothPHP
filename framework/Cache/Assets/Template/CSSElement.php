@@ -8,7 +8,7 @@
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * * * *
  * CSSElement.php
- * Description
+ * A template block that is later replaced by all used CSS files.
  */
 
 namespace SmoothPHP\Framework\Cache\Assets\Template;

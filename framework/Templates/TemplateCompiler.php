@@ -37,7 +37,6 @@ class TemplateCompiler {
             'if' => Elements\Commands\IfElement::class,
             'while' => Elements\Commands\WhileElement::class,
 
-            'image' => Assets\ImageElement::class,
             'javascript' => Assets\JSElement::class,
             'css' => Assets\CSSElement::class
         );

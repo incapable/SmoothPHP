@@ -8,7 +8,7 @@
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * * * *
  * JSElement.php
- * Description
+ * A template block that is later replaced by all used JavaScript files.
  */
 
 namespace SmoothPHP\Framework\Cache\Assets\Template;
