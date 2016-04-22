@@ -13,12 +13,13 @@
 
 namespace SmoothPHP\Framework\Flow\Routing;
 
+use SmoothPHP\Framework\Cache\Assets\AssetsRegister;
 use SmoothPHP\Framework\Core\Kernel;
 use SmoothPHP\Framework\Database\MySQL;
 use SmoothPHP\Framework\Flow\Requests\Request;
 
 class ControllerCall {
-    private $request, $kernel, $mysql;
+    private $request, $kernel, $mysql, $assetsRegister;
     private $parameters;
 
     private $callable;
@@ -41,6 +42,9 @@ class ControllerCall {
                 case Kernel::class:
                     $this->controllerArgs[] = &$this->kernel;
                     break;
+                case AssetsRegister::class:
+                    $this->controllerArgs[] = &$this->assetsRegister;
+                    break;
                 case MySQL::class:
                     $this->mysql = -1; // Make sure the later isset fills this value
                     $this->controllerArgs[] = &$this->mysql;
@@ -61,6 +65,7 @@ class ControllerCall {
         $this->request = $request;
         if (isset($this->mysql)) // MySQL should only be initialized on-demand
             $this->mysql = $kernel->getMySQL();
+        $this->assetsRegister = $kernel->getAssetsRegister();
 
         $i = 0;
         foreach ($args as $arg) {

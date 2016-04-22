@@ -26,6 +26,8 @@ class TemplateResponse extends Response {
     }
 
     public function build(Kernel $kernel, Request $request) {
+        $this->args['assets'] = $kernel->getAssetsRegister();
+        $this->args['route'] = $kernel->getRouteDatabase();
         $this->built = $kernel->getTemplateEngine()->fetch($this->controllerResponse, $this->args);
     }
 

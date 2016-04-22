@@ -13,7 +13,7 @@
 
 namespace SmoothPHP\Framework\Core;
 
-use SmoothPHP\Framework\Cache\FileCacheProvider;
+use SmoothPHP\Framework\Cache\Builder\FileCacheProvider;
 
 class Lock {
     private $key;

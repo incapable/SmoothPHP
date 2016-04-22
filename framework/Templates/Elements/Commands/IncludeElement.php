@@ -13,7 +13,7 @@
 
 namespace SmoothPHP\Framework\Templates\Elements\Commands;
 
-use SmoothPHP\Framework\Cache\CacheExpiredException;
+use SmoothPHP\Framework\Cache\Builder\CacheExpiredException;
 use SmoothPHP\Framework\Templates\Compiler\CompilerState;
 use SmoothPHP\Framework\Templates\Compiler\TemplateCompileException;
 use SmoothPHP\Framework\Templates\Compiler\TemplateLexer;

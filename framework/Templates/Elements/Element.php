@@ -17,8 +17,15 @@ use SmoothPHP\Framework\Templates\Compiler\CompilerState;
 
 abstract class Element {
 
+    /**
+     * @param CompilerState $tpl
+     * @return Element
+     */
     abstract function optimize(CompilerState $tpl);
 
+    /**
+     * @param CompilerState $tpl
+     */
     abstract function output(CompilerState $tpl);
 
 }

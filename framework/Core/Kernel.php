@@ -13,6 +13,7 @@
 
 namespace SmoothPHP\Framework\Core;
 
+use SmoothPHP\Framework\Cache\Assets\AssetsRegister;
 use SmoothPHP\Framework\Database\MySQL;
 use SmoothPHP\Framework\Flow\Requests\Request;
 use SmoothPHP\Framework\Flow\Routing\RouteDatabase;
@@ -25,11 +26,13 @@ class Kernel {
 
     // Runtime
     private $templateEngine;
+    private $assetsRegister;
     private $mysql;
 
     public function __construct() {
         $this->config = new Config();
         $this->routeDatabase = new RouteDatabase();
+        $this->assetsRegister = new AssetsRegister($this);
     }
 
     public function loadPrototype(WebPrototype $prototype) {
@@ -47,10 +50,24 @@ class Kernel {
     }
 
     /**
+     * @return RouteDatabase
+     */
+    public function getRouteDatabase() {
+        return $this->routeDatabase;
+    }
+
+    /**
      * @return TemplateEngine
      */
     public function getTemplateEngine() {
         return $this->templateEngine;
+    }
+
+    /**
+     * @return AssetsRegister
+     */
+    public function getAssetsRegister() {
+        return $this->assetsRegister;
     }
 
     /**

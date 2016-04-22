@@ -2,5 +2,5 @@
     RewriteEngine On
 
     RewriteBase /
-    RewriteRule ^ index.php [QSA,L]
+    RewriteRule ^(.*)$ index.php [QSA,L]
 </IfModule>

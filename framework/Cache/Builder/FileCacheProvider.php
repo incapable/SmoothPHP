@@ -34,10 +34,7 @@ class FileCacheProvider extends CacheProvider {
     public function fetch($sourceFile, callable $cacheBuilder = null) {
         $cacheBuilder = $cacheBuilder ?: $this->cacheBuilder;
 
-        $fileName = str_replace(array('/', '\\'), array('_', '_'), str_replace(__ROOT__, '', $sourceFile));
-        $checksum = md5_file($sourceFile);
-
-        $cacheFile = sprintf($this->cacheFileFormat, $fileName, $checksum);
+        $cacheFile = $this->getCachePath($sourceFile, $fileName);
         if (!is_dir(dirname($cacheFile)))
             mkdir(dirname($cacheFile), self::PERMS, true);
 
@@ -63,4 +60,12 @@ class FileCacheProvider extends CacheProvider {
         } else
             return call_user_func($this->readCache, $cacheFile);
     }
+
+    public function getCachePath($sourceFile, &$fileName = null) {
+        $fileName = str_replace(array('/', '\\'), array('_', '_'), str_replace(__ROOT__, '', $sourceFile));
+        $checksum = md5_file($sourceFile);
+
+        return sprintf($this->cacheFileFormat, $fileName, $checksum);
+    }
+
 }

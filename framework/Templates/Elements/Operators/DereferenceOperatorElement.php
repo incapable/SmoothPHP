@@ -31,7 +31,7 @@ class DereferenceOperatorElement extends Element {
 
     public function optimize(CompilerState $tpl) {
         $this->left = $this->left->optimize($tpl);
-        if (!($this->right) instanceof FunctionOperatorElement)
+        if (!($this->right instanceof FunctionOperatorElement))
             $this->right = $this->right->optimize($tpl);
         else if ($tpl->performCalls)
             return new PrimitiveElement(call_user_func_array(array($this->left->getValue(), $this->right->getFunctionName()), $this->right->getPrimitiveArgs($tpl)));

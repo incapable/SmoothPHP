@@ -30,7 +30,10 @@ class JSElement extends Element {
     }
 
     public function output(CompilerState $tpl) {
-
+        /* @var $assetHandler \SmoothPHP\Framework\Cache\Assets\AssetsRegister */
+        $assetHandler = $tpl->vars['assets']->getValue();
+        foreach ($assetHandler->getJSFiles() as $js)
+            echo '<script type="text/javascript" src="/javascript/' . $js . '"></script>';
     }
 
 }

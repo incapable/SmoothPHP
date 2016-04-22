@@ -24,12 +24,6 @@ class Website extends WebPrototype {
         $config->mysql_database = 'test';
         $config->mysql_user = 'root';
         $config->mysql_password = 'root';
-
-        $mysql = new \SmoothPHP\Framework\Database\MySQL($config);
-        $map = $mysql->map(\Test\Model\TextObject::class);
-        $obj = $map->fetch(10);
-        $map->insert($obj);
-        var_dump($obj);
     }
 
     public function registerRoutes(RouteDatabase $routes) {

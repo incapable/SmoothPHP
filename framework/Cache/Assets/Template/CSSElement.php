@@ -30,7 +30,10 @@ class CSSElement extends Element {
     }
 
     public function output(CompilerState $tpl) {
-
+        /* @var $assetHandler \SmoothPHP\Framework\Cache\Assets\AssetsRegister */
+        $assetHandler = $tpl->vars['assets']->getValue();
+        foreach ($assetHandler->getCSSFiles() as $css)
+            echo '<link rel="stylesheet" type="text/css" href="/css/' . $css . '" />';
     }
 
 }

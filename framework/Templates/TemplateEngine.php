@@ -46,12 +46,17 @@ class TemplateEngine {
         $path = sprintf('%ssrc/templates/%s', __ROOT__, $templateName);
         $template = $this->runtimeCache->fetch($path);
 
+        // Prepare the template output
         $state = new CompilerState();
-        $state->performCalls = true;
         $state->vars = array_map(function ($arg) {
             return new PrimitiveElement($arg);
         }, $args);
+        $state->performCalls = true;
 
+        // Optimize one last time, with the new variables
+        $template = $template->optimize($state);
+
+        // Gather output and return it
         ob_start();
         $template->output($state);
         return ob_get_clean();
