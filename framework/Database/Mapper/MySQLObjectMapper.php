@@ -38,10 +38,6 @@ class MySQLObjectMapper {
         }, $this->classDef->getProperties());
     }
 
-    public function createStructure() {
-
-    }
-
     /**
      * @param int $id
      * @return MappedMySQLObject
