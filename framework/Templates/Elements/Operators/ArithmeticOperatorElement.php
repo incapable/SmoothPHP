@@ -22,6 +22,9 @@ use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
 use SmoothPHP\Framework\Templates\TemplateCompiler;
 
 abstract class ArithmeticOperatorElement extends Element {
+    /**
+     * @var Element
+     */
     protected $left, $right;
 
     protected abstract function getPriority();

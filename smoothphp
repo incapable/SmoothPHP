@@ -1,0 +1,11 @@
+#!/usr/bin/env php
+<?php
+
+set_time_limit( 0 );
+define('__ROOT__', getcwd()  . '/');
+
+require_once './framework/Bootstrap.php';
+use SmoothPHP\Framework\Core\Kernel;
+
+$kernel = new Kernel();
+$kernel->loadPrototype(new Website());

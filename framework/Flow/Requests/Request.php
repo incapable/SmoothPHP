@@ -17,7 +17,7 @@ class Request {
     private $get, $post, $server;
 
     /**
-     * @return \SmoothPHP\Framework\Flow\Request\GlobalVarRequest
+     * @return \SmoothPHP\Framework\Flow\Requests\Request
      */
     public static function createFromGlobals() {
         return new Request($_GET, $_POST, $_SERVER);

@@ -47,7 +47,7 @@ class IfElement extends Element {
             if ($this->condition->getValue())
                 return $this->body;
             else
-                return new PrimitiveElement('');
+                return new PrimitiveElement();
         } else
             return $this;
     }
