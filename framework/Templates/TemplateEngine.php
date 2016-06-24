@@ -44,9 +44,10 @@ class TemplateEngine {
 
     public function fetch($templateName, array $args) {
         $path = sprintf('%ssrc/templates/%s', __ROOT__, $templateName);
+        /* @var $template \SmoothPHP\Framework\Templates\Elements\Element */
         $template = $this->runtimeCache->fetch($path);
 
-        // Prepare the template output
+        // Prepare the template state for final output
         $state = new CompilerState();
         $state->vars = array_map(function ($arg) {
             return new PrimitiveElement($arg);

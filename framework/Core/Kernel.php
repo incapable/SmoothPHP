@@ -82,6 +82,7 @@ class Kernel {
     }
 
     /**
+     * @param Request $request The request that determines how the response is made, and how it is given.
      * @return \SmoothPHP\Framework\Flow\Responses\Response|boolean
      */
     public function getResponse(Request $request) {
