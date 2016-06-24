@@ -48,13 +48,17 @@ class IncludeElement extends Element {
         $this->md5 = md5_file($file);
     }
 
+    public function __wakeup() {
+        if (md5_file($this->file) != $this->md5)
+            throw new CacheExpiredException();
+    }
+
     public function optimize(CompilerState $tpl) {
         return $this;
     }
 
     public function output(CompilerState $tpl) {
-        if (md5_file($this->file) != $this->md5)
-            throw new CacheExpiredException();
+        return '';
     }
 
 }
