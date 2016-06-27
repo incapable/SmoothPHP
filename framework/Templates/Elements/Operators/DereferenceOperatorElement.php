@@ -49,9 +49,9 @@ class DereferenceOperatorElement extends Element {
             throw new TemplateCompileException("Could not determine left-hand of '->' at runtime.");
         else {
             if ($this->right instanceof PrimitiveElement)
-                return $this->left->getValue()->{$this->right->getValue()};
+                echo $this->left->getValue()->{$this->right->getValue()};
             else if ($this->right instanceof FunctionOperatorElement)
-                return call_user_func_array(array($this->left->getValue(), $this->right->getFunctionName()), $this->right->getPrimitiveArgs($tpl));
+                echo call_user_func_array(array($this->left->getValue(), $this->right->getFunctionName()), $this->right->getPrimitiveArgs($tpl));
             else
                 throw new TemplateCompileException("Right-hand of '->' is invalid.");
         }
