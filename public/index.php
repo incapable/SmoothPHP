@@ -15,11 +15,9 @@ require_once '../framework/Bootstrap.php';
 use SmoothPHP\Framework\Core\Kernel;
 use SmoothPHP\Framework\Flow\Requests\Request;
 
-{
-    $kernel = new Kernel();
-    $kernel->loadPrototype(new Website());
+$kernel = new Kernel();
+$kernel->loadPrototype(new Website());
 
-    $request = Request::createFromGlobals();
-    $response = $kernel->getResponse($request);
-    $response->send();
-}
+$request = Request::createFromGlobals();
+$response = $kernel->getResponse($request);
+$response->send();

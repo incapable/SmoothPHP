@@ -29,6 +29,11 @@ class Request {
         $this->server = new VariableSource($server);
     }
 
+    /**
+     * @param $scope
+     * @return VariableSource
+     * @throws \Exception
+     */
     public function __get($scope) {
         switch ($scope) {
             case "get":

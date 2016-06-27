@@ -20,6 +20,8 @@ use SmoothPHP\Framework\Flow\Routing\RouteDatabase;
 use SmoothPHP\Framework\Templates\TemplateEngine;
 
 class Kernel {
+    public static $instance;
+
     // Site data
     private $config;
     private $routeDatabase;

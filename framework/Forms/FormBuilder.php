@@ -18,6 +18,7 @@ use SmoothPHP\Framework\Forms\Containers\Type;
 use SmoothPHP\Framework\Forms\Types as Types;
 
 class FormBuilder {
+    private $action = '';
     private $properties;
 
     /**
@@ -39,6 +40,16 @@ class FormBuilder {
         return $this;
     }
 
+    public function setAction() {
+        global $kernel;
+        $action = func_get_arg(0);
+
+        if ($kernel->getRouteDatabase()->getRoute($action))
+            $this->action = call_user_func_array(array($kernel->getRouteDatabase(), 'buildPath'), func_get_args());
+        else
+            $this->action = $action;
+    }
+
     public function getForm() {
         $elements = array();
 
@@ -54,6 +65,6 @@ class FormBuilder {
             ));
         }
 
-        return new Form($elements);
+        return new Form($this->action, $elements);
     }
 }

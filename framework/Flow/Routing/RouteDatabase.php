@@ -63,6 +63,7 @@ class RouteDatabase {
     }
 
     /**
+     * @param $request Request $request->server->REQUEST_URI and $request->server->REQUEST_METHOD are used to determine the route.
      * @return \SmoothPHP\Framework\Flow\Routing\ResolvedRoute
      */
     public function resolve(Request $request) {
@@ -120,6 +121,47 @@ class RouteDatabase {
 
             return false;
         }
+    }
+
+    /**
+     * @param string $name
+     * @return array Route info
+     */
+    public function getRoute($name) {
+        if (isset($this->routes[$name]))
+            return $this->routes[$name];
+        else
+            return false;
+    }
+
+    public function buildPath() {
+        if (func_num_args() < 1)
+            throw new \Exception('RouteDatabase#buildPath(...) called with no arguments, requires at least 1.');
+
+        $route = $this->getRoute(func_get_arg(0));
+        if (!$route)
+            throw new \Exception(sprintf('Route \'%s\' does not exist.', func_get_arg(0)));
+
+        $args = array_slice(func_get_args(), 1);
+        $path = $route['path'];
+        for($i = 0; $i < count($args); $i++) {
+            $path = preg_replace('/' . self::WILDCARD_INPUT . '/', $args[$i], $path, 1, $count);
+            if ($count == 1)
+                continue;
+            else {
+                if (strpos($path, self::VARARGS_INPUT) !== false) {
+                    $varArgs = implode('/', array_splice($args, $i));
+                    $path = preg_replace('/' . self::VARARGS_INPUT . '/', $varArgs, $path);
+                    break;
+                } else
+                    throw new \Exception('Not enough arguments given, route \'%s\' requested argument %d, %d given.', func_get_arg(0), $i, count($args));
+            }
+        }
+
+        if (strpos($path, self::WILDCARD_INPUT) !== false || strpos($path, self::VARARGS_INPUT) !== false)
+            throw new \Exception('Not enough arguments given to path.');
+
+        return $path;
     }
 
 }
