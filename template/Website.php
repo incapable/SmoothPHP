@@ -33,6 +33,14 @@ class Website extends WebPrototype {
             'controller' => \Test\Controllers\TestController::class,
             'call' => 'index'
         ));
+
+        $routes->register(array(
+            'name' => 'submit',
+            'path' => '/submit/%',
+            'controller' => \Test\Controllers\TestController::class,
+            'call' => 'onForm',
+            'method' => 'POST'
+        ));
     }
 
 }
