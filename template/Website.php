@@ -36,7 +36,7 @@ class Website extends WebPrototype {
 
         $routes->register(array(
             'name' => 'submit',
-            'path' => '/submit/%',
+            'path' => '/submit',
             'controller' => \Test\Controllers\TestController::class,
             'call' => 'onForm',
             'method' => 'POST'
