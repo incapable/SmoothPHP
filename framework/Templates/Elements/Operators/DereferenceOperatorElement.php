@@ -31,10 +31,14 @@ class DereferenceOperatorElement extends Element {
 
     public function optimize(CompilerState $tpl) {
         $this->left = $this->left->optimize($tpl);
-        if (!($this->right instanceof FunctionOperatorElement))
-            $this->right = $this->right->optimize($tpl);
-        else if ($tpl->performCalls)
+
+        if ($tpl->performCalls && $this->left instanceof PrimitiveElement && $this->right instanceof  PrimitiveElement)
+            return new PrimitiveElement($this->left->getValue()->{$this->right->getValue()});
+
+        if ($this->right instanceof FunctionOperatorElement && $tpl->performCalls)
             return new PrimitiveElement(call_user_func_array(array($this->left->getValue(), $this->right->getFunctionName()), $this->right->getPrimitiveArgs($tpl)));
+        else
+            $this->right = $this->right->optimize($tpl);
         return $this;
     }
 
@@ -45,9 +49,9 @@ class DereferenceOperatorElement extends Element {
             throw new TemplateCompileException("Could not determine left-hand of '->' at runtime.");
         else {
             if ($this->right instanceof PrimitiveElement)
-                echo $this->left->getValue()->{$this->right->getValue()};
+                return $this->left->getValue()->{$this->right->getValue()};
             else if ($this->right instanceof FunctionOperatorElement)
-                echo call_user_func_array(array($this->left->getValue(), $this->right->getFunctionName()), $this->right->getPrimitiveArgs($tpl));
+                return call_user_func_array(array($this->left->getValue(), $this->right->getFunctionName()), $this->right->getPrimitiveArgs($tpl));
             else
                 throw new TemplateCompileException("Right-hand of '->' is invalid.");
         }
