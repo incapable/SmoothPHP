@@ -33,7 +33,7 @@ class AssetsRegister {
 
         $this->jsCache = new FileCacheProvider("js", null, $parser);
         $this->cssCache = new FileCacheProvider("css", null, $parser);
-        $this->imageCache = new FileCacheProvider("images", "img");
+        $this->imageCache = new FileCacheProvider("images", "*");
 
         $route = $kernel->getRouteDatabase();
         $route->register(array(
@@ -139,10 +139,12 @@ class AssetsRegister {
             }, function($cacheFile, $image) use ($path, $ext, $width, $height) {
                 // Lambda: Cache writer
                 $fileInfo = pathinfo($cacheFile);
-                $cacheFile = sprintf('%s/%s.%dx%d.%s', $fileInfo['dirname'], $fileInfo['filename'], $width, $height, $ext);
+                $cacheFile = sprintf('%s/%dx%d.%s.%s', $fileInfo['dirname'], $width, $height, $fileInfo['filename'], $ext);
 
                 if ($image == null) {
                     // Create a link
+                    if (is_link($cacheFile))
+                        unlink($cacheFile);
                     symlink($path, $cacheFile);
                 } else {
                     imagepng($image, $cacheFile, 9);
@@ -151,7 +153,12 @@ class AssetsRegister {
             });
 
             $fileInfo = pathinfo($file);
-            $virtualPath = sprintf('/images/%s%s.%dx%d.%s', $fileInfo['dirname'] == '.' ? '' : ($fileInfo['dirname'] . '/'), $fileInfo['filename'], $width, $height, $fileInfo['extension']);
+            $virtualPath = sprintf('/images/%s%s.%dx%d.%s',
+                $fileInfo['dirname'] == '.' ? '' : ($fileInfo['dirname'] . '/'),
+                $fileInfo['filename'],
+                $width,
+                $height,
+                $fileInfo['extension']);
 
             return $virtualPath;
         } else
