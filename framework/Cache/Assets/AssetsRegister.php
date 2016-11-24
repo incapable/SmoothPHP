@@ -145,7 +145,7 @@ class AssetsRegister {
                     // Create a link
                     symlink($path, $cacheFile);
                 } else {
-                    imagepng($cacheFile, $image, 9);
+                    imagepng($image, $cacheFile, 9);
                     imagedestroy($image);
                 }
             });
