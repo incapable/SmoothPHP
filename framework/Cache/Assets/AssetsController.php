@@ -19,8 +19,6 @@ class AssetsController {
 
     public function getJS(AssetsRegister $register, array $path) {
         $file = $register->getJSPath(implode('/', $path));
-        if (!file_exists($file))
-            throw new \Error();
 
         return new OctetStream(array(
             'type' => 'text/javascript',
@@ -31,8 +29,6 @@ class AssetsController {
 
     public function getCSS(AssetsRegister $register, array $path) {
         $file = $register->getCSSPath(implode('/', $path));
-        if (!file_exists($file))
-            throw new \Error();
 
         return new OctetStream(array(
             'type' => 'text/css',
@@ -42,14 +38,22 @@ class AssetsController {
     }
 
     public function getImage(array $path) {
-        $file = sprintf('%scache/images/%s', __ROOT__, implode('/', $path));
-        if (!file_exists($file))
-            throw new \Error();
+        preg_match('/^(.+?)(?:\.([0-9]+?)x([0-9]+?))?\.([a-z]+)$/', implode('/', $path), $matches);
+
+        $srcFile = sprintf('src/assets/images/%s.%s', $matches[1], $matches[4]);
+        $srcFileFull = __ROOT__ . $srcFile;
+        $cacheFile = sprintf('%scache/images/%s.%s.%dx%d.%s',
+            __ROOT__,
+            str_replace(array('/', '\\'), array('_', '_'), $srcFile),
+            md5_file($srcFileFull),
+            $matches[2],
+            $matches[3],
+            $matches[4]);
 
         return new OctetStream(array(
-            'type' => image_type_to_mime_type(exif_imagetype($file)),
+            'type' => image_type_to_mime_type(exif_imagetype($srcFileFull)),
             'filename' => end($path),
-            'url' => $file
+            'url' => $cacheFile
         ));
     }
 

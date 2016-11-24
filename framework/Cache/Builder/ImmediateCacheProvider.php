@@ -15,7 +15,7 @@ namespace SmoothPHP\Framework\Cache\Builder;
 
 class ImmediateCacheProvider extends RuntimeCacheProvider {
 
-    public function fetch($sourceFile, callable $cacheBuilder = null) {
+    public function fetch($sourceFile, callable $cacheBuilder = null, callable $readCache = null, callable $writeCache = null) {
         $cacheBuilder = $cacheBuilder ?: $this->cacheBuilder;
         return $cacheBuilder($sourceFile);
     }

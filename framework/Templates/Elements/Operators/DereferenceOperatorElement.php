@@ -15,6 +15,7 @@ namespace SmoothPHP\Framework\Templates\Elements\Operators;
 
 use SmoothPHP\Framework\Templates\Compiler\CompilerState;
 use SmoothPHP\Framework\Templates\Compiler\TemplateCompileException;
+use SmoothPHP\Framework\Templates\Elements\Commands\VariableElement;
 use SmoothPHP\Framework\Templates\Elements\Element;
 use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
 
@@ -32,11 +33,14 @@ class DereferenceOperatorElement extends Element {
     public function optimize(CompilerState $tpl) {
         $this->left = $this->left->optimize($tpl);
 
-        if ($tpl->performCalls && $this->left instanceof PrimitiveElement && $this->right instanceof  PrimitiveElement)
+        if ($tpl->performCalls && $this->left instanceof PrimitiveElement && $this->right instanceof PrimitiveElement)
             return new PrimitiveElement($this->left->getValue()->{$this->right->getValue()});
 
-        if ($this->right instanceof FunctionOperatorElement && $tpl->performCalls)
+        if ($this->right instanceof FunctionOperatorElement && $tpl->performCalls) {
+            if ($this->left instanceof VariableElement)
+                throw new TemplateCompileException(sprintf("Template variable '%s' is not defined.", $this->left->getVarName()));
             return new PrimitiveElement(call_user_func_array(array($this->left->getValue(), $this->right->getFunctionName()), $this->right->getPrimitiveArgs($tpl)));
+        }
         else
             $this->right = $this->right->optimize($tpl);
         return $this;

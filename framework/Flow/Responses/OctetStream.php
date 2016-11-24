@@ -36,7 +36,7 @@ class OctetStream extends Response {
             $filename = end($pathSegments);
         }
 
-        header('Content-Disposition: ' . strpos($this->controllerResponse['type'], 'text/') == 0 ? 'inline' : 'attachment' . '; filename="' . $filename . '"');
+        header('Content-Disposition: ' . (strpos($this->controllerResponse['type'], 'text/') == 0 ? 'inline' : 'attachment') . '; filename="' . $filename . '"');
         header('Access-Control-Allow-Origin: *');
     }
 

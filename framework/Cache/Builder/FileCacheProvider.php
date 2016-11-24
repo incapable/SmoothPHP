@@ -31,8 +31,10 @@ class FileCacheProvider extends CacheProvider {
         $this->writeCache = $writeCache ?: 'file_put_contents';
     }
 
-    public function fetch($sourceFile, callable $cacheBuilder = null) {
+    public function fetch($sourceFile, callable $cacheBuilder = null, callable $readCache = null, callable $writeCache = null) {
         $cacheBuilder = $cacheBuilder ?: $this->cacheBuilder;
+        $readCache = $readCache ?: $this->readCache;
+        $writeCache = $writeCache ?: $this->writeCache;
 
         $cacheFile = $this->getCachePath($sourceFile, $fileName);
         if (!is_dir(dirname($cacheFile)))
@@ -41,7 +43,7 @@ class FileCacheProvider extends CacheProvider {
         // Try reading the cache
         try {
             if (file_exists($cacheFile))
-                return call_user_func($this->readCache, $cacheFile);
+                return call_user_func($readCache, $cacheFile);
         } catch (CacheExpiredException $e) {
         }
 
@@ -53,12 +55,12 @@ class FileCacheProvider extends CacheProvider {
             array_map('unlink', glob(sprintf($this->cacheFileFormat, $fileName, '*')));
 
             $newCache = call_user_func($cacheBuilder, $sourceFile);
-            call_user_func($this->writeCache, $cacheFile, $newCache);
+            call_user_func($writeCache, $cacheFile, $newCache);
 
             $lock->unlock();
             return $newCache;
         } else
-            return call_user_func($this->readCache, $cacheFile);
+            return call_user_func($readCache, $cacheFile);
     }
 
     public function getCachePath($sourceFile, &$fileName = null) {

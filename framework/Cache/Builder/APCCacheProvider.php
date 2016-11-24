@@ -33,7 +33,7 @@ class APCCacheProvider extends RuntimeCacheProvider {
         parent::__construct($cacheBuilder);
     }
 
-    public function fetch($sourceFile, callable $cacheBuilder = null) {
+    public function fetch($sourceFile, callable $cacheBuilder = null, callable $readCache = null, callable $writeCache = null) {
         $cacheBuilder = $cacheBuilder ?: $this->cacheBuilder;
         $realPath = realpath($sourceFile);
         $checksum = md5_file($realPath);

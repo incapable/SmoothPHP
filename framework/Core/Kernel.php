@@ -34,7 +34,7 @@ class Kernel {
     public function __construct() {
         $this->config = new Config();
         $this->routeDatabase = new RouteDatabase();
-        $this->assetsRegister = new AssetsRegister($this);
+        $this->assetsRegister = new AssetsRegister();
     }
 
     public function loadPrototype(WebPrototype $prototype) {
@@ -42,6 +42,7 @@ class Kernel {
         $prototype->registerRoutes($this->routeDatabase);
         define('__DEBUG__', $this->config->debug);
         $this->templateEngine = new TemplateEngine();
+        $this->assetsRegister->initialize($this);
     }
 
     /**

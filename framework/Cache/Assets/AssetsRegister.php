@@ -20,12 +20,19 @@ class AssetsRegister {
     private $jsCache, $cssCache, $imageCache;
     private $js, $css;
 
-    public function __construct(Kernel $kernel) {
+    public function initialize(Kernel $kernel) {
         $this->js = array();
         $this->css = array();
 
-        $this->jsCache = new FileCacheProvider("js");
-        $this->cssCache = new FileCacheProvider("css");
+        $parser = function($filePath) use ($kernel) {
+            return $kernel->getTemplateEngine()->simpleFetch($filePath, array(
+                'assets' => $kernel->getAssetsRegister(),
+                'route' => $kernel->getRouteDatabase()
+            ));
+        };
+
+        $this->jsCache = new FileCacheProvider("js", null, $parser);
+        $this->cssCache = new FileCacheProvider("css", null, $parser);
         $this->imageCache = new FileCacheProvider("images", "img");
 
         $route = $kernel->getRouteDatabase();
@@ -64,6 +71,8 @@ class AssetsRegister {
 
     public function getJSPath($file) {
         $path = sprintf('%ssrc/assets/js/%s', __ROOT__, $file);
+        if (!file_exists($path))
+            throw new \RuntimeException();
         return $this->jsCache->getCachePath($path);
     }
 
@@ -78,6 +87,8 @@ class AssetsRegister {
 
     public function getCSSPath($file) {
         $path = sprintf('%ssrc/assets/css/%s', __ROOT__, $file);
+        if (!file_exists($path))
+            throw new \RuntimeException();
         return $this->cssCache->getCachePath($path);
     }
 
@@ -85,7 +96,66 @@ class AssetsRegister {
         return $this->css;
     }
 
-    public function getImage($file, $x = -1, $y = -1) {
+    public function getImage($file, $width = null, $height = null) {
+        $path = sprintf('%ssrc/assets/images/%s', __ROOT__, $file);
+        if (file_exists($path)) {
+            $isOriginalSize = false;
+            list($originalWidth, $originalHeight) = getimagesize($path);
+            if ($width == null && $height != null)
+                $width = $height * ($originalWidth / $originalHeight);
+            else if ($width != null && $height == null)
+                $height = $width * ($originalHeight / $originalWidth);
+            else if ($width == null && $height == null) {
+                $width = $originalWidth;
+                $height = $originalHeight;
+                $isOriginalSize = true;
+            }
 
+            $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+            $this->imageCache->fetch($path, function($filePath) use ($ext, $width, $height, $originalWidth, $originalHeight, $isOriginalSize) {
+                // Lambda: Cache builder
+                if ($isOriginalSize)
+                    return null; // This will instruct the saving mechanism to make a symlink instead
+
+                $source = call_user_func( sprintf( 'imagecreatefrom%s', $ext == 'jpg' ? 'jpeg' : $ext ), $filePath );
+                $target = imagecreatetruecolor($width, $height);
+
+                // Make the image transparent to begin with
+                imagealphablending($target, false);
+                imagesavealpha($target, true);
+                $transparent = imagecolorallocatealpha($target, 255, 255, 255, 127);
+                imagefilledrectangle($target, 0, 0, $width, $height, $transparent);
+
+                // Copy the old image in, sampling it
+                imagecopyresampled($target, $source, 0, 0, 0, 0, $width, $height, $originalWidth, $originalHeight);
+
+                // Clean up the source
+                imagedestroy($source);
+
+                return $target;
+            }, function($cacheFile) {
+                // Lambda: Cache reader
+                return null; // Since we don't actually use the file here, don't bother reading it
+            }, function($cacheFile, $image) use ($path, $ext, $width, $height) {
+                // Lambda: Cache writer
+                $fileInfo = pathinfo($cacheFile);
+                $cacheFile = sprintf('%s/%s.%dx%d.%s', $fileInfo['dirname'], $fileInfo['filename'], $width, $height, $ext);
+
+                if ($image == null) {
+                    // Create a link
+                    symlink($path, $cacheFile);
+                } else {
+                    imagepng($cacheFile, $image, 9);
+                    imagedestroy($image);
+                }
+            });
+
+            $fileInfo = pathinfo($file);
+            $virtualPath = sprintf('/images/%s%s.%dx%d.%s', $fileInfo['dirname'] == '.' ? '' : ($fileInfo['dirname'] . '/'), $fileInfo['filename'], $width, $height, $fileInfo['extension']);
+
+            return $virtualPath;
+        } else
+            throw new \RuntimeException("Image '" . $file . "' does not exist.");
     }
+
 }

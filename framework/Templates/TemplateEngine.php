@@ -63,4 +63,21 @@ class TemplateEngine {
         return ob_get_clean();
     }
 
+    public function simpleFetch($absoluteFile, array $args = array()) {
+        $template = $this->compiler->compile($absoluteFile);
+
+        // Prepare a template state with focuses on results
+        $state = new CompilerState();
+        $state->vars = array_map(function ($arg) {
+            return new PrimitiveElement($arg);
+        }, $args);
+        $state->performCalls = true;
+        $template = $template->optimize($state);
+
+        // Gather output and return
+        ob_start();
+        $template->output($state);
+        return ob_get_clean();
+    }
+
 }
