@@ -20,7 +20,6 @@ use SmoothPHP\Framework\Templates\Elements\Chain;
 use SmoothPHP\Framework\Templates\Elements\Element;
 use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
 use SmoothPHP\Framework\Templates\TemplateCompiler;
-use SmoothPHP\Framework\Templates\TemplateRuntime;
 
 class IfElement extends Element {
     private $condition;
@@ -41,12 +40,12 @@ class IfElement extends Element {
 
     public function optimize(CompilerState $tpl) {
         $this->condition = $this->condition->optimize($tpl);
-        $this->body = $this->body->optimize($tpl);
 
         if ($this->condition instanceof PrimitiveElement) {
-            if ($this->condition->getValue())
+            if ($this->condition->getValue()) {
+                $this->body = $this->body->optimize($tpl);
                 return $this->body;
-            else
+            } else
                 return new PrimitiveElement();
         } else
             return $this;

@@ -11,8 +11,9 @@
  * Prototype for a website.
  */
 
-namespace SmoothPHP\Framework\Core;
+namespace SmoothPHP\Framework\Core\Abstracts;
 
+use SmoothPHP\Framework\Core\Kernel;
 use SmoothPHP\Framework\Flow\Routing\RouteDatabase;
 
 abstract class WebPrototype {

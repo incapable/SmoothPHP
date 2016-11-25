@@ -13,18 +13,48 @@
 
 namespace SmoothPHP\Framework\Forms\Containers;
 
-abstract class Type {
+use SmoothPHP\Framework\Flow\Requests\Request;
+use SmoothPHP\Framework\Forms\Constraint;
+use SmoothPHP\Framework\Forms\Constraints\RequiredConstraint;
+
+abstract class Type implements Constraint {
     protected $field;
     protected $attributes;
+    private $constraints;
 
     public function __construct($field, array $attributes = array()) {
         $this->field = $field;
         $this->attributes = array_replace_recursive(array(
             'label' => self::getLabel($field),
+            'required' => true,
             'attr' => array(
                 'class' => ''
-            )
+            ),
+            'constraints' => array()
         ), $attributes);
+    }
+
+    public function buildConstraints() {
+        $this->constraints = array();
+        foreach($this->attributes['constraints'] as $constraint) {
+            if ($constraint instanceof Constraint)
+                $this->constraints[] = $constraint;
+            else
+                $this->constraints[] = new $constraint();
+        }
+
+        if ($this->attributes['required'])
+            $this->constraints[] = new RequiredConstraint();
+    }
+
+    public function checkConstraint(Request $request, $name, $value, array &$failReasons) {
+        foreach($this->constraints as $constraint)
+            /* @var $constraint Constraint */
+            $constraint->checkConstraint($request, $this->attributes['label'], $value, $failReasons);
+    }
+
+    public function getFieldName() {
+        return $this->field;
     }
 
     public function generateLabel() {

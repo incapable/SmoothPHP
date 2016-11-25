@@ -27,4 +27,8 @@ class SubmitType extends Type {
         ));
     }
 
+    public function generateLabel() {
+        return '';
+    }
+
 }

@@ -62,8 +62,8 @@ class EqualsOperatorElement extends Element {
         $result = $this->optimize($tpl);
 
         if (!($result instanceof PrimitiveElement))
-            throw new TemplateCompileException("Could not arithmetic values at runtime.");
+            throw new TemplateCompileException("Could not determine values at runtime.");
 
-        $result->output($tpl);
+        echo $result->output($tpl);
     }
 }

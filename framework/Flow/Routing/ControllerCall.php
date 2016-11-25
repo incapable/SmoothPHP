@@ -57,6 +57,10 @@ class ControllerCall {
         }
     }
 
+    public function initializeController() {
+        $this->callable[0]->onInitialize();
+    }
+
     /**
      * @return \SmoothPHP\Framework\Flow\Responses\Response|mixed
      */

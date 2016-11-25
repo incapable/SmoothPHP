@@ -14,6 +14,7 @@
 namespace SmoothPHP\Framework\Core;
 
 use SmoothPHP\Framework\Cache\Assets\AssetsRegister;
+use SmoothPHP\Framework\Core\Abstracts\WebPrototype;
 use SmoothPHP\Framework\Database\MySQL;
 use SmoothPHP\Framework\Flow\Requests\Request;
 use SmoothPHP\Framework\Flow\Routing\RouteDatabase;
@@ -35,6 +36,10 @@ class Kernel {
         $this->config = new Config();
         $this->routeDatabase = new RouteDatabase();
         $this->assetsRegister = new AssetsRegister();
+
+        // Initialise the PHP session
+        session_name('smsid');
+        session_start();
     }
 
     public function loadPrototype(WebPrototype $prototype) {
@@ -43,12 +48,13 @@ class Kernel {
         define('__DEBUG__', $this->config->debug);
         $this->templateEngine = new TemplateEngine();
         $this->assetsRegister->initialize($this);
+        $this->routeDatabase->initializeControllers();
     }
 
     /**
      * @return Config
      */
-    public function &getConfig() {
+    public function getConfig() {
         return $this->config;
     }
 

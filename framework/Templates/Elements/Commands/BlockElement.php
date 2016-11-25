@@ -20,7 +20,6 @@ use SmoothPHP\Framework\Templates\Elements\Chain;
 use SmoothPHP\Framework\Templates\Elements\Element;
 use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
 use SmoothPHP\Framework\Templates\TemplateCompiler;
-use SmoothPHP\Framework\Templates\TemplateRuntime;
 
 class BlockElement extends Element {
     const USAGE_UNSPECIFIED = 0;

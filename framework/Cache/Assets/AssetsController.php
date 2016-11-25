@@ -13,9 +13,10 @@
 
 namespace SmoothPHP\Framework\Cache\Assets;
 
+use SmoothPHP\Framework\Core\Abstracts\Controller;
 use SmoothPHP\Framework\Flow\Responses\OctetStream;
 
-class AssetsController {
+class AssetsController extends Controller {
 
     public function getJS(AssetsRegister $register, array $path) {
         $file = $register->getJSPath(implode('/', $path));

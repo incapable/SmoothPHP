@@ -36,6 +36,7 @@ class TemplateCompiler {
             'block' => BlockElement::class,
             'if' => Elements\Commands\IfElement::class,
             'while' => Elements\Commands\WhileElement::class,
+            'foreach' => Elements\Commands\ForeachElement::class,
 
             'javascript' => Assets\JSElement::class,
             'css' => Assets\CSSElement::class

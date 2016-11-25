@@ -13,9 +13,11 @@
 
 namespace SmoothPHP\Framework\Forms\Containers;
 
+use SmoothPHP\Framework\Flow\Requests\Request;
+use SmoothPHP\Framework\Forms\Constraint;
 use SmoothPHP\Framework\Forms\Form;
 
-class FormHeader {
+class FormHeader implements Constraint {
     private $form;
 
     public function __construct(Form $form) {
@@ -23,7 +25,23 @@ class FormHeader {
     }
 
     public function __toString() {
-        return '<form action="' . $this->form->getAction() . '" method="post" class="smoothform">';
+        if (!isset($_SESSION['formtokens']))
+            $_SESSION['formtokens'] = array();
+
+        $formToken = md5(uniqid(rand(), true));
+        $_SESSION['formtokens'][] = $formToken;
+
+        return '<form action="' . $this->form->getAction() . '" method="post" class="smoothform">'
+            . '<input type="hidden" id="_token" name="_token" value="' . $formToken . '" />';
+    }
+
+    public function checkConstraint(Request $request, $name, $value, array &$failReasons) {
+        $key = array_search($request->post->_token, $_SESSION['formtokens'], true);
+        if ($key === false) {
+            $failReasons[] = 'Form security token mismatch.';
+            return;
+        }
+        unset($_SESSION['formtokens'][$key]);
     }
 
 }

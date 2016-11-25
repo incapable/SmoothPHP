@@ -31,7 +31,7 @@ class RouteDatabase {
 
         $this->defaults = array(
             'method' => 'GET',
-            'subdomain' => self::WILDCARD_INPUT,
+            'domain' => self::WILDCARD_INPUT,
             'content-type' => PlainTextResponse::class
         );
     }
@@ -39,32 +39,41 @@ class RouteDatabase {
     public function register(array $routeOptions) {
         $routeOpts = array_merge($this->defaults, $routeOptions);
 
-        $path = explode('/', $routeOptions['path']);
-        $path = array_merge(array($routeOpts['method'], $routeOpts['subdomain']), $path);
-        $path = array_values(array_filter($path, 'strlen'));
+        foreach(((array) $routeOpts['method']) as $method) {
+            $path = explode('/', $routeOptions['path']);
+            $path = array_merge(array($method, $routeOpts['domain']), $path);
+            $path = array_values(array_filter($path, 'strlen'));
 
-        $currentRecursive = &$this->resolveCache;
-        for ($i = 0; $i < count($path); $i++) {
-            $pathPart = $path[$i];
+            $currentRecursive = &$this->resolveCache;
+            for ($i = 0; $i < count($path); $i++) {
+                $pathPart = $path[$i];
 
-            if ($pathPart == self::VARARGS_INPUT && $i < (count($path) - 1))
-                throw new \LogicException("Route varargs can only be used at the end of the path");
+                if ($pathPart == self::VARARGS_INPUT && $i < (count($path) - 1))
+                    throw new \LogicException("Route varargs can only be used at the end of the path");
 
-            if (!isset($currentRecursive[$pathPart]))
-                $currentRecursive[$pathPart] = array();
+                if (!isset($currentRecursive[$pathPart]))
+                    $currentRecursive[$pathPart] = array();
 
-            $currentRecursive = &$currentRecursive[$pathPart];
+                $currentRecursive = &$currentRecursive[$pathPart];
+            }
+
+            $currentRecursive[self::HANDLER] = &$routeOpts;
         }
 
-        $currentRecursive[self::HANDLER] = &$routeOpts;
         $this->routes[$routeOpts['name']] = &$routeOpts;
 
         $routeOpts['controllercall'] = new ControllerCall($routeOpts['controller'], $routeOpts['call']);
     }
 
+    public function initializeControllers() {
+        foreach($this->routes as $route) {
+            $route['controllercall']->initializeController();
+        }
+    }
+
     /**
      * @param $request Request $request->server->REQUEST_URI and $request->server->REQUEST_METHOD are used to determine the route.
-     * @return \SmoothPHP\Framework\Flow\Routing\ResolvedRoute
+     * @return \SmoothPHP\Framework\Flow\Routing\ResolvedRoute|bool
      */
     public function resolve(Request $request) {
         // Clean the URL of extra arguments
@@ -84,6 +93,7 @@ class RouteDatabase {
             return false;
         }
 
+        $request->meta->route = $routeOpts;
         return new ResolvedRoute($routeOpts, $parameters);
     }
 
@@ -125,7 +135,7 @@ class RouteDatabase {
 
     /**
      * @param string $name
-     * @return array Route info
+     * @return array|bool Route info
      */
     public function getRoute($name) {
         if (isset($this->routes[$name]))

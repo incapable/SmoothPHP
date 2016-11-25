@@ -14,7 +14,8 @@
 namespace SmoothPHP\Framework\Flow\Requests;
 
 class Request {
-    private $get, $post, $server;
+    private $getr, $postr, $serverr;
+    public $meta;
 
     /**
      * @return \SmoothPHP\Framework\Flow\Requests\Request
@@ -24,9 +25,10 @@ class Request {
     }
 
     public function __construct(array $get, array $post, array $server) {
-        $this->get = new VariableSource($get);
-        $this->post = new VariableSource($post);
-        $this->server = new VariableSource($server);
+        $this->getr = new VariableSource($get);
+        $this->postr = new VariableSource($post);
+        $this->serverr = new VariableSource($server);
+        $this->meta = new \stdClass();
     }
 
     /**
@@ -39,7 +41,7 @@ class Request {
             case "get":
             case "post":
             case "server":
-                return $this->{$scope};
+                return $this->{$scope . 'r'};
             default:
                 throw new \Exception("Invalid scope.");
         }

@@ -25,4 +25,15 @@ class CompilerState {
         $this->finishing = false;
         $this->performCalls = false;
     }
+
+    public function createSubScope() {
+        $copy = new self();
+
+        $copy->vars = $this->vars;
+        $copy->blocks = $this->blocks;
+        $copy->finishing = $this->finishing;
+        $copy->performCalls = $this->performCalls;
+
+        return $copy;
+    }
 }

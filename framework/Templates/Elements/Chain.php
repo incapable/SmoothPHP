@@ -48,9 +48,12 @@ class Chain extends Element {
 
         foreach ($this->chain as $piece) {
             $piece = $piece->optimize($tpl);
-            if ($piece instanceof PrimitiveElement)
-                $str .= $piece->getValue();
-            else {
+            if ($piece instanceof PrimitiveElement) {
+                if ($piece->getValue() === false)
+                    $str .= '0';
+                else
+                    $str .= $piece->getValue();
+            } else {
                 if (strlen(trim($str)) > 0) {
                     $chain[] = new PrimitiveElement($str);
                     $str = '';

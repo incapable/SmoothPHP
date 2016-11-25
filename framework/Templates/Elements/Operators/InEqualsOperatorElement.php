@@ -26,11 +26,13 @@ class InEqualsOperatorElement extends Element {
 
     public static function handle(TemplateCompiler $compiler, TemplateLexer $command, TemplateLexer $lexer, Chain $chain, $stackEnd) {
         $command->next();
-        if ($command->peek('=')) {
-            $right = new Chain();
-            $compiler->handleCommand($command, $lexer, $right, $stackEnd);
+        $isEqualsOperator = $command->peek('=');
+        $right = new Chain();
+        $compiler->handleCommand($command, $lexer, $right, $stackEnd);
+        if ($isEqualsOperator)
             $chain->addElement(new self($chain->pop(), TemplateCompiler::flatten($right)));
-        }
+        else
+            $chain->addElement(new InverseOperatorElement(TemplateCompiler::flatten($right)));
     }
 
     public function __construct(Element $left, Element $right) {
