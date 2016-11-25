@@ -49,7 +49,7 @@ class FileCacheProvider extends CacheProvider {
 
         // If we get to this point, the above return has not returned.
         // Which means we have to generate a new cache
-        $lock = new Lock(str_replace('*', '', pathinfo($cacheFile, PATHINFO_BASENAME)));
+        $lock = new Lock(pathinfo($cacheFile, PATHINFO_BASENAME));
 
         if ($lock->lock()) {
             array_map('unlink', glob(sprintf($this->cacheFileFormat, $fileName, '*')));

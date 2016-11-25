@@ -42,11 +42,11 @@ class AssetsController {
 
         $srcFile = sprintf('src/assets/images/%s.%s', $matches[1], $matches[4]);
         $srcFileFull = __ROOT__ . $srcFile;
-        $cacheFile = sprintf('%scache/images/%dx%d.%s.%s.%s',
+        $cacheFile = sprintf('%scache/images/%s.%dx%d.%s.%s',
             __ROOT__,
+            str_replace(array('/', '\\'), array('_', '_'), $srcFile),
             $matches[2],
             $matches[3],
-            str_replace(array('/', '\\'), array('_', '_'), $srcFile),
             md5_file($srcFileFull),
             $matches[4]);
 

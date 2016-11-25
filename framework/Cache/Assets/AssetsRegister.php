@@ -17,7 +17,12 @@ use SmoothPHP\Framework\Cache\Builder\FileCacheProvider;
 use SmoothPHP\Framework\Core\Kernel;
 
 class AssetsRegister {
-    private $jsCache, $cssCache, $imageCache;
+    /* @var $jsCache FileCacheProvider */
+    private $jsCache;
+    /* @var $cssCache FileCacheProvider */
+    private $cssCache;
+    /* @var $imageCache ImageCache */
+    private $imageCache;
     private $js, $css;
 
     public function initialize(Kernel $kernel) {
@@ -31,9 +36,9 @@ class AssetsRegister {
             ));
         };
 
-        $this->jsCache = new FileCacheProvider("js", null, $parser);
-        $this->cssCache = new FileCacheProvider("css", null, $parser);
-        $this->imageCache = new FileCacheProvider("images", "*");
+        $this->jsCache = new FileCacheProvider('js', null, $parser);
+        $this->cssCache = new FileCacheProvider('css', null, $parser);
+        $this->imageCache = new ImageCache('images');
 
         $route = $kernel->getRouteDatabase();
         $route->register(array(
@@ -99,58 +104,7 @@ class AssetsRegister {
     public function getImage($file, $width = null, $height = null) {
         $path = sprintf('%ssrc/assets/images/%s', __ROOT__, $file);
         if (file_exists($path)) {
-            $isOriginalSize = false;
-            list($originalWidth, $originalHeight) = getimagesize($path);
-            if ($width == null && $height != null)
-                $width = $height * ($originalWidth / $originalHeight);
-            else if ($width != null && $height == null)
-                $height = $width * ($originalHeight / $originalWidth);
-            else if ($width == null && $height == null) {
-                $width = $originalWidth;
-                $height = $originalHeight;
-                $isOriginalSize = true;
-            }
-
-            $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
-            $this->imageCache->fetch($path, function($filePath) use ($ext, $width, $height, $originalWidth, $originalHeight, $isOriginalSize) {
-                // Lambda: Cache builder
-                if ($isOriginalSize)
-                    return null; // This will instruct the saving mechanism to make a symlink instead
-
-                $source = call_user_func( sprintf( 'imagecreatefrom%s', $ext == 'jpg' ? 'jpeg' : $ext ), $filePath );
-                $target = imagecreatetruecolor($width, $height);
-
-                // Make the image transparent to begin with
-                imagealphablending($target, false);
-                imagesavealpha($target, true);
-                $transparent = imagecolorallocatealpha($target, 255, 255, 255, 127);
-                imagefilledrectangle($target, 0, 0, $width, $height, $transparent);
-
-                // Copy the old image in, sampling it
-                imagecopyresampled($target, $source, 0, 0, 0, 0, $width, $height, $originalWidth, $originalHeight);
-
-                // Clean up the source
-                imagedestroy($source);
-
-                return $target;
-            }, function($cacheFile) {
-                // Lambda: Cache reader
-                return null; // Since we don't actually use the file here, don't bother reading it
-            }, function($cacheFile, $image) use ($path, $ext, $width, $height) {
-                // Lambda: Cache writer
-                $fileInfo = pathinfo($cacheFile);
-                $cacheFile = sprintf('%s/%dx%d.%s.%s', $fileInfo['dirname'], $width, $height, $fileInfo['filename'], $ext);
-
-                if ($image == null) {
-                    // Create a link
-                    if (is_link($cacheFile))
-                        unlink($cacheFile);
-                    symlink($path, $cacheFile);
-                } else {
-                    imagepng($image, $cacheFile, 9);
-                    imagedestroy($image);
-                }
-            });
+            $this->imageCache->ensureCache($path, $width, $height);
 
             $fileInfo = pathinfo($file);
             $virtualPath = sprintf('/images/%s%s.%dx%d.%s',
