@@ -48,16 +48,14 @@ class FileStream extends Response {
             header('Last-Modified: ' . gmdate('D, d M Y H:i:s \G\M\T', $lastModified));
             header('ETag: ' . $eTag);
 
-            if ($this->request->server->HTTP_IF_MODIFIED_SINCE)
-                if ($lastModified > strtotime($this->request->server->HTTP_IF_MODIFIED_SINCE)) {
-                    header('HTTP/1.1 304 Not modified');
-                    exit();
-                }
-            if ($this->request->server->HTTP_IF_NONE_MATCH)
-                if ($this->request->server->HTTP_IF_NONE_MATCH == $eTag) {
-                    header('HTTP/1.1 304 Not modified');
-                    exit();
-                }
+            if ($this->request->server->HTTP_IF_MODIFIED_SINCE && $lastModified > strtotime($this->request->server->HTTP_IF_MODIFIED_SINCE)) {
+                header('HTTP/1.1 304 Not modified');
+                exit();
+            }
+            if ($this->request->server->HTTP_IF_NONE_MATCH && $this->request->server->HTTP_IF_NONE_MATCH == $eTag) {
+                header('HTTP/1.1 304 Not modified');
+                exit();
+            }
         }
     }
 
