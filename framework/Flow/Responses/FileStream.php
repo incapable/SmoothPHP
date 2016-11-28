@@ -21,17 +21,13 @@ class FileStream extends Response {
     private $request;
 
     public function build(Kernel $kernel, Request $request) {
-        $response = is_array($this->controllerResponse) ? $this->controllerResponse : array('url' => $this->controllerResponse);
-
-        $pathSegments = explode('/', $response['url']);
-
         $this->request = $request;
         $this->options = array_merge(array(
             'type' => 'application/octet-stream',
-            'filename' => end($pathSegments),
+            'filename' => end($pathSegments = explode('/', $response['url'])),
             'cache' => false,
             'cors' => true
-        ), $response);
+        ), is_array($this->controllerResponse) ? $this->controllerResponse : array('url' => $this->controllerResponse));
     }
 
     protected function sendHeaders() {
