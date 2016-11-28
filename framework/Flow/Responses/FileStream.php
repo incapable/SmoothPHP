@@ -37,6 +37,11 @@ class FileStream extends Response {
     protected function sendHeaders() {
         parent::sendHeaders();
 
+        header('Content-Type: ' . $this->options['type']);
+        header('Content-Disposition: ' . (strpos($this->controllerResponse['type'], 'text/') == 0 ? 'inline' : 'attachment') . '; filename="' . $this->options['filename'] . '"');
+        if ($this->options['cors'])
+            header('Access-Control-Allow-Origin: *');
+
         if ($this->options['cache']) {
             $eTag = 'W/' . md5_file($this->options['url']);
             $lastModified = filemtime($this->options['url']);
@@ -46,10 +51,6 @@ class FileStream extends Response {
             header('Pragma: private');
             header('Last-Modified: ' . gmdate('D, d M Y H:i:s \G\M\T', $lastModified));
             header('ETag: ' . $eTag);
-            header('Content-Type: ' . $this->options['type']);
-            header('Content-Disposition: ' . (strpos($this->controllerResponse['type'], 'text/') == 0 ? 'inline' : 'attachment') . '; filename="' . $this->options['filename'] . '"');
-            if ($this->options['cors'])
-                header('Access-Control-Allow-Origin: *');
 
             if ($this->request->server->HTTP_IF_MODIFIED_SINCE)
                 if ($lastModified > strtotime($this->request->server->HTTP_IF_MODIFIED_SINCE)) {
