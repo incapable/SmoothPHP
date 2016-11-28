@@ -43,7 +43,7 @@ class FileStream extends Response {
             header('Access-Control-Allow-Origin: *');
 
         if ($this->options['cache']) {
-            $eTag = 'W/' . md5_file($this->options['url']);
+            $eTag = md5_file($this->options['url']);
             $lastModified = filemtime($this->options['url']);
 
             header('Cache-Control: max-age=86400, private');
