@@ -13,6 +13,8 @@
 
 namespace SmoothPHP\Framework\Forms\Types;
 
+use SmoothPHP\Framework\Flow\Requests\Request;
+
 class PasswordType extends StringType{
 
     public function __construct($field, array $attributes) {
@@ -22,6 +24,12 @@ class PasswordType extends StringType{
                 'type' => 'password'
             )
         ));
+    }
+
+    public function checkConstraint(Request $request, $name, $value, array &$failReasons) {
+        parent::checkConstraint($request, $name, $value, $failReasons);
+        // Make sure we never send back the password
+        unset($this->attributes['attr']['value']);
     }
 
 }

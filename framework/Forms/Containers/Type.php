@@ -51,6 +51,7 @@ abstract class Type implements Constraint {
         foreach($this->constraints as $constraint)
             /* @var $constraint Constraint */
             $constraint->checkConstraint($request, $this->attributes['label'], $value, $failReasons);
+        $this->attributes['attr']['value'] = $value;
     }
 
     public function getFieldName() {
