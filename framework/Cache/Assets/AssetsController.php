@@ -14,14 +14,15 @@
 namespace SmoothPHP\Framework\Cache\Assets;
 
 use SmoothPHP\Framework\Core\Abstracts\Controller;
-use SmoothPHP\Framework\Flow\Responses\OctetStream;
+use SmoothPHP\Framework\Flow\Responses\FileStream;
 
 class AssetsController extends Controller {
 
     public function getJS(AssetsRegister $register, array $path) {
         $file = $register->getJSPath(implode('/', $path));
 
-        return new OctetStream(array(
+        return new FileStream(array(
+            'cache' => true,
             'type' => 'text/javascript',
             'filename' => end($path),
             'url' => $file
@@ -31,7 +32,8 @@ class AssetsController extends Controller {
     public function getCSS(AssetsRegister $register, array $path) {
         $file = $register->getCSSPath(implode('/', $path));
 
-        return new OctetStream(array(
+        return new FileStream(array(
+            'cache' => true,
             'type' => 'text/css',
             'filename' => end($path),
             'url' => $file
@@ -51,7 +53,8 @@ class AssetsController extends Controller {
             md5_file($srcFileFull),
             $matches[4]);
 
-        return new OctetStream(array(
+        return new FileStream(array(
+            'cache' => true,
             'type' => image_type_to_mime_type(exif_imagetype($srcFileFull)),
             'filename' => end($path),
             'url' => $cacheFile
