@@ -25,7 +25,7 @@ class FileStream extends Response {
         $this->request = $request;
         $this->options = array_merge(array(
             'type' => 'application/octet-stream',
-            'filename' => end($pathSegments = explode('/', $options['url'])),
+            'filename' => end((explode('/', $options['url']))),
             'cache' => false,
             'cors' => true
         ), $options);
