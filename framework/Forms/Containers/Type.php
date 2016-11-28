@@ -8,7 +8,7 @@
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * * * *
  * Type.php
- * Description
+ * Input type, refers to the type attribute of the <input> element
  */
 
 namespace SmoothPHP\Framework\Forms\Containers;

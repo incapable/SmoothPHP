@@ -8,7 +8,7 @@
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * * * *
  * FormBuilder.php
- * Description
+ * Class responsible for creating 'Form' instances.
  */
 
 namespace SmoothPHP\Framework\Forms;

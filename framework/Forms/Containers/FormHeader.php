@@ -7,8 +7,8 @@
  * Copyright (C) 2016 Rens Rikkerink
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * * * *
- * FormContainer.php
- * Description
+ * FormHeader.php
+ * Header for all forms that includes the form validation token.
  */
 
 namespace SmoothPHP\Framework\Forms\Containers;

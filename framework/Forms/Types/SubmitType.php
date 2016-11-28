@@ -8,7 +8,7 @@
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * * * *
  * SubmitType.php
- * Description
+ * Type for html's input[type="submit"]
  */
 
 namespace SmoothPHP\Framework\Forms\Types;

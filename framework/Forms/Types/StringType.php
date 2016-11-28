@@ -8,7 +8,7 @@
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * * * *
  * StringType.php
- * Description
+ * Type for html's input[type="text"]
  */
 
 namespace SmoothPHP\Framework\Forms\Types;

@@ -1,5 +1,16 @@
 <?php
 
+/* !
+ * SmoothPHP
+ * This file is part of the SmoothPHP project.
+ * * * *
+ * Copyright (C) 2016 Rens Rikkerink
+ * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
+ * * * *
+ * ImageCache.php
+ * A specialised cache for images with support for resampling.
+ */
+
 namespace SmoothPHP\Framework\Cache\Assets;
 
 use SmoothPHP\Framework\Core\Lock;

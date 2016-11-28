@@ -8,7 +8,7 @@
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * * * *
  * DereferenceOperatorElement.php
- * Description
+ * '->' operator, used to get objects out of a class or invoking functions on it.
  */
 
 namespace SmoothPHP\Framework\Templates\Elements\Operators;

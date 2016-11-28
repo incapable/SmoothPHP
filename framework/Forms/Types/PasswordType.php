@@ -8,7 +8,7 @@
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * * * *
  * PasswordType.php
- * Description
+ * Type for html's input[type=password]
  */
 
 namespace SmoothPHP\Framework\Forms\Types;

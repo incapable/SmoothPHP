@@ -1,5 +1,16 @@
 <?php
 
+/* !
+ * SmoothPHP
+ * This file is part of the SmoothPHP project.
+ * * * *
+ * Copyright (C) 2016 Rens Rikkerink
+ * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
+ * * * *
+ * ForeachElement.php
+ * Template loop, will iterate through an (php) array of elements.
+ */
+
 namespace SmoothPHP\Framework\Templates\Elements\Commands;
 
 use SmoothPHP\Framework\Templates\Compiler\CompilerState;

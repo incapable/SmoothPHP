@@ -7,8 +7,8 @@
  * Copyright (C) 2016 Rens Rikkerink
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * * * *
- * TemplateState.php
- * Description
+ * CompilerState.php
+ * Struct-like class that represents a scope in the template.
  */
 
 namespace SmoothPHP\Framework\Templates\Compiler;

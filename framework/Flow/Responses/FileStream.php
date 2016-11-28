@@ -7,8 +7,8 @@
  * Copyright (C) 2016 Rens Rikkerink
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * * * *
- * OctetStream.php
- * Description
+ * FileStream.php
+ * Response that will yield a file to the browser.
  */
 
 namespace SmoothPHP\Framework\Flow\Responses;

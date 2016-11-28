@@ -8,7 +8,7 @@
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * * * *
  * TemplateCompileException.php
- * Description
+ * Exception thrown if there is a problem while compiling the template.
  */
 
 namespace SmoothPHP\Framework\Templates\Compiler;

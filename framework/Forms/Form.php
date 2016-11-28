@@ -8,7 +8,7 @@
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * * * *
  * Form.php
- * Description
+ * A built form, which can be used for printing and validating the form.
  */
 
 namespace SmoothPHP\Framework\Forms;

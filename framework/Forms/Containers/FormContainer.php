@@ -8,7 +8,7 @@
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * * * *
  * FormContainer.php
- * Description
+ * Container for array elements that will pass on calls to each individual element.
  */
 
 namespace SmoothPHP\Framework\Forms\Containers;
