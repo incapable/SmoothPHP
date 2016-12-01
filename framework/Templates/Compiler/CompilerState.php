@@ -16,12 +16,14 @@ namespace SmoothPHP\Framework\Templates\Compiler;
 class CompilerState {
     public $vars;
     public $blocks;
+    public $uncertainVars;
     public $finishing;
     public $performCalls;
 
     public function __construct() {
         $this->vars = new Scope();
         $this->blocks = array();
+        $this->uncertainVars = false;
         $this->finishing = false;
         $this->performCalls = false;
     }

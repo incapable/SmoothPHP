@@ -28,6 +28,9 @@ class VariableElement extends Element {
     }
 
     public function optimize(CompilerState $tpl) {
+        if ($tpl->uncertainVars)
+            return $this;
+
         $var = $tpl->vars->{$this->varName};
         if ($var != null)
             return $var;

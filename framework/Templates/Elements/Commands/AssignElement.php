@@ -55,6 +55,6 @@ class AssignElement extends Element {
         $optimized = $this->optimize($tpl);
 
         if (!($optimized->value instanceof PrimitiveElement))
-            throw new TemplateCompileException("Value could not be deduced.");
+            throw new TemplateCompileException("Value '" . $this->varName . "' could not be resolved.");
     }
 }
