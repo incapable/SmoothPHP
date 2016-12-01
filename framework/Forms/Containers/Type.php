@@ -17,7 +17,7 @@ use SmoothPHP\Framework\Flow\Requests\Request;
 use SmoothPHP\Framework\Forms\Constraint;
 use SmoothPHP\Framework\Forms\Constraints\RequiredConstraint;
 
-abstract class Type implements Constraint {
+abstract class Type extends Constraint {
     protected $field;
     protected $attributes;
     private $constraints;
@@ -45,6 +45,12 @@ abstract class Type implements Constraint {
 
         if ($this->attributes['required'])
             $this->constraints[] = new RequiredConstraint();
+
+        foreach($this->constraints as $constraint) {
+            $copy = $this->attributes;
+            $constraint->setAttributes($copy);
+            $this->attributes = array_replace_recursive($copy, $this->attributes);
+        }
     }
 
     public function checkConstraint(Request $request, $name, $value, array &$failReasons) {

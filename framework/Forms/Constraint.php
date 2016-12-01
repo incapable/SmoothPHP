@@ -15,8 +15,10 @@ namespace SmoothPHP\Framework\Forms;
 
 use SmoothPHP\Framework\Flow\Requests\Request;
 
-interface Constraint {
+abstract class Constraint {
 
-    public function checkConstraint(Request $request, $name, $value, array &$failReasons);
+    public function setAttributes(array &$attributes) {}
+
+    public abstract function checkConstraint(Request $request, $name, $value, array &$failReasons);
 
 }

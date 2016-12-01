@@ -17,7 +17,7 @@ use SmoothPHP\Framework\Flow\Requests\Request;
 use SmoothPHP\Framework\Forms\Constraint;
 use SmoothPHP\Framework\Forms\Form;
 
-class FormHeader implements Constraint {
+class FormHeader extends Constraint {
     private $form;
 
     public function __construct(Form $form) {

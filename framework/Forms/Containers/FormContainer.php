@@ -16,7 +16,7 @@ namespace SmoothPHP\Framework\Forms\Containers;
 use SmoothPHP\Framework\Flow\Requests\Request;
 use SmoothPHP\Framework\Forms\Constraint;
 
-class FormContainer implements Constraint {
+class FormContainer extends Constraint {
     private $backing;
 
     public function __construct(array $backing) {
