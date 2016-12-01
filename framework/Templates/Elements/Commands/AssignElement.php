@@ -46,7 +46,7 @@ class AssignElement extends Element {
         $this->value = $this->value->optimize($tpl);
 
         if ($this->value instanceof PrimitiveElement)
-            $tpl->vars[$this->varName] = $this->value;
+            $tpl->vars->{$this->varName} = $this->value;
 
         return $this;
     }

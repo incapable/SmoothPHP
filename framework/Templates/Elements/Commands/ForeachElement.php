@@ -79,8 +79,8 @@ class ForeachElement extends Element {
         foreach($this->iterable->getValue() as $key => $value) {
             $scope = $tpl->createSubScope();
             if ($this->keyName != null)
-                $scope->vars[$this->keyName] = new PrimitiveElement($key);
-            $scope->vars[$this->valueName] = new PrimitiveElement($value);
+                $scope->vars->{$this->keyName} = new PrimitiveElement($key);
+            $scope->vars->{$this->valueName} = new PrimitiveElement($value);
 
             $clone = clone $this->body;
             $result->addElement($clone->optimize($scope));

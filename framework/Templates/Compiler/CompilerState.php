@@ -20,7 +20,7 @@ class CompilerState {
     public $performCalls;
 
     public function __construct() {
-        $this->vars = array();
+        $this->vars = new Scope();
         $this->blocks = array();
         $this->finishing = false;
         $this->performCalls = false;
@@ -29,7 +29,7 @@ class CompilerState {
     public function createSubScope() {
         $copy = new self();
 
-        $copy->vars = $this->vars;
+        $copy->vars = new Scope($this->vars);
         $copy->blocks = $this->blocks;
         $copy->finishing = $this->finishing;
         $copy->performCalls = $this->performCalls;

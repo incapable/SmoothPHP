@@ -28,13 +28,14 @@ class VariableElement extends Element {
     }
 
     public function optimize(CompilerState $tpl) {
-        if (isset($tpl->vars[$this->varName]))
-            return $tpl->vars[$this->varName]->optimize($tpl);
+        $var = $tpl->vars->{$this->varName};
+        if ($var != null)
+            return $var;
         else
             return $this;
     }
 
     public function output(CompilerState $tpl) {
-        $tpl->vars[$this->varName]->output($tpl);
+        $tpl->vars->{$this->varName}->output($tpl);
     }
 }

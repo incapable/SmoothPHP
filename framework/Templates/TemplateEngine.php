@@ -49,9 +49,8 @@ class TemplateEngine {
 
         // Prepare the template state for final output
         $state = new CompilerState();
-        $state->vars = array_map(function ($arg) {
-            return new PrimitiveElement($arg);
-        }, $args);
+        foreach($args as $key => $value)
+            $state->vars->{$key} = new PrimitiveElement($value);
         $state->performCalls = true;
 
         // Optimize one last time, with the new variables
@@ -68,9 +67,8 @@ class TemplateEngine {
 
         // Prepare a template state with focuses on results
         $state = new CompilerState();
-        $state->vars = array_map(function ($arg) {
-            return new PrimitiveElement($arg);
-        }, $args);
+        foreach($args as $key => $value)
+            $state->vars->{$key} = new PrimitiveElement($value);
         $state->performCalls = true;
         $template = $template->optimize($state);
 
