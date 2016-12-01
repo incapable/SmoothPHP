@@ -7,8 +7,8 @@
  * Copyright (C) 2016 Rens Rikkerink
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * * * *
- * MinimumLengthConstraint.php
- * Constraint for forms that requires this particular field to have a minimum length.
+ * MaximumLengthConstraint.php
+ * Constraint for forms that requires this particular field to have a maximum length.
  */
 
 namespace SmoothPHP\Framework\Forms\Constraints;
