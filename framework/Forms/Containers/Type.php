@@ -34,7 +34,7 @@ abstract class Type extends Constraint {
         );
     }
 
-    public function initialize(array $attributes = array()) {
+    public function initialize(array $attributes) {
         $this->attributes = array_merge_recursive($this->attributes, $attributes);
 
         $this->constraints = array();
