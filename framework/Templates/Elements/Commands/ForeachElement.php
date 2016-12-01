@@ -55,9 +55,9 @@ class ForeachElement extends Element {
 
     public function optimize(CompilerState $tpl) {
         $collection = $this->collection->optimize($tpl);
-        $tpl->uncertainVars = true;
+        $tpl->pushUncertainty();
         $body = $this->body->optimize($tpl);
-        $tpl->uncertainVars = false;
+        $tpl->popUncertainty();
 
         if ($collection instanceof PrimitiveElement)
             return self::runLoop($tpl, $collection, $body, $this->keyName, $this->valueName);

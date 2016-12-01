@@ -39,10 +39,10 @@ class WhileElement extends Element {
     }
 
     public function optimize(CompilerState $tpl) {
-        $tpl->uncertainVars = true;
+        $tpl->pushUncertainty();
         $condition = $this->condition->optimize($tpl);
         $body = $this->body->optimize($tpl);
-        $tpl->uncertainVars = false;
+        $tpl->popUncertainty();
 
         return new self($condition, $body);
     }

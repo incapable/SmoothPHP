@@ -16,14 +16,14 @@ namespace SmoothPHP\Framework\Templates\Compiler;
 class CompilerState {
     public $vars;
     public $blocks;
-    public $uncertainVars;
+    public $uncertainDepth;
     public $finishing;
     public $performCalls;
 
     public function __construct() {
         $this->vars = new Scope();
         $this->blocks = array();
-        $this->uncertainVars = false;
+        $this->uncertainVars = 0;
         $this->finishing = false;
         $this->performCalls = false;
     }
@@ -37,5 +37,17 @@ class CompilerState {
         $copy->performCalls = $this->performCalls;
 
         return $copy;
+    }
+
+    public function pushUncertainty() {
+        $this->uncertainVars++;
+    }
+
+    public function popUncertainty() {
+        $this->uncertainVars--;
+    }
+
+    public function isUncertain() {
+        return $this->uncertainVars != 0;
     }
 }
