@@ -19,11 +19,12 @@ class StringType extends Type {
 
     public function __construct($field, array $attributes) {
         parent::__construct($field, $attributes);
-        $this->attributes = array_replace_recursive($this->attributes, array(
+        $this->attributes = array_replace_recursive(array(
             'attr' => array(
-                'type' => 'text'
+                'type' => 'text',
+                'placeholder' => '...'
             )
-        ));
+        ), $this->attributes);
     }
 
 }

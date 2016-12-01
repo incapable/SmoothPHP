@@ -7,32 +7,36 @@
  * Copyright (C) 2016 Rens Rikkerink
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * * * *
- * PasswordType.php
- * Type for html's input[type=password]
+ * EmailType.php
+ * Type for html's input[type="email"]
  */
 
 namespace SmoothPHP\Framework\Forms\Types;
 
 use SmoothPHP\Framework\Flow\Requests\Request;
+use SmoothPHP\Framework\Forms\Containers\Type;
 
-class PasswordType extends StringType{
+class EmailType extends Type {
 
     public function __construct($field, array $attributes) {
         parent::__construct($field, $attributes);
 
         global $kernel;
-        $this->attributes = array_replace_recursive($this->attributes, array(
+        $this->attributes = array_replace_recursive(array(
             'attr' => array(
-                'type' => 'password',
-                'placeholder' => $kernel->getLanguageRepository()->getEntry('smooth_form_password')
+                'type' => 'email',
+                'placeholder' => $kernel->getLanguageRepository()->getEntry('smooth_form_email')
             )
-        ));
+        ), $this->attributes);
     }
 
     public function checkConstraint(Request $request, $name, $value, array &$failReasons) {
         parent::checkConstraint($request, $name, $value, $failReasons);
-        // Make sure we never send back the password
-        unset($this->attributes['attr']['value']);
+
+        if (!$request->post->email->get($this->field)) {
+            global $kernel;
+            $failReasons[] = sprintf($kernel->getLanguageRepository()->getEntry('smooth_form_email_invalid'), $value);
+        }
     }
 
 }
