@@ -62,12 +62,14 @@ class AssetsRegister {
     }
 
     public function addJS($file) {
-        $path = sprintf('%ssrc/assets/js/%s', __ROOT__, $file);
-        if (file_exists($path)) {
-            $this->jsCache->fetch($path);
-            $this->js[] = $file;
-        } else
-            throw new \RuntimeException("Javascript file '" . $file . "' does not exist.");
+        $this->js[] = $file;
+        if (strtolower(substr($file, 0, 4)) != 'http') {
+            $path = sprintf('%ssrc/assets/js/%s', __ROOT__, $file);
+            if (file_exists($path)) {
+                $this->jsCache->fetch($path);
+            } else
+                throw new \RuntimeException("Javascript file '" . $file . "' does not exist.");
+        }
     }
 
     public function getJSFiles() {
@@ -82,12 +84,14 @@ class AssetsRegister {
     }
 
     public function addCSS($file) {
-        $path = sprintf('%ssrc/assets/css/%s', __ROOT__, $file);
-        if (file_exists($path)) {
-            $this->cssCache->fetch($path);
-            $this->css[] = $file;
-        } else
-            throw new \RuntimeException("CSS file '" . $file . "' does not exist.");
+        $this->css[] = $file;
+        if (strtolower(substr($file, 0, 4)) != 'http') {
+            $path = sprintf('%ssrc/assets/css/%s', __ROOT__, $file);
+            if (file_exists($path)) {
+                $this->cssCache->fetch($path);
+            } else
+                throw new \RuntimeException("CSS file '" . $file . "' does not exist.");
+        }
     }
 
     public function getCSSPath($file) {

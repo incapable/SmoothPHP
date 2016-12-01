@@ -32,8 +32,11 @@ class JSElement extends Element {
     public function output(CompilerState $tpl) {
         /* @var $assetHandler \SmoothPHP\Framework\Cache\Assets\AssetsRegister */
         $assetHandler = $tpl->vars->assets->getValue();
-        foreach ($assetHandler->getJSFiles() as $js)
-            echo '<script type="text/javascript" src="/javascript/' . $js . '"></script>';
+        foreach ($assetHandler->getJSFiles() as $js) {
+            if (strtolower(substr($js, 0, 4)) != 'http')
+                $js = '/javascript/' . $js;
+            echo '<script type="text/javascript" src="' . $js . '"></script>';
+        }
     }
 
 }
