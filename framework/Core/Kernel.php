@@ -53,7 +53,7 @@ class Kernel {
         define('__DEBUG__', $this->config->debug);
         $this->templateEngine = new TemplateEngine();
         $this->assetsRegister->initialize($this);
-        $this->languagerepo->addSource(new FileDataSource(__ROOT__ . '/framework/Localization/Strings/'));
+        $this->languagerepo->addSource(new FileDataSource(__ROOT__ . '/framework/assets/strings/'));
         $this->routeDatabase->initializeControllers();
     }
 
