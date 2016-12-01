@@ -39,16 +39,16 @@ class IfElement extends Element {
     }
 
     public function optimize(CompilerState $tpl) {
-        $this->condition = $this->condition->optimize($tpl);
+        $condition = $this->condition->optimize($tpl);
 
-        if ($this->condition instanceof PrimitiveElement) {
-            if ($this->condition->getValue()) {
-                $this->body = $this->body->optimize($tpl);
-                return $this->body;
+        if ($condition instanceof PrimitiveElement) {
+            if ($condition->getValue()) {
+                $body = $this->body->optimize($tpl);
+                return $body;
             } else
                 return new PrimitiveElement();
         } else
-            return $this;
+            return new self($condition, $this->body);
     }
 
     public function output(CompilerState $tpl) {

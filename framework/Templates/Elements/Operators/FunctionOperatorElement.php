@@ -82,12 +82,10 @@ class FunctionOperatorElement extends Element {
                 $resolvedArgs[] = $args[$i]->getValue();
         }
 
-        $this->args = $optimizedChain;
-
         if (($tpl->performCalls || in_array($this->functionName, self::$cacheableFunctions)) && $simpleArgs) {
             return new PrimitiveElement(call_user_func_array($this->functionName, $resolvedArgs));
         } else
-            return $this;
+            return new self($this->functionName, $optimizedChain);
     }
 
     public function output(CompilerState $tpl) {

@@ -18,8 +18,8 @@ use SmoothPHP\Framework\Templates\Compiler\CompilerState;
 class Chain extends Element {
     private $chain;
 
-    public function __construct() {
-        $this->chain = array();
+    public function __construct(array $chain = array()) {
+        $this->chain = $chain;
     }
 
     public function addElement(Element $element) {
@@ -71,8 +71,7 @@ class Chain extends Element {
         else if ($count == 1)
             return current($chain);
         else {
-            $this->chain = $chain;
-            return $this;
+            return new self($chain);
         }
     }
 

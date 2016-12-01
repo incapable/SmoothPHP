@@ -26,12 +26,12 @@ class InverseOperatorElement extends Element {
     }
 
     public function optimize(CompilerState $tpl) {
-        $this->body = $this->body->optimize($tpl);
+        $body = $this->body->optimize($tpl);
 
-        if ($this->body instanceof PrimitiveElement)
-            return new PrimitiveElement(!$this->body->getValue());
+        if ($body instanceof PrimitiveElement)
+            return new PrimitiveElement(!$body->getValue());
 
-        return $this;
+        return new self($body);
     }
 
     public function output(CompilerState $tpl) {

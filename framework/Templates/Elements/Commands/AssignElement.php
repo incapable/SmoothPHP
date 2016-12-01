@@ -43,18 +43,18 @@ class AssignElement extends Element {
     }
 
     public function optimize(CompilerState $tpl) {
-        $this->value = $this->value->optimize($tpl);
+        $optValue = $this->value->optimize($tpl);
 
-        if ($this->value instanceof PrimitiveElement)
-            $tpl->vars->{$this->varName} = $this->value;
+        if ($optValue instanceof PrimitiveElement)
+            $tpl->vars->{$this->varName} = $optValue;
 
-        return $this;
+        return new self($this->varName, $optValue);
     }
 
     public function output(CompilerState $tpl) {
-        $this->optimize($tpl);
+        $optimized = $this->optimize($tpl);
 
-        if (!($this->value instanceof PrimitiveElement))
+        if (!($optimized->value instanceof PrimitiveElement))
             throw new TemplateCompileException("Value could not be deduced.");
     }
 }

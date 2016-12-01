@@ -23,8 +23,7 @@ class ParenthesisElement extends Element {
     }
 
     public function optimize(CompilerState $tpl) {
-        $this->element = $this->element->optimize($tpl);
-        return $this->element;
+        return $this->element->optimize($tpl);
     }
 
     public function output(CompilerState $tpl) {

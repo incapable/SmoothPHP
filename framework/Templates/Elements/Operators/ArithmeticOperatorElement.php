@@ -27,6 +27,11 @@ abstract class ArithmeticOperatorElement extends Element {
      */
     protected $left, $right;
 
+    protected function __construct(Element $left = null, Element $right = null) {
+        $this->left = $left;
+        $this->right = $right;
+    }
+
     protected abstract function getPriority();
 
     public static function handle(TemplateCompiler $compiler, TemplateLexer $command, TemplateLexer $lexer, Chain $chain) {

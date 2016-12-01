@@ -39,9 +39,7 @@ class WhileElement extends Element {
     }
 
     public function optimize(CompilerState $tpl) {
-        $this->condition = $this->condition->optimize($tpl);
-        $this->body = $this->body->optimize($tpl);
-        return $this;
+        return new self($this->condition->optimize($tpl), $this->body->optimize($tpl));
     }
 
     public function output(CompilerState $tpl) {

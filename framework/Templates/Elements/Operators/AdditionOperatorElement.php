@@ -23,15 +23,15 @@ class AdditionOperatorElement extends ArithmeticOperatorElement {
     }
 
     public function optimize(CompilerState $tpl) {
-        $this->left = $this->left->optimize($tpl);
-        $this->right = $this->right->optimize($tpl);
+        $left = $this->left->optimize($tpl);
+        $right = $this->right->optimize($tpl);
 
-        if ($this->left instanceof PrimitiveElement && $this->right instanceof PrimitiveElement)
-            if (is_string($this->left->getValue()) && is_string($this->right->getValue()))
-                return new PrimitiveElement($this->left->getValue() . $this->right->getValue());
+        if ($left instanceof PrimitiveElement && $right instanceof PrimitiveElement)
+            if (is_string($left->getValue()) && is_string($right->getValue()))
+                return new PrimitiveElement($left->getValue() . $right->getValue());
             else
-                return new PrimitiveElement($this->left->getValue() + $this->right->getValue());
+                return new PrimitiveElement($left->getValue() + $right->getValue());
         else
-            return $this;
+            return new self($left, $right);
     }
 }

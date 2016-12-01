@@ -22,14 +22,14 @@ use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
 use SmoothPHP\Framework\Templates\TemplateCompiler;
 
 class ForeachElement extends Element {
-    private $iterable;
+    private $collection;
     private $keyName;
     private $valueName;
     private $body;
 
     public static function handle(TemplateCompiler $compiler, TemplateLexer $command, TemplateLexer $lexer, Chain $chain, $stackEnd = null) {
-        $iterable = new Chain();
-        $compiler->handleCommand($command, $lexer, $iterable, 'as');
+        $collection = new Chain();
+        $compiler->handleCommand($command, $lexer, $collection, 'as');
         $command->skipWhitespace();
         $command->peek('$');
         $keyName = null;
@@ -43,47 +43,46 @@ class ForeachElement extends Element {
 
         $body = new Chain();
         $compiler->read($lexer, $body, TemplateCompiler::DELIMITER_START . '/foreach' . TemplateCompiler::DELIMITER_END);
-        $chain->addElement(new self(TemplateCompiler::flatten($iterable), $keyName, $valueName, TemplateCompiler::flatten($body)));
+        $chain->addElement(new self(TemplateCompiler::flatten($collection), $keyName, $valueName, TemplateCompiler::flatten($body)));
     }
 
-    public function __construct(Element $iterable, $keyName, $valueName, Element $body) {
-        $this->iterable = $iterable;
+    public function __construct(Element $collection, $keyName, $valueName, Element $body) {
+        $this->collection = $collection;
         $this->keyName = $keyName;
         $this->valueName = $valueName;
         $this->body = $body;
     }
 
     public function optimize(CompilerState $tpl) {
-        $this->iterable = $this->iterable->optimize($tpl);
-        $this->body = $this->body->optimize($tpl);
+        $collection = $this->collection->optimize($tpl);
+        $body = $this->body->optimize($tpl);
 
-        if ($this->iterable instanceof PrimitiveElement)
-            return $this->runLoop($tpl);
+        if ($collection instanceof PrimitiveElement)
+            return self::runLoop($tpl, $collection, $body, $this->keyName, $this->valueName);
 
-        return $this;
+        return new self($collection, $this->keyName, $this->valueName, $body);
     }
 
     public function output(CompilerState $tpl) {
-        $this->iterable = $this->iterable->optimize($tpl);
-        $this->body = $this->body->optimize($tpl);
+        $collection = $this->collection->optimize($tpl);
+        $body = $this->body->optimize($tpl);
 
-        if (!($this->iterable instanceof PrimitiveElement))
+        if (!($collection instanceof PrimitiveElement))
             throw new TemplateCompileException("Could not foreach-loop over element.");
 
-        $this->runLoop($tpl)->output($tpl);
+        self::runLoop($tpl, $collection, $body, $this->keyName, $this->valueName)->output($tpl);
     }
 
-    private function runLoop(CompilerState $tpl) {
+    private static function runLoop(CompilerState $tpl, PrimitiveElement $collection, Element $body, $keyName, $valueName) {
         $result = new Chain();
 
-        foreach($this->iterable->getValue() as $key => $value) {
+        foreach($collection->getValue() as $key => $value) {
             $scope = $tpl->createSubScope();
-            if ($this->keyName != null)
-                $scope->vars->{$this->keyName} = new PrimitiveElement($key);
-            $scope->vars->{$this->valueName} = new PrimitiveElement($value);
+            if ($keyName != null)
+                $scope->vars->{$keyName} = new PrimitiveElement($key);
+            $scope->vars->{$valueName} = new PrimitiveElement($value);
 
-            $clone = clone $this->body;
-            $result->addElement($clone->optimize($scope));
+            $result->addElement($body->optimize($scope));
         }
 
         return $result->optimize($tpl);
