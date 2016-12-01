@@ -1,6 +1,6 @@
 <?php
 
-/* !
+/*!
  * SmoothPHP
  * This file is part of the SmoothPHP project.
  * * * *
@@ -8,13 +8,15 @@
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * * * *
  * Config.php
- * Abstract configuration for SmoothPHP
+ * Simple data class containing configuration for this project.
  */
 
 namespace SmoothPHP\Framework\Core;
 
 class Config {
     public $debug = false;
+
+    public $default_language = 'en';
 
     public $mysql_enabled = false;
     public $mysql_host = 'localhost';

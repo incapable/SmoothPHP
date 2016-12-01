@@ -17,7 +17,10 @@ use SmoothPHP\Framework\Cache\Assets\AssetsRegister;
 use SmoothPHP\Framework\Core\Abstracts\WebPrototype;
 use SmoothPHP\Framework\Database\MySQL;
 use SmoothPHP\Framework\Flow\Requests\Request;
+use SmoothPHP\Framework\Flow\Responses\PlainTextResponse;
 use SmoothPHP\Framework\Flow\Routing\RouteDatabase;
+use SmoothPHP\Framework\Localization\FileDataSource;
+use SmoothPHP\Framework\Localization\LanguageRepository;
 use SmoothPHP\Framework\Templates\TemplateEngine;
 
 class Kernel {
@@ -30,12 +33,14 @@ class Kernel {
     // Runtime
     private $templateEngine;
     private $assetsRegister;
+    private $languagerepo;
     private $mysql;
 
     public function __construct() {
         $this->config = new Config();
         $this->routeDatabase = new RouteDatabase();
         $this->assetsRegister = new AssetsRegister();
+        $this->languagerepo = new LanguageRepository($this);
 
         // Initialise the PHP session
         session_name('smsid');
@@ -48,6 +53,7 @@ class Kernel {
         define('__DEBUG__', $this->config->debug);
         $this->templateEngine = new TemplateEngine();
         $this->assetsRegister->initialize($this);
+        $this->languagerepo->addSource(new FileDataSource(__ROOT__ . '/framework/Localization/Strings/'));
         $this->routeDatabase->initializeControllers();
     }
 
@@ -80,6 +86,13 @@ class Kernel {
     }
 
     /**
+     * @return LanguageRepository
+     */
+    public function getLanguageRepository() {
+        return $this->languagerepo;
+    }
+
+    /**
      * @return MySQL
      */
     public function getMySQL() {
@@ -97,7 +110,7 @@ class Kernel {
     public function getResponse(Request $request) {
         $resolvedRoute = $this->routeDatabase->resolve($request);
         if (!$resolvedRoute)
-            return false;
+            return new PlainTextResponse($this->languagerepo->getEntry('smooth_error_404'));
         return $resolvedRoute->buildResponse($this, $request);
     }
 

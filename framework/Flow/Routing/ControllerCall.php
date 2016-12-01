@@ -17,9 +17,10 @@ use SmoothPHP\Framework\Cache\Assets\AssetsRegister;
 use SmoothPHP\Framework\Core\Kernel;
 use SmoothPHP\Framework\Database\MySQL;
 use SmoothPHP\Framework\Flow\Requests\Request;
+use SmoothPHP\Framework\Localization\LanguageRepository;
 
 class ControllerCall {
-    private $request, $kernel, $mysql, $assetsRegister;
+    private $request, $kernel, $mysql, $assetsRegister, $languageRepo;
     private $parameters;
 
     private $callable;
@@ -44,6 +45,9 @@ class ControllerCall {
                     break;
                 case AssetsRegister::class:
                     $this->controllerArgs[] = &$this->assetsRegister;
+                    break;
+                case LanguageRepository::class:
+                    $this->controllerArgs[] = &$this->languageRepo;
                     break;
                 case MySQL::class:
                     $this->mysql = -1; // Make sure the later isset fills this value
@@ -70,6 +74,7 @@ class ControllerCall {
         if (isset($this->mysql)) // MySQL should only be initialized on-demand
             $this->mysql = $kernel->getMySQL();
         $this->assetsRegister = $kernel->getAssetsRegister();
+        $this->languageRepo = $kernel->getLanguageRepository();
 
         $i = 0;
         foreach ($args as $arg) {
