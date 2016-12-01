@@ -18,16 +18,16 @@ use SmoothPHP\Framework\Forms\Containers\Type;
 
 class EmailType extends Type {
 
-    public function __construct($field, array $attributes) {
-        parent::__construct($field, $attributes);
+    public function __construct($field) {
+        parent::__construct($field);
 
         global $kernel;
-        $this->attributes = array_replace_recursive(array(
+        $this->attributes = array_replace_recursive($this->attributes, array(
             'attr' => array(
                 'type' => 'email',
                 'placeholder' => $kernel->getLanguageRepository()->getEntry('smooth_form_email')
             )
-        ), $this->attributes);
+        ));
     }
 
     public function checkConstraint(Request $request, $name, $value, array &$failReasons) {

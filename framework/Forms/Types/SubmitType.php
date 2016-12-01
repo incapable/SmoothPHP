@@ -17,8 +17,8 @@ use SmoothPHP\Framework\Forms\Containers\Type;
 
 class SubmitType extends Type {
 
-    public function __construct($field, array $attributes) {
-        parent::__construct($field, $attributes);
+    public function __construct($field) {
+        parent::__construct($field);
         $this->attributes = array_replace_recursive($this->attributes, array(
             'attr' => array(
                 'type' => 'submit',

@@ -22,19 +22,21 @@ abstract class Type extends Constraint {
     protected $attributes;
     private $constraints;
 
-    public function __construct($field, array $attributes = array()) {
+    public function __construct($field) {
         $this->field = $field;
-        $this->attributes = array_replace_recursive(array(
+        $this->attributes = array(
             'label' => self::getLabel($field),
             'required' => true,
             'attr' => array(
                 'class' => ''
             ),
             'constraints' => array()
-        ), $attributes);
+        );
     }
 
-    public function buildConstraints() {
+    public function initialize(array $attributes = array()) {
+        $this->attributes = array_merge_recursive($this->attributes, $attributes);
+
         $this->constraints = array();
         foreach($this->attributes['constraints'] as $constraint) {
             if ($constraint instanceof Constraint)

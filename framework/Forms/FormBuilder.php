@@ -55,8 +55,8 @@ class FormBuilder {
 
         foreach ($this->properties as $key => $value) {
             /* @var $element Type */
-            $element = new $value['type']($key, $value);
-            $element->buildConstraints();
+            $element = new $value['type']($key);
+            $element->initialize($value);
             $elements[$key] = new FormContainer(array(
                 'rowstart' => '<tr><td>',
                 'label' => $element->generateLabel(),

@@ -17,8 +17,8 @@ use SmoothPHP\Framework\Flow\Requests\Request;
 
 class PasswordType extends StringType{
 
-    public function __construct($field, array $attributes) {
-        parent::__construct($field, $attributes);
+    public function __construct($field) {
+        parent::__construct($field);
 
         global $kernel;
         $this->attributes = array_replace_recursive($this->attributes, array(
