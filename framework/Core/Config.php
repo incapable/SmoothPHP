@@ -25,4 +25,7 @@ class Config {
     public $mysql_port = 3306;
     public $mysql_user = 'root';
     public $mysql_password = '';
+
+    public $recaptcha_site_key = '';
+    public $recaptcha_site_secret = '';
 }
