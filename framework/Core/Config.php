@@ -16,7 +16,8 @@ namespace SmoothPHP\Framework\Core;
 class Config {
     public $debug = false;
 
-    public $default_language = 'en';
+    public $default_language = 'en_US';
+    public $detect_language = true;
 
     public $mysql_enabled = false;
     public $mysql_host = 'localhost';

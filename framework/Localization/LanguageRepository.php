@@ -31,21 +31,18 @@ class LanguageRepository {
     }
 
     public function setSessionLanguage($language) {
-        $found = false;
+        $languages = array();
         foreach($this->sources as $source)
-            if ($source->checkLanguage($language)) {
-                $found = true;
-                break;
-            }
-
-        if (!$found)
-            throw new \RuntimeException('Unknown language: ' . $language);
+            $languages = array_merge($languages, $source->getAvailableLanguages());
+        if (!in_array($language, $languages))
+            throw new \RuntimeException("Language '" . $language . "' could not be found.");
 
         $_SESSION[self::SESSION_KEY] = $language;
+        return true;
     }
 
     public function getEntry($key, $language = null) {
-        $language = $language ?: (isset($_SESSION[self::SESSION_KEY]) ? $_SESSION[self::SESSION_KEY] : $this->kernel->getConfig()->default_language);
+        $language = $language ?: $this->detectLanguage();
         foreach($this->sources as $source) {
             $entry = $source->getEntry($language, $key);
             if ($entry)
@@ -57,5 +54,26 @@ class LanguageRepository {
 
     public function __get($name) {
         return $this->getEntry($name);
+    }
+
+    private function detectLanguage() {
+        if (isset($_SESSION[self::SESSION_KEY]))
+            return $_SESSION[self::SESSION_KEY];
+
+        $language = $this->kernel->getConfig()->default_language;
+
+        if ($this->kernel->getConfig()->detect_language) {
+            $languages = array();
+            foreach($this->sources as $source)
+                $languages = array_unique(array_merge($languages, $source->getAvailableLanguages()));
+
+            $language = locale_lookup($languages,
+                                      locale_accept_from_http($_SERVER['HTTP_ACCEPT_LANGUAGE']),
+                                      true,
+                                      $this->kernel->getConfig()->default_language);
+        }
+
+        $_SESSION[self::SESSION_KEY] = $language;
+        return $language;
     }
 }

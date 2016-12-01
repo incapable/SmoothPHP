@@ -34,9 +34,9 @@ class FileDataSource implements DataSource {
         $this->folder = $folder;
     }
 
-    public function checkLanguage($language) {
+    public function getAvailableLanguages() {
         $entries = self::$cache->fetch($this->folder);
-        return isset($entries[$language]);
+        return array_keys($entries);
     }
 
     public function getEntry($language, $key) {
