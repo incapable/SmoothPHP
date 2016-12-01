@@ -15,6 +15,8 @@ namespace SmoothPHP\Framework\Localization;
 
 interface DataSource {
 
+    public function checkLanguage($language);
+
     public function getEntry($language, $key);
 
 }

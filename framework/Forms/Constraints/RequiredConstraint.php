@@ -19,8 +19,10 @@ use SmoothPHP\Framework\Flow\Requests\Request;
 class RequiredConstraint implements Constraint {
 
     public function checkConstraint(Request $request, $name, $value, array &$failReasons) {
-        if (!isset($value) || empty($value))
-            $failReasons[] = $name . ' can not be empty!';
+        if (!isset($value) || empty($value)) {
+            global $kernel;
+            $failReasons[] = sprintf($kernel->getLanguageRepository()->getEntry('smooth_form_required'), $name);
+        }
     }
 
 }

@@ -16,6 +16,8 @@ namespace SmoothPHP\Framework\Localization;
 use SmoothPHP\Framework\Core\Kernel;
 
 class LanguageRepository {
+    const SESSION_KEY = 'sm_language';
+
     private $kernel;
     private $sources;
 
@@ -28,8 +30,20 @@ class LanguageRepository {
         array_unshift($this->sources, $source);
     }
 
+    public function setSessionLanguage($language) {
+        $found = false;
+        foreach($this->sources as $source)
+            if ($source->checkLanguage($language))
+                $found = true;
+
+        if (!$found)
+            throw new \RuntimeException('Unknown language: ' . $language);
+
+        $_SESSION[self::SESSION_KEY] = $language;
+    }
+
     public function getEntry($key, $language = null) {
-        $language = $language ?: (isset($_SESSION['language']) ? $_SESSION['language'] : $this->kernel->getConfig()->default_language);
+        $language = $language ?: (isset($_SESSION[self::SESSION_KEY]) ? $_SESSION[self::SESSION_KEY] : $this->kernel->getConfig()->default_language);
         foreach($this->sources as $source) {
             $entry = $source->getEntry($language, $key);
             if ($entry)
