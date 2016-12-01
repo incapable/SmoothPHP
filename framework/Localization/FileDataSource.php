@@ -29,7 +29,7 @@ class FileDataSource implements DataSource {
                         continue;
                     $entries = array_merge_recursive(parse_ini_file($folder . DIRECTORY_SEPARATOR . $file, true, INI_SCANNER_RAW), $entries);
                 }
-                return $entries;
+                return array_change_key_case($entries, CASE_LOWER);
             });
         $this->folder = $folder;
     }
