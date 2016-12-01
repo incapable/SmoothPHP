@@ -44,28 +44,16 @@ class TemplateEngine {
 
     public function fetch($templateName, array $args) {
         $path = sprintf('%ssrc/templates/%s', __ROOT__, $templateName);
-        /* @var $template \SmoothPHP\Framework\Templates\Elements\Element */
         $template = $this->runtimeCache->fetch($path);
 
-        // Prepare the template state for final output
-        $state = new CompilerState();
-        foreach($args as $key => $value)
-            $state->vars->{$key} = new PrimitiveElement($value);
-        $state->performCalls = true;
-
-        // Optimize one last time, with the new variables
-        $template = $template->optimize($state);
-
-        // Gather output and return it
-        ob_start();
-        $template->output($state);
-        return ob_get_clean();
+        return $this->prepareOutput($template, $args);
     }
 
     public function simpleFetch($absoluteFile, array $args = array()) {
-        $template = $this->compiler->compile($absoluteFile);
+        return $this->prepareOutput($this->compiler->compile($absoluteFile), $args);
+    }
 
-        // Prepare a template state with focuses on results
+    private function prepareOutput($template, array $args) {
         $state = new CompilerState();
         foreach($args as $key => $value)
             $state->vars->{$key} = new PrimitiveElement($value);
