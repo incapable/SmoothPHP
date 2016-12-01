@@ -33,8 +33,10 @@ class LanguageRepository {
     public function setSessionLanguage($language) {
         $found = false;
         foreach($this->sources as $source)
-            if ($source->checkLanguage($language))
+            if ($source->checkLanguage($language)) {
                 $found = true;
+                break;
+            }
 
         if (!$found)
             throw new \RuntimeException('Unknown language: ' . $language);
