@@ -36,6 +36,8 @@ class Form extends FormContainer {
     }
 
     public function getAction() {
+        if (!isset($this->action))
+            return $_SERVER['REQUEST_URI'];
         return $this->action;
     }
 
@@ -66,6 +68,12 @@ class Form extends FormContainer {
         if (!$this->hasResult)
             return true;
         return isset($this->failReasons) && count($this->failReasons) == 0;
+    }
+
+    public function addErrorMessage($message) {
+        if (!isset($this->failReasons))
+            throw new \Exception('Form has not yet been validated.');
+        $this->failReasons[] = $message;
     }
 
     public function getErrorMessages() {

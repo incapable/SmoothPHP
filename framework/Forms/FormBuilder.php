@@ -18,7 +18,7 @@ use SmoothPHP\Framework\Forms\Containers\Type;
 use SmoothPHP\Framework\Forms\Types as Types;
 
 class FormBuilder {
-    private $action = '';
+    private $action = null;
     private $properties;
 
     /**
