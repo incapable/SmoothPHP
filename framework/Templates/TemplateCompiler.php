@@ -18,6 +18,7 @@ use SmoothPHP\Framework\Templates\Compiler\TemplateCompileException;
 use SmoothPHP\Framework\Templates\Compiler\TemplateLexer;
 use SmoothPHP\Framework\Templates\Elements\Chain;
 use SmoothPHP\Framework\Templates\Elements\Commands\BlockElement;
+use SmoothPHP\Framework\Templates\Elements\Element;
 use SmoothPHP\Framework\Templates\Elements\Operators\ArithmeticOperatorElement;
 use SmoothPHP\Framework\Templates\Elements\Operators\DereferenceOperatorElement;
 
@@ -35,6 +36,8 @@ class TemplateCompiler {
             'assign' => Elements\Commands\AssignElement::class,
             'block' => BlockElement::class,
             'if' => Elements\Commands\IfElement::class,
+            'else' => Elements\Commands\ElseElement::class,
+            'elseif' => Elements\Commands\ElseIfElement::class,
             'while' => Elements\Commands\WhileElement::class,
             'foreach' => Elements\Commands\ForeachElement::class,
 
