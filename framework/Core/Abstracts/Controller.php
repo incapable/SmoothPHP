@@ -13,6 +13,7 @@
 
 namespace SmoothPHP\Framework\Core\Abstracts;
 
+use SmoothPHP\Framework\Flow\Responses\RedirectResponse;
 use SmoothPHP\Framework\Flow\Responses\TemplateResponse;
 
 abstract class Controller {
@@ -21,6 +22,10 @@ abstract class Controller {
 
     protected static function render($template, array $templateArgs = array()) {
         return new TemplateResponse($template, $templateArgs);
+    }
+
+    protected static function redirect($route, array $args = array()) {
+        return new RedirectResponse($route, $args);
     }
 
 }
