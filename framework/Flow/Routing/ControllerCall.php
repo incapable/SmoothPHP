@@ -13,6 +13,7 @@
 
 namespace SmoothPHP\Framework\Flow\Routing;
 
+use SmoothPHP\Framework\Authentication\AuthenticationManager;
 use SmoothPHP\Framework\Cache\Assets\AssetsRegister;
 use SmoothPHP\Framework\Core\Kernel;
 use SmoothPHP\Framework\Database\MySQL;
@@ -20,7 +21,7 @@ use SmoothPHP\Framework\Flow\Requests\Request;
 use SmoothPHP\Framework\Localization\LanguageRepository;
 
 class ControllerCall {
-    private $request, $kernel, $mysql, $assetsRegister, $languageRepo;
+    private $request, $kernel, $assetsRegister, $mysql, $authentication, $languageRepo;
     private $parameters;
 
     private $callable;
@@ -46,12 +47,16 @@ class ControllerCall {
                 case AssetsRegister::class:
                     $this->controllerArgs[] = &$this->assetsRegister;
                     break;
-                case LanguageRepository::class:
-                    $this->controllerArgs[] = &$this->languageRepo;
-                    break;
                 case MySQL::class:
                     $this->mysql = -1; // Make sure the later isset fills this value
                     $this->controllerArgs[] = &$this->mysql;
+                    break;
+                case AuthenticationManager::class:
+                    $this->authentication = -1;
+                    $this->controllerArgs[] = &$this->authentication;
+                    break;
+                case LanguageRepository::class:
+                    $this->controllerArgs[] = &$this->languageRepo;
                     break;
                 default: // Mixed-type arg, url-argument
                     $this->parameters[++$i] = null;
@@ -71,9 +76,11 @@ class ControllerCall {
     public function performCall(Kernel $kernel, Request $request, array $args) {
         $this->kernel = $kernel;
         $this->request = $request;
+        $this->assetsRegister = $kernel->getAssetsRegister();
         if (isset($this->mysql)) // MySQL should only be initialized on-demand
             $this->mysql = $kernel->getMySQL();
-        $this->assetsRegister = $kernel->getAssetsRegister();
+        if (isset($this->authentication))
+            $this->authentication = $kernel->getAuthenticationManager();
         $this->languageRepo = $kernel->getLanguageRepository();
 
         $i = 0;

@@ -13,6 +13,7 @@
 
 namespace SmoothPHP\Framework\Core;
 
+use SmoothPHP\Framework\Authentication\AuthenticationManager;
 use SmoothPHP\Framework\Cache\Assets\AssetsRegister;
 use SmoothPHP\Framework\Core\Abstracts\WebPrototype;
 use SmoothPHP\Framework\Database\MySQL;
@@ -33,8 +34,9 @@ class Kernel {
     // Runtime
     private $templateEngine;
     private $assetsRegister;
-    private $languagerepo;
     private $mysql;
+    private $authentication;
+    private $languagerepo;
 
     public function __construct() {
         $this->config = new Config();
@@ -50,10 +52,12 @@ class Kernel {
     public function loadPrototype(WebPrototype $prototype) {
         $prototype->initialize($this);
         $prototype->registerRoutes($this->routeDatabase);
-        define('__DEBUG__', $this->config->debug);
         $this->templateEngine = new TemplateEngine();
         $this->assetsRegister->initialize($this);
-        $this->languagerepo->addSource(new FileDataSource(__ROOT__ . '/framework/assets/strings/'));
+        if ($this->config->authentication_enabled)
+            $this->authentication = new AuthenticationManager($this);
+        $this->languagerepo->addSource(new FileDataSource(__ROOT__ . 'framework/assets/strings/'));
+        $this->languagerepo->addSource(new FileDataSource(__ROOT__ . 'src/assets/strings/'));
         $this->routeDatabase->initializeControllers();
     }
 
@@ -86,13 +90,6 @@ class Kernel {
     }
 
     /**
-     * @return LanguageRepository
-     */
-    public function getLanguageRepository() {
-        return $this->languagerepo;
-    }
-
-    /**
      * @return MySQL
      */
     public function getMySQL() {
@@ -104,13 +101,31 @@ class Kernel {
     }
 
     /**
+     * @return AuthenticationManager
+     */
+    public function getAuthenticationManager() {
+        if (!$this->config->authentication_enabled)
+            throw new \RuntimeException("Authentication is not enabled");
+        return $this->authentication;
+    }
+
+    /**
+     * @return LanguageRepository
+     */
+    public function getLanguageRepository() {
+        return $this->languagerepo;
+    }
+
+    /**
      * @param Request $request The request that determines how the response is made, and how it is given.
      * @return \SmoothPHP\Framework\Flow\Responses\Response|boolean
      */
     public function getResponse(Request $request) {
         $resolvedRoute = $this->routeDatabase->resolve($request);
-        if (!$resolvedRoute)
+        if (!$resolvedRoute) {
+            header('HTTP/1.1 404 Not found');
             return new PlainTextResponse($this->languagerepo->getEntry('smooth_error_404'));
+        }
         return $resolvedRoute->buildResponse($this, $request);
     }
 

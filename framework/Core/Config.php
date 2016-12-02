@@ -14,8 +14,6 @@
 namespace SmoothPHP\Framework\Core;
 
 class Config {
-    public $debug = false;
-
     public $default_language = 'en_us';
     public $detect_language = true;
 
@@ -25,6 +23,8 @@ class Config {
     public $mysql_port = 3306;
     public $mysql_user = 'root';
     public $mysql_password = '';
+
+    public $authentication_enabled = false;
 
     public $recaptcha_site_key = '';
     public $recaptcha_site_secret = '';
