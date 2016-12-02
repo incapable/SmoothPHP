@@ -22,7 +22,7 @@ class MySQLObjectMapper {
     private $classDef;
     private $fields;
 
-    private $fetch, $insert;
+    private $fetch, $insert, $delete;
 
     public function __construct(MySQL $mysql, $clazz) {
         $this->mysql = $mysql;
@@ -91,6 +91,12 @@ class MySQLObjectMapper {
                 $query .= ') VALUES (' . implode(', ', $insertParams) . ') ON DUPLICATE KEY UPDATE ' . implode(', ', array_values($this->insert->params));
                 $this->insert->statement = $this->mysql->prepare($query, false);
             }
+
+            // Set up delete query
+            {
+                $query = 'DELETE FROM `' . $object->getTableName() . '` WHERE `id` = %d';
+                $this->delete = $this->mysql->prepare($query, false);
+            }
         }
     }
 
@@ -120,13 +126,21 @@ class MySQLObjectMapper {
             $query .= ' FROM `' . $target->getTableName() . '` WHERE ';
 
             if (is_array($where)) {
+                $whereSeparator = 'AND';
+                if (isset($where['_separator'])) {
+                    $whereSeparator = $where['_separator'];
+                    unset($where['_separator']);
+                }
+
                 $conditions = array();
                 array_walk($where, function(&$value, $key) use (&$conditions) {
                     $conditions[] = sprintf('`%s` = %s', $key, is_numeric($value) ? '%d' : '%s');
                 });
-                $query .= implode(' AND ', $conditions);
+                $query .= implode(' ' . $whereSeparator . ' ', $conditions);
             } else
                 $query .= $where;
+
+            $query .= ' LIMIT 1';
 
             $prepared->statement = $this->mysql->prepare($query, false);
             call_user_func_array(array($prepared->statement->getStatement(), 'bind_result'), $prepared->references);
@@ -170,6 +184,10 @@ class MySQLObjectMapper {
         $id = $this->insert->statement->getStatement()->insert_id;
         if ($id != 0)
             $idField->setValue($object, $id);
+    }
+
+    public function delete(MappedMySQLObject $object) {
+        $this->delete->execute($object->getId());
     }
 
 }

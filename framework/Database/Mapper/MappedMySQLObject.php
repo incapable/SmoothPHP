@@ -19,4 +19,8 @@ class MappedMySQLObject {
     public function getTableName() {
         return strtolower((new \ReflectionClass($this))->getShortName());
     }
+
+    public function getId() {
+        return $this->id;
+    }
 }
