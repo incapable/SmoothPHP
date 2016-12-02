@@ -57,7 +57,7 @@ class LanguageRepository {
     }
 
     private function detectLanguage() {
-        if (isset($_SESSION[self::SESSION_KEY]))
+        if (isset($_SESSION[self::SESSION_KEY]) && !empty($_SESSION[self::SESSION_KEY]))
             return $_SESSION[self::SESSION_KEY];
 
         $language = $this->kernel->getConfig()->default_language;
