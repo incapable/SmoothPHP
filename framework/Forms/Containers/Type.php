@@ -55,6 +55,16 @@ abstract class Type extends Constraint {
         }
     }
 
+    public function getContainer() {
+        return array(
+            'rowstart' => '<tr><td>',
+            'label' => $this->generateLabel(),
+            'rowseparator' => '</td><td>',
+            'input' => $this,
+            'rowend' => '</td></tr>'
+        );
+    }
+
     public function checkConstraint(Request $request, $name, $value, array &$failReasons) {
         foreach($this->constraints as $constraint)
             /* @var $constraint Constraint */

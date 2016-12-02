@@ -57,13 +57,7 @@ class FormBuilder {
             /* @var $element Type */
             $element = new $value['type']($key);
             $element->initialize($value);
-            $elements[$key] = new FormContainer(array(
-                'rowstart' => '<tr><td>',
-                'label' => $element->generateLabel(),
-                'rowseparator' => '</td><td>',
-                'input' => $element,
-                'rowend' => '</td></tr>'
-            ));
+            $elements[$key] = new FormContainer($element->getContainer());
         }
 
         return new Form($this->action, $elements);

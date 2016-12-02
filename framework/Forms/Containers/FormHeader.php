@@ -18,6 +18,9 @@ use SmoothPHP\Framework\Forms\Constraint;
 use SmoothPHP\Framework\Forms\Form;
 
 class FormHeader extends Constraint {
+
+    const SESSION_KEY = 'sm_formtokens';
+
     private $form;
 
     public function __construct(Form $form) {
@@ -25,23 +28,23 @@ class FormHeader extends Constraint {
     }
 
     public function __toString() {
-        if (!isset($_SESSION['formtokens']))
-            $_SESSION['formtokens'] = array();
+        if (!isset($_SESSION[self::SESSION_KEY]))
+            $_SESSION[self::SESSION_KEY] = array();
 
         $formToken = md5(uniqid(rand(), true));
-        $_SESSION['formtokens'][] = $formToken;
+        $_SESSION[self::SESSION_KEY][] = $formToken;
 
         return '<form action="' . $this->form->getAction() . '" method="post" class="smoothform">'
             . '<input type="hidden" id="_token" name="_token" value="' . $formToken . '" />';
     }
 
     public function checkConstraint(Request $request, $name, $value, array &$failReasons) {
-        $key = array_search($request->post->_token, $_SESSION['formtokens'], true);
+        $key = array_search($request->post->_token, $_SESSION[self::SESSION_KEY], true);
         if ($key === false) {
             $failReasons[] = 'Form security token mismatch.';
             return;
         }
-        unset($_SESSION['formtokens'][$key]);
+        unset($_SESSION[self::SESSION_KEY][$key]);
     }
 
 }
