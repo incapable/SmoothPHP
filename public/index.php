@@ -11,12 +11,12 @@
  * Primary entry point for SmoothPHP.
  */
 
-require_once '../framework/Bootstrap.php';
-use SmoothPHP\Framework\Core\Kernel;
+define('__DEBUG__', true);
+
 use SmoothPHP\Framework\Flow\Requests\Request;
 
-$kernel = new Kernel();
-$kernel->loadPrototype(new Website());
+$loader = require_once '../framework/Bootstrap.php';
+$loader(new Website());
 
 $request = Request::createFromGlobals();
 $response = $kernel->getResponse($request);

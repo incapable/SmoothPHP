@@ -11,7 +11,10 @@
  * This file is responsible for initializing the classloader so that the index file may create a website kernel.
  */
 
+use SmoothPHP\Framework\Core\Kernel;
+use SmoothPHP\Framework\Core\Abstracts\WebPrototype;
 use SmoothPHP\Framework\Core\ClassLoader\BasicClassLoader;
+use SmoothPHP\Framework\Cache\Builder\RuntimeCacheProvider;
 
 // Set an error handler that uses exceptions instead
 set_error_handler(function ($num, $str, $file, $line) {
@@ -27,3 +30,15 @@ set_error_handler(function ($num, $str, $file, $line) {
     $classLoader = new BasicClassLoader();
     $classLoader->register();
 }
+
+/* @var $kernel Kernel */
+$kernel = null;
+
+return function(WebPrototype $prototype) {
+    global $kernel;
+    $kernel = RuntimeCacheProvider::create(function() use (&$kernel, $prototype) {
+        $kernel = new Kernel();
+        $kernel->loadPrototype($prototype);
+        return $kernel;
+    })->fetch(null);
+};
