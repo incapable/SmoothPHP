@@ -13,6 +13,8 @@
 
 namespace SmoothPHP\Framework\Authentication;
 
+use SmoothPHP\Framework\Authentication\UserTypes\AnonymousUser;
+use SmoothPHP\Framework\Authentication\UserTypes\User;
 use SmoothPHP\Framework\Core\Kernel;
 use SmoothPHP\Framework\Database\Mapper\MySQLObjectMapper;
 use SmoothPHP\Framework\Flow\Requests\Request;
@@ -27,11 +29,12 @@ class AuthenticationManager {
     const SESSION_KEY_LOGINTOKEN = 'sm_logintoken';
 
     /* @var MySQLObjectMapper */
-    private $sessionMap, $userMap;
+    private $loginSessionMap, $activeSessionMap, $userMap;
     private $defaultForm;
 
     public function __construct(Kernel $kernel) {
-        $this->sessionMap = $kernel->getMySQL()->map(LoginSession::class);
+        $this->loginSessionMap = $kernel->getMySQL()->map(LoginSession::class);
+        $this->activeSessionMap = $kernel->getMySQL()->map(ActiveSession::class);
         $this->userMap = $kernel->getMySQL()->map(User::class);
 
         $formBuilder = new FormBuilder();
@@ -60,7 +63,7 @@ class AuthenticationManager {
 
     public function getLoginForm(Request $request) {
         // Do we have a known login session yet?
-        $session = $this->sessionMap->fetch(array(
+        $session = $this->loginSessionMap->fetch(array(
             '_separator' => 'OR', // Either match
             'token' => $request->post->_logintoken ?: (isset($_SESSION[self::SESSION_KEY_LOGINTOKEN]) ? $_SESSION[self::SESSION_KEY_LOGINTOKEN] : '-'),
             'ip' => $request->server->REMOTE_ADDR
@@ -80,7 +83,7 @@ class AuthenticationManager {
 
         if ($form->hasResult() && $form->isValid()) {
             /* @var $session LoginSession */
-            $session = $this->sessionMap->fetch(array(
+            $session = $this->loginSessionMap->fetch(array(
                 'token' => $request->post->_logintoken,
                 'ip' => $request->server->REMOTE_ADDR
             ));
@@ -107,11 +110,13 @@ class AuthenticationManager {
             if (!$user || !password_verify($request->post->password, $user->getHashedPassword())) {
                 $form->addErrorMessage('Username and/or password are incorrect.');
                 $session->increaseFailure();
-                $this->sessionMap->insert($session);
+                $this->loginSessionMap->insert($session);
                 return false;
             }
 
-            $this->sessionMap->delete($session);
+            $this->loginSessionMap->delete($session);
+            $activeSession = new ActiveSession($user);
+            $this->activeSessionMap->insert($activeSession);
 
             return true;
         } else
@@ -120,9 +125,17 @@ class AuthenticationManager {
 
     private function assignLoginSession(Request $request) {
         $session = new LoginSession($request);
-        $this->sessionMap->insert($session);
+        $this->loginSessionMap->insert($session);
         $_SESSION[self::SESSION_KEY_LOGINTOKEN] = $session->getToken();
         return $session;
+    }
+
+    public function getActiveUser() {
+        $session = ActiveSession::readCookie($this->activeSessionMap);
+        if ($session == null)
+            return new AnonymousUser();
+        else
+            return $this->userMap->fetch($session->getUserId());
     }
 
 }

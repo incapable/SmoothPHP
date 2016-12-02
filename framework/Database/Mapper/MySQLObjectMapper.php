@@ -56,8 +56,8 @@ class MySQLObjectMapper {
                 $query .= ' FROM `' . $object->getTableName() . '` WHERE `id` = %d';
 
                 $this->fetch->statement = $this->mysql->prepare($query, false);
-                call_user_func_array(array($this->fetch->statement->getStatement(), 'bind_result'), $this->fetch->references);
-                MySQL::checkError($this->fetch->statement->getStatement());
+                call_user_func_array(array($this->fetch->statement->getMySQLi_stmt(), 'bind_result'), $this->fetch->references);
+                MySQL::checkError($this->fetch->statement->getMySQLi_stmt());
             }
 
             // Set up insert/update query
@@ -109,7 +109,7 @@ class MySQLObjectMapper {
         $target = $this->classDef->newInstanceWithoutConstructor();
 
         $prepared = null;
-        if (!is_array($where) && !is_string($where)) {
+        if (is_numeric($where)) {
             $prepared = $this->fetch;
             $prepared->statement->execute($where);
         } else {
@@ -143,8 +143,8 @@ class MySQLObjectMapper {
             $query .= ' LIMIT 1';
 
             $prepared->statement = $this->mysql->prepare($query, false);
-            call_user_func_array(array($prepared->statement->getStatement(), 'bind_result'), $prepared->references);
-            MySQL::checkError($prepared->statement->getStatement());
+            call_user_func_array(array($prepared->statement->getMySQLi_stmt(), 'bind_result'), $prepared->references);
+            MySQL::checkError($prepared->statement->getMySQLi_stmt());
 
             if (is_array($where)) {
                 call_user_func_array(array($prepared->statement, 'execute'), array_values($where));
@@ -152,11 +152,11 @@ class MySQLObjectMapper {
                 $prepared->statement->execute();
         }
 
-        $prepared->statement->getStatement()->fetch();
-        $prepared->statement->getStatement()->reset();
-        MySQL::checkError($prepared->statement->getStatement());
+        $prepared->statement->getMySQLi_stmt()->fetch();
+        $prepared->statement->getMySQLi_stmt()->reset();
+        MySQL::checkError($prepared->statement->getMySQLi_stmt());
 
-        if ($prepared->statement->getStatement()->num_rows == 0)
+        if ($prepared->statement->getMySQLi_stmt()->num_rows == 0)
             return null;
 
         /* @var $field \ReflectionProperty */
@@ -180,8 +180,8 @@ class MySQLObjectMapper {
             }
 
         call_user_func_array(array($this->insert->statement, 'execute'), $params);
-        MySQL::checkError($this->insert->statement->getStatement());
-        $id = $this->insert->statement->getStatement()->insert_id;
+        MySQL::checkError($this->insert->statement->getMySQLi_stmt());
+        $id = $this->insert->statement->getMySQLi_stmt()->insert_id;
         if ($id != 0)
             $idField->setValue($object, $id);
     }

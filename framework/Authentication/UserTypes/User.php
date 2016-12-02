@@ -11,15 +11,15 @@
  * Default user implementation
  */
 
-namespace SmoothPHP\Framework\Authentication;
+namespace SmoothPHP\Framework\Authentication\UserTypes;
 
 use SmoothPHP\Framework\Database\Mapper\MappedMySQLObject;
 
-class User extends MappedMySQLObject {
+class User extends MappedMySQLObject implements AbstractUser {
 
-    private $username;
+    protected $username;
+    protected $email;
     private $password;
-    private $email;
 
     public function getTableName() {
         return 'users';
@@ -27,6 +27,19 @@ class User extends MappedMySQLObject {
 
     public function getHashedPassword() {
         return $this->password;
+    }
+
+    public function isLoggedIn() {
+        return true;
+    }
+
+    public function __get($name) {
+        return $this->{$name};
+    }
+
+    public static function getInstance() {
+        global $kernel;
+        return $kernel->getAuthenticationManager()->getActiveUser();
     }
 
 }

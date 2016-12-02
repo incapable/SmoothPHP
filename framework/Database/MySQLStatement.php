@@ -36,7 +36,7 @@ abstract class MySQLStatement {
         }
     }
 
-    public function getStatement() {
+    public function getMySQLi_stmt() {
         return $this->stmt;
     }
 

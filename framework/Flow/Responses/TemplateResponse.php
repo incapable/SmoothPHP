@@ -13,6 +13,7 @@
 
 namespace SmoothPHP\Framework\Flow\Responses;
 
+use SmoothPHP\Framework\Authentication\UserTypes\User;
 use SmoothPHP\Framework\Core\Kernel;
 use SmoothPHP\Framework\Flow\Requests\Request;
 
@@ -29,6 +30,8 @@ class TemplateResponse extends Response {
         $this->args['assets'] = $kernel->getAssetsRegister();
         $this->args['route'] = $kernel->getRouteDatabase();
         $this->args['language'] = $kernel->getLanguageRepository();
+        if ($kernel->getConfig()->authentication_enabled)
+            $this->args['user'] = User::getInstance();
         $this->built = $kernel->getTemplateEngine()->fetch($this->controllerResponse, $this->args);
     }
 
