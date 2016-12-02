@@ -36,77 +36,124 @@ class MySQLObjectMapper {
             $field->setAccessible(true);
             return $field;
         }, $this->classDef->getProperties());
+
+        // Prepare queries
+        {
+            $object = $this->classDef->newInstanceWithoutConstructor();
+
+            // Set up fetch query
+            {
+                $query = 'SELECT ';
+
+                $this->fetch = new PreparedMapStatement();
+
+                $query .= implode(', ', array_map(function (\ReflectionProperty $field) {
+                    $this->fetch->params[$field->getName()] = null;
+                    $this->fetch->references[] = &$this->fetch->params[$field->getName()];
+                    return '`' . $field->getName() . '`';
+                }, $this->fields));
+
+                $query .= ' FROM `' . $object->getTableName() . '` WHERE `id` = %d';
+
+                $this->fetch->statement = $this->mysql->prepare($query, false);
+                call_user_func_array(array($this->fetch->statement->getStatement(), 'bind_result'), $this->fetch->references);
+                MySQL::checkError($this->fetch->statement->getStatement());
+            }
+
+            // Set up insert/update query
+            {
+                $query = 'INSERT INTO `' . $object->getTableName() . '` (';
+
+                $insertParams = array();
+                $this->insert = new PreparedMapStatement();
+
+                $first = true;
+                array_map(function (\ReflectionProperty $field) use (&$object, &$query, &$insertParams, &$first) {
+                    if (!$first)
+                        $query .= ', ';
+                    else
+                        $first = false;
+                    $query .= '' . $field->getName() . '';
+
+                    $value = $field->getValue($object);
+                    if (is_int($value))
+                        $insertKey = '%d';
+                    else if (is_float($value))
+                        $insertKey = '%f';
+                    else
+                        $insertKey = '%s';
+
+                    $insertParams[] = $insertKey;
+                    if ($field->getName() != 'id')
+                        $this->insert->params[$field->getName()] = '`' . $field->getName() . '` = ' . $insertKey;
+                }, $this->fields);
+
+                $query .= ') VALUES (' . implode(', ', $insertParams) . ') ON DUPLICATE KEY UPDATE ' . implode(', ', array_values($this->insert->params));
+                $this->insert->statement = $this->mysql->prepare($query, false);
+            }
+        }
     }
 
     /**
-     * @param int $id
+     * @param int|array|string $where Either an object ID, or an array of properties, or a string
      * @return MappedMySQLObject
      */
-    public function fetch($id) {
+    public function fetch($where) {
+        /* @var $target MappedMySQLObject */
         $target = $this->classDef->newInstanceWithoutConstructor();
 
-        if (!isset($this->fetch)) {
+        $prepared = null;
+        if (!is_array($where) && !is_string($where)) {
+            $prepared = $this->fetch;
+            $prepared->statement->execute($where);
+        } else {
             $query = 'SELECT ';
 
-            $this->fetch = new PreparedMapStatement();
+            $prepared = new PreparedMapStatement();
 
-            $query .= implode(', ', array_map(function (\ReflectionProperty $field) {
-                $this->fetch->params[$field->getName()] = null;
-                $this->fetch->references[] = &$this->fetch->params[$field->getName()];
+            $query .= implode(', ', array_map(function (\ReflectionProperty $field) use (&$prepared) {
+                $prepared->params[$field->getName()] = null;
+                $prepared->references[] = &$prepared->params[$field->getName()];
                 return '`' . $field->getName() . '`';
             }, $this->fields));
 
-            $query .= ' FROM `' . $target->getTableName() . '` WHERE `id` = %d';
+            $query .= ' FROM `' . $target->getTableName() . '` WHERE ';
 
-            $this->fetch->statement = $this->mysql->prepare($query, false);
-            call_user_func_array(array($this->fetch->statement->getStatement(), 'bind_result'), $this->fetch->references);
-            MySQL::checkError($this->fetch->statement->getStatement());
+            if (is_array($where)) {
+                $conditions = array();
+                array_walk($where, function(&$value, $key) use (&$conditions) {
+                    $conditions[] = sprintf('`%s` = %s', $key, is_numeric($value) ? '%d' : '%s');
+                });
+                $query .= implode(' AND ', $conditions);
+            } else
+                $query .= $where;
+
+            $prepared->statement = $this->mysql->prepare($query, false);
+            call_user_func_array(array($prepared->statement->getStatement(), 'bind_result'), $prepared->references);
+            MySQL::checkError($prepared->statement->getStatement());
+
+            if (is_array($where)) {
+                call_user_func_array(array($prepared->statement, 'execute'), array_values($where));
+            } else
+                $prepared->statement->execute();
         }
 
-        $this->fetch->statement->execute($id);
-        $this->fetch->statement->getStatement()->fetch();
-        $this->fetch->statement->getStatement()->reset();
+        $prepared->statement->getStatement()->fetch();
+        $prepared->statement->getStatement()->reset();
+        MySQL::checkError($prepared->statement->getStatement());
+
+        if ($prepared->statement->getStatement()->num_rows == 0)
+            return null;
 
         /* @var $field \ReflectionProperty */
         foreach ($this->fields as $field) {
-            $field->setValue($target, $this->fetch->params[$field->getName()]);
+            $field->setValue($target, $prepared->params[$field->getName()]);
         }
 
         return $target;
     }
 
     public function insert(MappedMySQLObject $object) {
-        if (!isset($this->insert)) {
-            $query = 'INSERT INTO `' . $object->getTableName() . '` (';
-
-            $insertParams = array();
-            $this->insert = new PreparedMapStatement();
-
-            $first = true;
-            array_map(function (\ReflectionProperty $field) use (&$object, &$query, &$insertParams, &$first) {
-                if (!$first)
-                    $query .= ', ';
-                else
-                    $first = false;
-                $query .= '' . $field->getName() . '';
-
-                $value = $field->getValue($object);
-                if (is_int($value))
-                    $insertKey = '%d';
-                else if (is_float($value))
-                    $insertKey = '%f';
-                else
-                    $insertKey = '%s';
-
-                $insertParams[] = $insertKey;
-                if ($field->getName() != 'id')
-                    $this->insert->params[$field->getName()] = '`' . $field->getName() . '` = ' . $insertKey;
-            }, $this->fields);
-
-            $query .= ') VALUES (' . implode(', ', $insertParams) . ') ON DUPLICATE KEY UPDATE ' . implode(', ', array_values($this->insert->params));
-            $this->insert->statement = $this->mysql->prepare($query, false);
-        }
-
         $params = array();
         $idField = null;
         for ($i = 0; $i < 2; $i++)
@@ -119,6 +166,7 @@ class MySQLObjectMapper {
             }
 
         call_user_func_array(array($this->insert->statement, 'execute'), $params);
+        MySQL::checkError($this->insert->statement->getStatement());
         $id = $this->insert->statement->getStatement()->insert_id;
         if ($id != 0)
             $idField->setValue($object, $id);
