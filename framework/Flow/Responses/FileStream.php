@@ -23,9 +23,10 @@ class FileStream extends Response {
     public function build(Kernel $kernel, Request $request) {
         $options = is_array($this->controllerResponse) ? $this->controllerResponse : array('url' => $this->controllerResponse);
         $this->request = $request;
+        $urlParts = explode('/', $options['url']);
         $this->options = array_merge(array(
             'type' => 'application/octet-stream',
-            'filename' => end((explode('/', $options['url']))),
+            'filename' => end($urlParts),
             'cache' => false,
             'cors' => true
         ), $options);
