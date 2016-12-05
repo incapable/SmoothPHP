@@ -40,5 +40,5 @@ return function(WebPrototype $prototype) {
         $kernel = new Kernel();
         $kernel->loadPrototype($prototype);
         return $kernel;
-    })->fetch(null);
+    })->fetch("kernel");
 };
