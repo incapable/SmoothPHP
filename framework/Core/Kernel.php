@@ -25,8 +25,6 @@ use SmoothPHP\Framework\Localization\LanguageRepository;
 use SmoothPHP\Framework\Templates\TemplateEngine;
 
 class Kernel {
-    public static $instance;
-
     // Site data
     private $config;
     private $routeDatabase;
