@@ -24,7 +24,18 @@ class ImageCache {
     }
 
     public function ensureCache($image, &$width = null, &$height = null) {
-        $isOriginal = $this->determineSizes($image, $width, $height, $originalWidth, $originalHeight);
+        $isOriginal = false;
+        list($originalWidth, $originalHeight) = getimagesize($image);
+        if ($width == null && $height != null)
+            $width = $height * ($originalWidth / $originalHeight);
+        else if ($width != null && $height == null)
+            $height = $width * ($originalHeight / $originalWidth);
+        else if ($width == null && $height == null) {
+            $width = $originalWidth;
+            $height = $originalHeight;
+            $isOriginal = true;
+        }
+
         $cacheFile = $this->getCachePath($image, $width, $height, $fileName);
 
         if (!is_dir(dirname($cacheFile)))
@@ -70,22 +81,6 @@ class ImageCache {
             $lock->unlock();
             return;
         }
-    }
-
-    public function determineSizes($path, &$width = null, &$height = null, &$originalWidth = null, &$originalHeight = null) {
-        $isOriginalSize = false;
-        list($originalWidth, $originalHeight) = getimagesize($path);
-        if ($width == null && $height != null)
-            $width = $height * ($originalWidth / $originalHeight);
-        else if ($width != null && $height == null)
-            $height = $width * ($originalHeight / $originalWidth);
-        else if ($width == null && $height == null) {
-            $width = $originalWidth;
-            $height = $originalHeight;
-            $isOriginalSize = true;
-        }
-
-        return $isOriginalSize;
     }
 
     public function getCachePath($sourceFile, $width, $height, &$fileName = null) {
