@@ -68,8 +68,8 @@ class LanguageRepository {
                 $languages = array_unique(array_merge($languages, $source->getAvailableLanguages()));
             $languages = array_change_key_case($languages, CASE_LOWER);
 
-            $language = locale_lookup($languages,
-                                      locale_accept_from_http($_SERVER['HTTP_ACCEPT_LANGUAGE']),
+            $language = \Locale::lookup($languages,
+                                      \Locale::acceptFromHttp($_SERVER['HTTP_ACCEPT_LANGUAGE']),
                                       true,
                                       $this->kernel->getConfig()->default_language);
         }
