@@ -35,8 +35,13 @@ class APCCacheProvider extends RuntimeCacheProvider {
 
     public function fetch($sourceFile, callable $cacheBuilder = null, callable $readCache = null, callable $writeCache = null) {
         $cacheBuilder = $cacheBuilder ?: $this->cacheBuilder;
-        $realPath = realpath($sourceFile);
-        $checksum = md5_file($realPath);
+        if (file_exists($sourceFile)) {
+            $realPath = realpath($sourceFile);
+            $checksum = md5_file($realPath);
+        } else {
+            $realPath = $sourceFile;
+            $checksum = md5($sourceFile);
+        }
 
         $cacheItem = call_user_func($this->cacheFetch, self::$apcKey . $realPath);
 
