@@ -38,23 +38,22 @@ class Kernel {
 
     public function __construct() {
         $this->config = new Config();
-        $this->routeDatabase = new RouteDatabase();
-        $this->assetsRegister = new AssetsRegister();
-        $this->languagerepo = new LanguageRepository($this);
-
-        // Initialise the PHP session
-        session_name('smsid');
-        session_start();
     }
 
     public function loadPrototype(WebPrototype $prototype) {
+        session_name('sm_sid');
+        session_start();
+
+        $this->routeDatabase = new RouteDatabase();
+        $this->assetsRegister = new AssetsRegister();
+        $this->languagerepo = new LanguageRepository($this);
+        $this->templateEngine = new TemplateEngine();
         $prototype->initialize($this);
         $prototype->registerRoutes($this->routeDatabase);
-        $this->templateEngine = new TemplateEngine();
         $this->assetsRegister->initialize($this);
         if ($this->config->authentication_enabled)
             $this->authentication = new AuthenticationManager($this);
-        $this->languagerepo->addSource(new FileDataSource(__ROOT__ . 'framework/assets/strings/'));
+        $this->languagerepo->addSource(new FileDataSource(__ROOT__ . 'framework/meta/assets/strings/'));
         $this->languagerepo->addSource(new FileDataSource(__ROOT__ . 'src/assets/strings/'));
         $this->routeDatabase->initializeControllers();
     }
