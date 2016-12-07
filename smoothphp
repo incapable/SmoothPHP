@@ -1,11 +1,51 @@
 #!/usr/bin/env php
 <?php
 
+print('Initializing SmoothPHP CLI module.' . PHP_EOL);
+
 set_time_limit( 0 );
-define('__ROOT__', getcwd()  . '/');
+define('__DEBUG__', true);
+
+if ( file_exists( sprintf( '%s/%s', getcwd(), 'smoothphp' ) ) ) {
+    define( '__ROOT__', getcwd() . '/' );
+} else if ( file_exists( file_exists( sprintf( '%s/%s', __DIR__, 'smoothphp' ) ) ) ) {
+    define( '__ROOT__', __DIR__ . '/' );
+} else {
+    $prts = explode( '/', $argv[ 0 ] );
+    unset( $prts[ count( $prts ) - 1 ] );
+    if ( file_exists( sprintf( '%s/%s', implode( '/', $prts ), 'smoothphp' ) ) )
+        define( '__ROOT__', realpath( implode( '/', $prts ) ) . '/' );
+    else
+        printf('Could not reliably determine __ROOT__.');
+}
 
 require_once './framework/Bootstrap.php';
 use SmoothPHP\Framework\Core\Kernel;
+use SmoothPHP\Framework\Core\CLI as CLI;
 
 $kernel = new Kernel();
-$kernel->loadPrototype(new Website());
+$website = new Website();
+$website->initialize($kernel);
+
+print('Finished initializing CLI module.' . PHP_EOL . '----' . PHP_EOL);
+
+try {
+    /* @var CLI\Command */
+    $command = null;
+
+    if (isset($argv[1])) {
+        $cmdName = ucfirst(strtolower($argv[1]));
+        if (file_exists(__ROOT__ . 'framework/Core/CLI/' . $cmdName . '.php')) {
+            $className = 'SmoothPHP\\Framework\\Core\\CLI\\' . $cmdName;
+            $command = new $className();
+        }
+    }
+    if (!$command)
+        $command = new CLI\Help();
+
+    $command->handle($kernel, array_splice($argv, 2));
+} catch ( \RuntimeException $e ) {
+    printf( $e->getMessage() );
+}
+
+print('----' . PHP_EOL . 'Closing SmoothPHP CLI module.' . PHP_EOL);
