@@ -18,6 +18,9 @@ use SmoothPHP\Framework\Authentication\UserTypes\User;
 use SmoothPHP\Framework\Core\Kernel;
 use SmoothPHP\Framework\Database\Mapper\MySQLObjectMapper;
 use SmoothPHP\Framework\Flow\Requests\Request;
+use SmoothPHP\Framework\Flow\Responses\PlainTextResponse;
+use SmoothPHP\Framework\Flow\Responses\RedirectResponse;
+use SmoothPHP\Framework\Flow\Responses\Response;
 use SmoothPHP\Framework\Forms\Constraints\MaximumLengthConstraint;
 use SmoothPHP\Framework\Forms\FormBuilder;
 use SmoothPHP\Framework\Forms\Types as Types;
@@ -144,6 +147,37 @@ class AuthenticationManager {
         }
 
         return $this->user;
+    }
+
+    public function verifyAccess(Request $request, array $routeOpts, array $parameters) {
+        if (isset($routeOpts['authentication']) && $routeOpts['authentication'] !== false) {
+            $user = $this->getActiveUser();
+
+            // Plain boolean
+            if ($routeOpts['authentication'] === true && !$user->isLoggedIn())
+                return $this->determineNoAccessAction($request);
+
+            // Callable function
+            else if (is_callable($routeOpts['authentication'])) {
+                $response = call_user_func($routeOpts['authentication'], $routeOpts, $parameters);
+                if ($response instanceof Response)
+                    return $response;
+                else if ($response === false)
+                    return $this->determineNoAccessAction($request);
+            }
+        }
+
+        return null; // Proceed as normal
+    }
+
+    private function determineNoAccessAction(Request $request) {
+        global $kernel;
+        if (isset($kernel->getConfig()->authentication_loginroute))
+            return new RedirectResponse($kernel->getRouteDatabase()->buildPath($kernel->getConfig()->authentication_loginroute) . '?' . http_build_query(array(
+                'ref' => $request->server->REQUEST_URI
+                )));
+
+        return new PlainTextResponse('No access');
     }
 
     public function logout() {

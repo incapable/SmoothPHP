@@ -25,6 +25,7 @@ class Config {
     public $mysql_password = '';
 
     public $authentication_enabled = false;
+    public $authentication_loginroute = null;
 
     public $recaptcha_site_key = '';
     public $recaptcha_site_secret = '';

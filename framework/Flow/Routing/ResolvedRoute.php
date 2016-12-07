@@ -27,6 +27,14 @@ class ResolvedRoute {
     }
 
     public function buildResponse(Kernel $kernel, Request $request) {
+        if ($kernel->getConfig()->authentication_enabled) {
+            $authResponse = $kernel->getAuthenticationManager()->verifyAccess($request, $this->route, $this->parameters);
+            if ($authResponse instanceof Response) {
+                $authResponse->build($kernel, $request);
+                return $authResponse;
+            }
+        }
+
         $response = $this->route['controllercall']->performCall($kernel, $request, $this->parameters);
 
         if (!($response instanceof Response))
