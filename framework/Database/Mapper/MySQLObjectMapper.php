@@ -16,6 +16,8 @@ namespace SmoothPHP\Framework\Database\Mapper;
 use SmoothPHP\Framework\Database\MySQL;
 use SmoothPHP\Framework\Database\MySQLException;
 
+define('MYSQL_NO_LIMIT', -1);
+
 class MySQLObjectMapper {
     private $mysql;
 
@@ -102,12 +104,10 @@ class MySQLObjectMapper {
 
     /**
      * @param int|array|string $where Either an object ID, or an array of properties, or a string
-     * @return MappedMySQLObject
+     * @param int $limit
+     * @return array|MappedMySQLObject
      */
-    public function fetch($where) {
-        /* @var $target MappedMySQLObject */
-        $target = $this->classDef->newInstanceWithoutConstructor();
-
+    public function fetch($where, $limit = 1) {
         $prepared = null;
         if (is_numeric($where)) {
             $prepared = $this->fetch;
@@ -123,7 +123,7 @@ class MySQLObjectMapper {
                 return '`' . $field->getName() . '`';
             }, $this->fields));
 
-            $query .= ' FROM `' . $target->getTableName() . '` WHERE ';
+            $query .= ' FROM `' . $this->classDef->newInstanceWithoutConstructor()->getTableName() . '` WHERE ';
 
             if (is_array($where)) {
                 $whereSeparator = 'AND';
@@ -140,7 +140,8 @@ class MySQLObjectMapper {
             } else
                 $query .= $where;
 
-            $query .= ' LIMIT 1';
+            if ($limit != -1)
+                $query .= ' LIMIT ' . $limit;
 
             $prepared->statement = $this->mysql->prepare($query, false);
             call_user_func_array(array($prepared->statement->getMySQLi_stmt(), 'bind_result'), $prepared->references);
@@ -152,19 +153,27 @@ class MySQLObjectMapper {
                 $prepared->statement->execute();
         }
 
-        $prepared->statement->getMySQLi_stmt()->fetch();
+        $results = array();
+        while($prepared->statement->getMySQLi_stmt()->fetch()) {
+            $target = $this->classDef->newInstanceWithoutConstructor();
+            /* @var $field \ReflectionProperty */
+            foreach ($this->fields as $field) {
+                $field->setValue($target, $prepared->params[$field->getName()]);
+            }
+            $results[] = $target;
+        }
+
         $prepared->statement->getMySQLi_stmt()->reset();
         MySQL::checkError($prepared->statement->getMySQLi_stmt());
 
-        if ($prepared->statement->getMySQLi_stmt()->num_rows == 0)
-            return null;
-
-        /* @var $field \ReflectionProperty */
-        foreach ($this->fields as $field) {
-            $field->setValue($target, $prepared->params[$field->getName()]);
+        if ($limit == 1) {
+            if ($prepared->statement->getMySQLi_stmt()->num_rows == 0)
+                return null;
+            else
+                return current($results);
         }
 
-        return $target;
+        return $results;
     }
 
     public function insert(MappedMySQLObject $object) {
