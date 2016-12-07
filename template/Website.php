@@ -12,7 +12,7 @@
  */
 
 use SmoothPHP\Framework\Core\Kernel;
-use SmoothPHP\Framework\Core\WebPrototype;
+use SmoothPHP\Framework\Core\Abstracts\WebPrototype;
 use SmoothPHP\Framework\Flow\Routing\RouteDatabase;
 
 class Website extends WebPrototype {
