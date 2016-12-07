@@ -41,24 +41,26 @@ class AssetsRegister {
         $this->imageCache = new ImageCache('images');
 
         $route = $kernel->getRouteDatabase();
-        $route->register(array(
-            'name' => 'assets_js',
-            'path' => '/javascript/...',
-            'controller' => AssetsController::class,
-            'call' => 'getJS'
-        ));
-        $route->register(array(
-            'name' => 'assets_css',
-            'path' => '/css/...',
-            'controller' => AssetsController::class,
-            'call' => 'getCSS'
-        ));
-        $route->register(array(
-            'name' => 'assets_images',
-            'path' => '/images/...',
-            'controller' => AssetsController::class,
-            'call' => 'getImage'
-        ));
+        if ($route) {
+            $route->register(array(
+                'name' => 'assets_js',
+                'path' => '/javascript/...',
+                'controller' => AssetsController::class,
+                'call' => 'getJS'
+            ));
+            $route->register(array(
+                'name' => 'assets_css',
+                'path' => '/css/...',
+                'controller' => AssetsController::class,
+                'call' => 'getCSS'
+            ));
+            $route->register(array(
+                'name' => 'assets_images',
+                'path' => '/images/...',
+                'controller' => AssetsController::class,
+                'call' => 'getImage'
+            ));
+        }
     }
 
     public function addJS($file) {
