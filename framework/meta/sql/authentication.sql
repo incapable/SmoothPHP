@@ -12,14 +12,11 @@ CREATE TABLE `loginsession` (
   `state` tinyint(1) NOT NULL,
   `lastUpdate` int(11) NOT NULL,
   `failedAttempts` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=MEMORY DEFAULT CHARSET=latin1;
 
 CREATE TABLE `sessions` (
   `id` int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `userId` int(11) NOT NULL,
   `selector` varchar(255) NOT NULL,
   `validator` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
-ALTER TABLE `sessions`
-  ADD CONSTRAINT `fk_userid` FOREIGN KEY (`userId`) REFERENCES `users`(`id`) ON DELETE CASCADE ON UPDATE RESTRICT;
+) ENGINE=MEMORY DEFAULT CHARSET=latin1;
