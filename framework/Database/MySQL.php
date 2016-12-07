@@ -29,10 +29,20 @@ class MySQL {
             : new MySQLStatementWithoutResult($this->connection, $query);
     }
 
+    /**
+     * @param $query
+     * @param array $params
+     * @return int Insert id if applicable, num_rows otherwise
+     */
     public function execute($query, array $params = array()) {
-        $this->prepare($query, false)->execute($params);
+        return $this->prepare($query, false)->execute($params);
     }
 
+    /**
+     * @param $query
+     * @param array $params
+     * @return MySQLResult
+     */
     public function fetch($query, array $params = array()) {
         return $this->prepare($query, true)->execute($params);
     }

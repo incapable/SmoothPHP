@@ -27,12 +27,23 @@ class MySQLResult {
     }
 
     public function next() {
+        $this->current++;
         if ($this->current >= count($this->results))
             return false;
-        else {
-            $this->current++;
+        else
             return true;
+    }
+
+    public function getAsArray() {
+        $arrays = array_values($this->results);
+
+        if (isset($arrays[0]) && is_array($arrays[0]) && count($arrays[0]) == 1) {
+            $arrays = array_map(function(array $value) {
+                return $value[0];
+            }, $arrays);
         }
+
+        return $arrays;
     }
 
     public function __get($varName) {

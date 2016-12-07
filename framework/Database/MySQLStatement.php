@@ -42,6 +42,9 @@ abstract class MySQLStatement {
 
     public function execute() {
         $args = func_get_args();
+        if (is_array($args[0]))
+            $args = $args[0];
+
         for ($i = 0; $i < count($args); $i++)
             $this->args[$i] = $args[$i];
 
