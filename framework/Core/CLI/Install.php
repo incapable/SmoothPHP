@@ -38,7 +38,7 @@ class Install extends Command {
     }
 
     private function import(MySQL $mysql, $file) {
-        printf( 'Importing %s... ' . PHP_EOL, $file );
+        printf( 'Importing %s... ', $file );
         $sqlFile = file_get_contents( $file );
 
         $queries = explode( ';', $sqlFile );
