@@ -41,7 +41,7 @@ class RouteDatabase {
 
         foreach(((array) $routeOpts['method']) as $method) {
             $path = explode('/', $routeOptions['path']);
-            $path = array_merge(array($method, $routeOpts['domain']), $path);
+            $path = array_merge(array(strtoupper($method), $routeOpts['domain']), $path);
             $path = array_values(array_filter($path, 'strlen'));
 
             $currentRecursive = &$this->resolveCache;
