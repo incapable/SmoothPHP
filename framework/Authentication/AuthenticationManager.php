@@ -28,9 +28,13 @@ class AuthenticationManager {
 
     const SESSION_KEY_LOGINTOKEN = 'sm_logintoken';
 
+    // Login flow
     /* @var MySQLObjectMapper */
     private $loginSessionMap, $activeSessionMap, $userMap;
     private $defaultForm;
+
+    // Active user
+    private $user, $session;
 
     public function __construct(Kernel $kernel) {
         $this->loginSessionMap = $kernel->getMySQL()->map(LoginSession::class);
@@ -131,11 +135,28 @@ class AuthenticationManager {
     }
 
     public function getActiveUser() {
-        $session = ActiveSession::readCookie($this->activeSessionMap);
-        if ($session == null)
-            return new AnonymousUser();
+        if (!$this->user) {
+            $this->session = ActiveSession::readCookie($this->activeSessionMap);
+            if ($this->session == null)
+                return new AnonymousUser();
+            else
+                $this->user = $this->userMap->fetch($this->session->getUserId());
+        }
+
+        return $this->user;
+    }
+
+    public function logout() {
+        $this->getActiveUser();
+        if ($this->session)
+            $this->activeSessionMap->delete($this->session);
+
+        $domain = explode('.', $_SERVER['SERVER_NAME']);
+        if (count($domain) < 2)
+            $cookieDomain = $_SERVER['SERVER_NAME'];
         else
-            return $this->userMap->fetch($session->getUserId());
+            $cookieDomain = sprintf('.%s.%s', $domain[count($domain) - 2], $domain[count($domain) - 1]);
+        setcookie(ActiveSession::SESSION_KEY, '-', 1, '/', $cookieDomain, false, false);
     }
 
 }
