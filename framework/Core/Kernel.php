@@ -47,14 +47,14 @@ class Kernel {
         $this->routeDatabase = new RouteDatabase();
         $this->assetsRegister = new AssetsRegister();
         $this->languagerepo = new LanguageRepository($this);
+        $this->languagerepo->addSource(new FileDataSource(__ROOT__ . 'framework/meta/assets/strings/'));
         $this->templateEngine = new TemplateEngine();
-        $prototype->initialize($this);
-        $prototype->registerRoutes($this->routeDatabase);
         $this->assetsRegister->initialize($this);
+        $prototype->initialize($this);
         if ($this->config->authentication_enabled)
             $this->authentication = new AuthenticationManager($this);
-        $this->languagerepo->addSource(new FileDataSource(__ROOT__ . 'framework/meta/assets/strings/'));
         $this->languagerepo->addSource(new FileDataSource(__ROOT__ . 'src/assets/strings/'));
+        $prototype->registerRoutes($this->routeDatabase);
         $this->routeDatabase->initializeControllers();
     }
 
