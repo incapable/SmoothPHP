@@ -52,7 +52,7 @@ class FileCacheProvider extends CacheProvider {
         $lock = new Lock(pathinfo($cacheFile, PATHINFO_BASENAME));
 
         if ($lock->lock()) {
-            array_map('unlink', glob(sprintf($this->cacheFileFormat, $fileName, '*')));
+            array_map('unlink', glob(sprintf($this->cacheFileFormat, $fileName, '*'), GLOB_NOSORT));
 
             $newCache = call_user_func($cacheBuilder, $sourceFile);
             call_user_func($writeCache, $cacheFile, $newCache);
