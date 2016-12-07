@@ -53,10 +53,13 @@ class BasicClassLoader {
                     $prefix = $prefix . '\\';
                 $prefix = str_replace('\\', '/', $prefix);
                 $ldPath = preg_replace('#' . $prefix . '#', $dir, $classPath, 1);
+                if (($realpath = realpath($ldPath)) === false) {
+                    clearstatcache(true, $ldPath);
+                    $realpath = realpath($ldPath);
+                }
 
-                $tries[] = $ldPath;
-                if (file_exists($ldPath))
-                    return $ldPath;
+                if (file_exists($realpath))
+                    return $realpath;
             }
         }
 
