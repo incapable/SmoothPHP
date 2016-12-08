@@ -41,6 +41,10 @@ class LanguageRepository {
         return true;
     }
 
+    public function getLanguage() {
+        return $this->detectLanguage();
+    }
+
     public function getEntry($key, $language = null) {
         $language = $language ?: $this->detectLanguage();
         foreach($this->sources as $source) {
