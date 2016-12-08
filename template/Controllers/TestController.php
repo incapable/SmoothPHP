@@ -9,7 +9,7 @@ use SmoothPHP\Framework\Flow\Requests\Request;
 
 class TestController extends Controller {
 
-    public function index(AuthenticationManager $auth, Request $request) {
+    public function login(AuthenticationManager $auth, Request $request) {
         if ($auth->checkLoginResult($request))
             return 'Successfully logged in!';
 
