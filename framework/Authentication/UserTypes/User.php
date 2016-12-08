@@ -19,7 +19,7 @@ class User extends MappedMySQLObject implements AbstractUser {
 
     protected $username;
     protected $email;
-    private $password;
+    protected $password;
 
     public function getTableName() {
         return 'users';

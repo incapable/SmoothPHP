@@ -40,6 +40,9 @@ abstract class MySQLStatement {
         return $this->stmt;
     }
 
+    /**
+     * @return MySQLResult|int
+     */
     public function execute() {
         $args = func_get_args();
         if (is_array($args[0]))

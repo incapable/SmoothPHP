@@ -34,15 +34,18 @@ class AuthenticationManager {
     // Login flow
     /* @var MySQLObjectMapper */
     private $loginSessionMap, $activeSessionMap, $userMap;
+    private $permissionsQuery;
     private $defaultForm;
 
     // Active user
-    private $user, $session;
+    private $user, $session, $permissions;
 
-    public function __construct(Kernel $kernel) {
-        $this->loginSessionMap = $kernel->getMySQL()->map(LoginSession::class);
-        $this->activeSessionMap = $kernel->getMySQL()->map(ActiveSession::class);
-        $this->userMap = $kernel->getMySQL()->map(User::class);
+    public function initialize(Kernel $kernel) {
+        $mysql = $kernel->getMySQL();
+        $this->loginSessionMap = $mysql->map(LoginSession::class);
+        $this->activeSessionMap = $mysql->map(ActiveSession::class);
+        $this->userMap = $this->userMap ?: $mysql->map(User::class);
+        $this->permissionsQuery = $mysql->prepare('SELECT `permission` FROM `users_permissions` WHERE `userId` = %d');
 
         $formBuilder = new FormBuilder();
 
@@ -142,11 +145,24 @@ class AuthenticationManager {
             $this->session = ActiveSession::readCookie($this->activeSessionMap);
             if ($this->session == null)
                 return new AnonymousUser();
-            else
+            else {
                 $this->user = $this->userMap->fetch($this->session->getUserId());
+                $this->permissions = $this->permissionsQuery->execute($this->user->getId())->getAsArray();
+            }
         }
 
         return $this->user;
+    }
+
+    public function canGo() {
+        $args = func_get_args();
+
+        if (!isset($args[0]))
+            throw new \RuntimeException('AuthenticationManager#canGo(...) called with no arguments, requires at least 1.');
+
+        global $kernel;
+        $route = $kernel->getRouteDatabase()->getRoute($args[0]);
+        return $this->verifyAccess(null, $route, array_splice($args, 1));
     }
 
     public function verifyAccess(Request $request, array $routeOpts, array $parameters) {
@@ -154,25 +170,35 @@ class AuthenticationManager {
             $user = $this->getActiveUser();
 
             // Plain boolean
-            if ($routeOpts['authentication'] === true && !$user->isLoggedIn())
-                return $this->determineNoAccessAction($request);
+            if ($routeOpts['authentication'] === true) {
+                if (!$user->isLoggedIn())
+                    return $request ? $this->determineNoAccessAction($request, false) : false;
+            }
 
             // Callable function
             else if (is_callable($routeOpts['authentication'])) {
                 $response = call_user_func($routeOpts['authentication'], $routeOpts, $parameters);
                 if ($response instanceof Response)
-                    return $response;
+                    return $request ? $response : false;
                 else if ($response === false)
-                    return $this->determineNoAccessAction($request);
+                    return $request ? $this->determineNoAccessAction($request, $user->isLoggedIn()) : false;
+            }
+
+            // Permissions
+            else {
+                $required = (array) $routeOpts['authentication'];
+                $missing = array_diff($required, $this->permissions);
+                if (count($missing) > 0)
+                    return $request ? $this->determineNoAccessAction($request, $user->isLoggedIn()) : false;
             }
         }
 
-        return null; // Proceed as normal
+        return true; // Proceed as normal
     }
 
-    private function determineNoAccessAction(Request $request) {
+    private function determineNoAccessAction(Request $request, $isLoggedIn) {
         global $kernel;
-        if (isset($kernel->getConfig()->authentication_loginroute))
+        if (!$isLoggedIn && isset($kernel->getConfig()->authentication_loginroute))
             return new RedirectResponse($kernel->getRouteDatabase()->buildPath($kernel->getConfig()->authentication_loginroute) . '?' . http_build_query(array(
                 'ref' => $request->server->REQUEST_URI
                 )));

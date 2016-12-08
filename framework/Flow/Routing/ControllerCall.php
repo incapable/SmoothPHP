@@ -15,6 +15,7 @@ namespace SmoothPHP\Framework\Flow\Routing;
 
 use SmoothPHP\Framework\Authentication\AuthenticationManager;
 use SmoothPHP\Framework\Cache\Assets\AssetsRegister;
+use SmoothPHP\Framework\Core\Abstracts\Controller;
 use SmoothPHP\Framework\Core\Kernel;
 use SmoothPHP\Framework\Database\MySQL;
 use SmoothPHP\Framework\Flow\Requests\Request;
@@ -27,12 +28,12 @@ class ControllerCall {
     private $callable;
     private $controllerArgs;
 
-    public function __construct($controller, $call) {
+    public function __construct(Controller $controller, $call) {
         $this->controllerArgs = array();
         $this->parameters = array();
 
-        $this->callable = array(new $controller(), $call);
-        $method = new \ReflectionMethod($controller, $call);
+        $this->callable = array($controller, $call);
+        $method = new \ReflectionMethod(get_class($controller), $call);
         $i = -1;
 
         foreach ($method->getParameters() as $parameter) {
@@ -64,10 +65,6 @@ class ControllerCall {
                     break;
             }
         }
-    }
-
-    public function initializeController() {
-        $this->callable[0]->onInitialize();
     }
 
     /**

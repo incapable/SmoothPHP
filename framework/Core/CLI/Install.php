@@ -23,21 +23,30 @@ class Install extends Command {
     }
 
     public function handle(Kernel $kernel, array $argv) {
-        $this->traverse(__ROOT__ . 'framework/meta/sql', function($file) use ($kernel) {
+        $debug = true;
+        if (isset($argv[0]) && strtolower($argv[0]) == '--nodebug')
+            $debug = false;
+
+        $this->traverse(__ROOT__ . 'framework/meta/sql', function($file) use ($kernel, $debug) {
             switch(pathinfo($file, PATHINFO_FILENAME)) {
                 case 'authentication':
                     if (!$kernel->getConfig()->authentication_enabled)
                         break;
                 default:
-                    $this->import($kernel->getMySQL(), $file);
+                    $this->import($kernel->getMySQL(), $file, $debug);
             }
         });
-        $this->traverse(__ROOT__ . 'src/sql', function ($file) use ($kernel) {
-            $this->import($kernel->getMySQL(), $file);
+        $this->traverse(__ROOT__ . 'src/sql', function ($file) use ($kernel, $debug) {
+            $this->import($kernel->getMySQL(), $file, $debug);
         });
     }
 
-    private function import(MySQL $mysql, $file) {
+    private function import(MySQL $mysql, $file, $debug) {
+        if (!$debug && strpos($file, '.debug.sql')) {
+            printf('Skipping %s...' . PHP_EOL, $file);
+            return;
+        }
+
         printf( 'Importing %s... ', $file );
         $sqlFile = file_get_contents( $file );
 

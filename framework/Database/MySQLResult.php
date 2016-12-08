@@ -38,8 +38,8 @@ class MySQLResult {
         $arrays = array_values($this->results);
 
         if (isset($arrays[0]) && is_array($arrays[0]) && count($arrays[0]) == 1) {
-            $arrays = array_map(function(array $value) {
-                return $value[0];
+            $arrays = array_map(function($value) {
+                return current($value);
             }, $arrays);
         }
 

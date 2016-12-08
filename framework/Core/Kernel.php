@@ -38,6 +38,7 @@ class Kernel {
 
     public function __construct() {
         $this->config = new Config();
+        $this->authentication = new AuthenticationManager();
     }
 
     public function loadPrototype(WebPrototype $prototype) {
@@ -52,10 +53,12 @@ class Kernel {
         $this->assetsRegister->initialize($this);
         $prototype->initialize($this);
         if ($this->config->authentication_enabled)
-            $this->authentication = new AuthenticationManager($this);
+            $this->authentication->initialize($this);
+        else
+            $this->authentication = null;
         $this->languagerepo->addSource(new FileDataSource(__ROOT__ . 'src/assets/strings/'));
         $prototype->registerRoutes($this->routeDatabase);
-        $this->routeDatabase->initializeControllers();
+        $this->routeDatabase->initializeControllers($this);
     }
 
     /**

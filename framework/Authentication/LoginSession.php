@@ -18,20 +18,20 @@ use SmoothPHP\Framework\Flow\Requests\Request;
 
 class LoginSession extends MappedMySQLObject {
 
-    const STATE_NEW = 0;
-
     private $ip;
     private $token;
-    private $state;
     private $lastUpdate;
     private $failedAttempts;
 
     public function __construct(Request $request) {
         $this->ip = $request->server->REMOTE_ADDR;
         $this->token = base64_encode(openssl_random_pseudo_bytes(128));
-        $this->state = self::STATE_NEW;
         $this->lastUpdate = time();
         $this->failedAttempts = 0;
+    }
+
+    public function getTableName() {
+        return 'loginsessions';
     }
 
     public function getToken() {
