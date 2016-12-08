@@ -24,22 +24,17 @@ class Website extends WebPrototype {
         $config->mysql_database = 'test';
         $config->mysql_user = 'root';
         $config->mysql_password = 'root';
+
+        $config->authentication_enabled = true;
     }
 
     public function registerRoutes(RouteDatabase $routes) {
         $routes->register(array(
-            'name' => 'index',
+            'name' => 'front_login',
             'path' => '/',
             'controller' => \Test\Controllers\TestController::class,
-            'call' => 'index'
-        ));
-
-        $routes->register(array(
-            'name' => 'submit',
-            'path' => '/submit',
-            'controller' => \Test\Controllers\TestController::class,
-            'call' => 'onForm',
-            'method' => 'POST'
+            'call' => 'login',
+            'method' => array('GET', 'POST')
         ));
     }
 
