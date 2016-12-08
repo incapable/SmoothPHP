@@ -13,12 +13,13 @@
 
 namespace SmoothPHP\Framework\Core\Abstracts;
 
+use SmoothPHP\Framework\Core\Kernel;
 use SmoothPHP\Framework\Flow\Responses\RedirectResponse;
 use SmoothPHP\Framework\Flow\Responses\TemplateResponse;
 
 abstract class Controller {
 
-    public function onInitialize() {}
+    public function onInitialize(Kernel $kernel) {}
 
     protected static function render($template, array $templateArgs = array()) {
         return new TemplateResponse($template, $templateArgs);

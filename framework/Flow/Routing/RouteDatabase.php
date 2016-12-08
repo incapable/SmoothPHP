@@ -13,6 +13,7 @@
 
 namespace SmoothPHP\Framework\Flow\Routing;
 
+use SmoothPHP\Framework\Core\Kernel;
 use SmoothPHP\Framework\Flow\Requests\Request;
 use SmoothPHP\Framework\Flow\Responses\PlainTextResponse;
 
@@ -39,6 +40,9 @@ class RouteDatabase {
     public function register(array $routeOptions) {
         $routeOpts = array_merge($this->defaults, $routeOptions);
 
+        if (isset($routeOpts['controllercall']))
+            throw new \RuntimeException('You can not explicitly declare the controllercall route option.');
+
         foreach(((array) $routeOpts['method']) as $method) {
             $path = explode('/', $routeOptions['path']);
             $path = array_merge(array(strtoupper($method), $routeOpts['domain']), $path);
@@ -61,13 +65,16 @@ class RouteDatabase {
         }
 
         $this->routes[$routeOpts['name']] = &$routeOpts;
-
-        $routeOpts['controllercall'] = new ControllerCall($routeOpts['controller'], $routeOpts['call']);
     }
 
-    public function initializeControllers() {
-        foreach($this->routes as $route) {
-            $route['controllercall']->initializeController();
+    public function initializeControllers(Kernel $kernel) {
+        $controllers = array();
+        foreach($this->routes as &$route) {
+            if (!isset($controllers[$route['controller']])) {
+                $controllers[$route['controller']] = new $route['controller']();
+                $controllers[$route['controller']]->onInitialize($kernel);
+            }
+            $route['controllercall'] = new ControllerCall($controllers[$route['controller']], $route['call']);
         }
     }
 
