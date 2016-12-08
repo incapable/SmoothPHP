@@ -40,11 +40,11 @@ class AuthenticationManager {
     // Active user
     private $user, $session, $permissions;
 
-    public function __construct(Kernel $kernel) {
+    public function initialize(Kernel $kernel) {
         $mysql = $kernel->getMySQL();
         $this->loginSessionMap = $mysql->map(LoginSession::class);
         $this->activeSessionMap = $mysql->map(ActiveSession::class);
-        $this->userMap = $mysql->map(User::class);
+        $this->userMap = $this->userMap ?: $mysql->map(User::class);
         $this->permissionsQuery = $mysql->prepare('SELECT `permission` FROM `users_permissions` WHERE `userId` = %d');
 
         $formBuilder = new FormBuilder();
