@@ -49,7 +49,7 @@ class APCCacheProvider extends RuntimeCacheProvider {
 
         $cacheItem = call_user_func($this->cacheFetch, self::$apcKey . $realPath);
 
-        if (isset($cacheItem) && $cacheItem->md5 == $checksum)
+        if ($cacheItem instanceof APCCacheItem && $cacheItem->md5 == $checksum)
             return $cacheItem->value;
         else {
             $lock = new Lock(md5($realPath));
