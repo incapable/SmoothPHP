@@ -32,6 +32,8 @@ class TemplateCompiler {
         // All these commands and operators will have the following method called:
         // static handle(TemplateCompiler, TemplateLexer $command, TemplateLexer $lexer, Chain, $stackEnd);
         $this->commands = array(
+            'ignore' => Elements\Commands\IgnoreElement::class,
+
             'include' => Elements\Commands\IncludeElement::class,
             'assign' => Elements\Commands\AssignElement::class,
             'block' => BlockElement::class,
