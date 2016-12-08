@@ -25,7 +25,7 @@ set_error_handler(function ($num, $str, $file, $line) {
     if (!defined('__ROOT__'))
         define('__ROOT__', str_replace('public', '', $_SERVER['DOCUMENT_ROOT']));
 
-    require_once __ROOT__ . '/framework/Core/ClassLoader/BasicClassLoader.php';
+    require_once __ROOT__ . 'framework/Core/ClassLoader/BasicClassLoader.php';
 
     $classLoader = new BasicClassLoader();
     $classLoader->register();
