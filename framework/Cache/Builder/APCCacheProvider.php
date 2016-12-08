@@ -25,9 +25,13 @@ class APCCacheProvider extends RuntimeCacheProvider {
         $this->cacheStore = $cacheStore;
 
         if (!isset(self::$apcKey)) {
-            self::$apcKey = (new FileCacheProvider("conf", "txt", function () {
-                return md5(mt_rand(0, 99999));
-            }))->fetch('apc_app_id');
+            $cacheFile = __ROOT__ . 'cache/apc_app_id';
+            if (!file_exists($cacheFile)) {
+                self::$apcKey = md5(mt_rand(0, 99999));
+                file_put_contents($cacheFile, self::$apcKey);
+            } else {
+                self::$apcKey = file_get_contents($cacheFile);
+            }
         }
 
         parent::__construct($cacheBuilder);
