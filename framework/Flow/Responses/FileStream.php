@@ -17,6 +17,9 @@ use SmoothPHP\Framework\Core\Kernel;
 use SmoothPHP\Framework\Flow\Requests\Request;
 
 class FileStream extends Response {
+
+    const CACHE_DATE = 'D, d M Y H:i:s \G\M\T';
+
     private $options;
     private $request;
 
@@ -47,10 +50,13 @@ class FileStream extends Response {
 
             if (!__DEBUG__) {
                 header('Cache-Control: max-age=' . $this->options['expires'] . ', private');
-                header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + $this->options['expires']));
+                header('Expires: ' . gmdate(self::CACHE_DATE, time() + $this->options['expires']));
+                header('Pragma: private');
+            } else {
+                header('Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0');
+                header('Expires: ' . gmdate(self::CACHE_DATE, 0));
             }
-            header('Pragma: private');
-            header('Last-Modified: ' . gmdate('D, d M Y H:i:s \G\M\T', $lastModified));
+            header('Last-Modified: ' . gmdate(self::CACHE_DATE, $lastModified));
             header('ETag: ' . $eTag);
 
             if ($this->request->server->HTTP_IF_MODIFIED_SINCE && $lastModified > strtotime($this->request->server->HTTP_IF_MODIFIED_SINCE)) {
