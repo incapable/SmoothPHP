@@ -2,7 +2,7 @@ CREATE TABLE `users` (
   `id` int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `username` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `email` varchar(255) NOT NULL
+  `email` varchar(255) UNIQUE NOT NULL
 ) ENGINE=InnoDB;
 
 CREATE TABLE `users_permissions` (
