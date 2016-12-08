@@ -29,8 +29,11 @@ class TemplateResponse extends Response {
         $this->args['assets'] = $kernel->getAssetsRegister();
         $this->args['route'] = $kernel->getRouteDatabase();
         $this->args['language'] = $kernel->getLanguageRepository();
-        if ($kernel->getConfig()->authentication_enabled)
-            $this->args['user'] = $kernel->getAuthenticationManager()->getActiveUser();
+        if ($kernel->getConfig()->authentication_enabled) {
+            $auth = $kernel->getAuthenticationManager();
+            $this->args['auth'] = $auth;
+            $this->args['user'] = $auth->getActiveUser();
+        }
         $this->built = $kernel->getTemplateEngine()->fetch($this->controllerResponse, $this->args);
     }
 
