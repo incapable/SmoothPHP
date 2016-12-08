@@ -16,6 +16,11 @@ use SmoothPHP\Framework\Core\Abstracts\WebPrototype;
 use SmoothPHP\Framework\Core\ClassLoader\BasicClassLoader;
 use SmoothPHP\Framework\Cache\Builder\RuntimeCacheProvider;
 
+if (__DEBUG__) {
+    ini_set('display_errors', '1');
+    error_reporting(E_ALL);
+}
+
 // Set an error handler that uses exceptions instead
 set_error_handler(function ($num, $str, $file, $line) {
     throw new ErrorException($str, 0, $num, $file, $line);
