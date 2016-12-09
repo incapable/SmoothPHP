@@ -13,6 +13,8 @@
 
 namespace SmoothPHP\Framework\Flow\Requests;
 
+define('FILTER_VALIDATE_ARRAY', 'array');
+
 class VariableSource {
     private $source;
     private $filter;
@@ -22,12 +24,23 @@ class VariableSource {
         $this->filter = FILTER_DEFAULT;
     }
 
+    public function hasData() {
+        return count($this->source) > 0;
+    }
+
+    public function getArray() {
+        return $this->source;
+    }
+
     public function get($varName, $filter = FILTER_DEFAULT) {
         if ($filter == FILTER_DEFAULT)
             $filter = $this->filter;
 
         if (!isset($this->source[$varName]))
             return $filter == FILTER_VALIDATE_BOOLEAN ? null : false;
+
+        if ($filter == FILTER_VALIDATE_ARRAY)
+            return $this->source[$varName];
 
         $value = trim($this->source[$varName]);
         $options = array(
@@ -68,6 +81,9 @@ class VariableSource {
                 break;
             case "url":
                 $filter = FILTER_VALIDATE_URL;
+                break;
+            case "array":
+                $filter = FILTER_VALIDATE_ARRAY;
                 break;
         }
 

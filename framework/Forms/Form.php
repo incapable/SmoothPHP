@@ -56,7 +56,7 @@ class Form extends FormContainer {
     }
 
     public function validate(Request $request) {
-        if (!$request->post->_token)
+        if (!$request->post->hasData())
             return;
 
         $this->hasResult = true;
