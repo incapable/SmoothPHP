@@ -22,13 +22,14 @@ use SmoothPHP\Framework\Flow\Requests\Request;
 use SmoothPHP\Framework\Localization\LanguageRepository;
 
 class ControllerCall {
-    private $request, $kernel, $assetsRegister, $mysql, $authentication, $languageRepo;
+    private $instanceRefs;
     private $parameters;
 
     private $callable;
     private $controllerArgs;
 
     public function __construct(Controller $controller, $call) {
+        $this->instanceRefs = array();
         $this->controllerArgs = array();
         $this->parameters = array();
 
@@ -40,24 +41,13 @@ class ControllerCall {
             $className = $parameter->getClass() ? $parameter->getClass()->name : null;
             switch ($className) {
                 case Request::class:
-                    $this->controllerArgs[] = &$this->request;
-                    break;
                 case Kernel::class:
-                    $this->controllerArgs[] = &$this->kernel;
-                    break;
+                case RouteDatabase::class:
                 case AssetsRegister::class:
-                    $this->controllerArgs[] = &$this->assetsRegister;
-                    break;
-                case MySQL::class:
-                    $this->mysql = -1; // Make sure the later isset fills this value
-                    $this->controllerArgs[] = &$this->mysql;
-                    break;
-                case AuthenticationManager::class:
-                    $this->authentication = -1;
-                    $this->controllerArgs[] = &$this->authentication;
-                    break;
                 case LanguageRepository::class:
-                    $this->controllerArgs[] = &$this->languageRepo;
+                case MySQL::class:
+                case AuthenticationManager::class:
+                    $this->controllerArgs[] = &$this->getRef($className);
                     break;
                 default: // Mixed-type arg, url-argument
                     $this->parameters[++$i] = null;
@@ -67,18 +57,28 @@ class ControllerCall {
         }
     }
 
+    private function &getRef($clazz) {
+        if (!isset($this->instanceRefs[$clazz]))
+            $this->instanceRefs[$clazz] = false;
+
+        return $this->instanceRefs[$clazz];
+    }
+
+    public function getController() {
+        return $this->callable[0];
+    }
+
     /**
      * @return \SmoothPHP\Framework\Flow\Responses\Response|mixed
      */
     public function performCall(Kernel $kernel, Request $request, array $args) {
-        $this->kernel = $kernel;
-        $this->request = $request;
-        $this->assetsRegister = $kernel->getAssetsRegister();
-        if (isset($this->mysql)) // MySQL should only be initialized on-demand
-            $this->mysql = $kernel->getMySQL();
-        if (isset($this->authentication))
-            $this->authentication = $kernel->getAuthenticationManager();
-        $this->languageRepo = $kernel->getLanguageRepository();
+        $this->setRef(Kernel::class, function() use ($kernel) { return $kernel; });
+        $this->setRef(Request::class, function() use ($request) { return $request; });
+        $this->setRef(RouteDatabase::class, function() use ($kernel) { return $kernel->getRouteDatabase(); });
+        $this->setRef(AssetsRegister::class, function() use ($kernel) { return $kernel->getAssetsRegister(); });
+        $this->setRef(LanguageRepository::class, function() use ($kernel) { return $kernel->getLanguageRepository(); });
+        $this->setRef(MySQL::class, function() use ($kernel) { return $kernel->getMySQL(); });
+        $this->setRef(AuthenticationManager::class, function() use ($kernel) { return $kernel->getAuthenticationManager(); });
 
         $i = 0;
         foreach ($args as $arg) {
@@ -86,6 +86,11 @@ class ControllerCall {
         }
 
         return call_user_func_array($this->callable, $this->controllerArgs);
+    }
+
+    private function setRef($clazz, callable $builder) {
+        if (isset($this->instanceRefs[$clazz]))
+            $this->instanceRefs[$clazz] = $builder();
     }
 
 }
