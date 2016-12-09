@@ -15,6 +15,7 @@ namespace SmoothPHP\Framework\Database\Mapper;
 
 use SmoothPHP\Framework\Database\MySQL;
 use SmoothPHP\Framework\Database\MySQLException;
+use SmoothPHP\Framework\Database\MySQLStatement;
 
 define('MYSQL_NO_LIMIT', -1);
 

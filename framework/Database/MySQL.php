@@ -18,15 +18,29 @@ use SmoothPHP\Framework\Database\Mapper\MySQLObjectMapper;
 
 class MySQL {
     private $connection;
+    private $maps;
 
     public function __construct(Config $config) {
         $prefix = ini_get('mysqli.allow_persistent') ? 'p:' : '';
         $this->connection = new \mysqli($prefix . $config->mysql_host, $config->mysql_user, $config->mysql_password, $config->mysql_database);
+        $this->maps = array();
     }
 
     public function prepare($query, $returnsData = true) {
         return $returnsData ? new MySQLStatementWithResult($this->connection, $query)
             : new MySQLStatementWithoutResult($this->connection, $query);
+    }
+
+    public function start() {
+        $this->connection->begin_transaction();
+    }
+
+    public function commit() {
+        $this->connection->commit();
+    }
+
+    public function rollback() {
+        $this->connection->rollback();
     }
 
     /**
@@ -47,8 +61,18 @@ class MySQL {
         return $this->prepare($query, true)->execute($params);
     }
 
+    /**
+     * @param $clazz
+     * @return MySQLObjectMapper
+     */
     public function map($clazz) {
-        return new MySQLObjectMapper($this, $clazz);
+        if (__ENV__ == 'cli')
+            return null;
+
+        if (!isset($this->maps[$clazz]))
+            $this->maps[$clazz] = new MySQLObjectMapper($this, $clazz);
+
+        return $this->maps[$clazz];
     }
 
     public static function checkError($source) {
