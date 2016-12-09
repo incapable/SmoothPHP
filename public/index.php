@@ -11,7 +11,7 @@
  * Primary entry point for SmoothPHP.
  */
 
-define('__DEBUG__', true);
+define('__ENV__', 'dev'); // Options: dev, debug, production
 
 use SmoothPHP\Framework\Flow\Requests\Request;
 

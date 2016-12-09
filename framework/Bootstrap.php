@@ -16,7 +16,7 @@ use SmoothPHP\Framework\Core\Abstracts\WebPrototype;
 use SmoothPHP\Framework\Core\ClassLoader\BasicClassLoader;
 use SmoothPHP\Framework\Cache\Builder\RuntimeCacheProvider;
 
-if (__DEBUG__) {
+if (__ENV__ != 'production') {
     ini_set('display_errors', '1');
     error_reporting(E_ALL);
 }

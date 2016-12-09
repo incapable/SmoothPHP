@@ -48,7 +48,7 @@ class FileStream extends Response {
             $eTag = md5_file($this->options['url']);
             $lastModified = filemtime($this->options['url']);
 
-            if (!__DEBUG__) {
+            if (__ENV__ != 'dev') {
                 header('Cache-Control: max-age=' . $this->options['expires'] . ', private');
                 header('Expires: ' . gmdate(self::CACHE_DATE, time() + $this->options['expires']));
                 header('Pragma: private');

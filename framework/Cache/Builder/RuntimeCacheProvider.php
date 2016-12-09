@@ -19,7 +19,7 @@ abstract class RuntimeCacheProvider extends CacheProvider {
 
     public static function create(callable $cacheBuilder) {
         if (!isset(self::$useAPC)) {
-            if (!__DEBUG__)
+            if (__ENV__ != 'dev')
                 if (extension_loaded('apcu'))
                     self::$useAPC = 'apcu';
                 else if (extension_loaded('apc'))

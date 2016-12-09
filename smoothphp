@@ -4,7 +4,7 @@
 print('Initializing SmoothPHP CLI module.' . PHP_EOL);
 
 set_time_limit( 0 );
-define('__DEBUG__', true);
+define('__ENV__', 'cli');
 
 if ( file_exists( sprintf( '%s/%s', getcwd(), 'smoothphp' ) ) ) {
     define( '__ROOT__', getcwd() . '/' );
