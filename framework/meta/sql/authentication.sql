@@ -5,10 +5,11 @@ CREATE TABLE `users` (
   `email` varchar(255) UNIQUE NOT NULL
 ) ENGINE=InnoDB;
 
-CREATE TABLE `users_permissions` (
+CREATE TABLE `permissions` (
   `id` int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
-  `userId` int(11) NOT NULL,
-  `permission` varchar(255) NOT NULL
+  `userId` int(11) DEFAULT NULL,
+  `group` varchar(255) DEFAULT NULL,
+  `permission` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB;
 
 CREATE TABLE `loginsessions` (
@@ -26,6 +27,6 @@ CREATE TABLE `sessions` (
   `validator` varchar(255) NOT NULL
 ) ENGINE=MEMORY;
 
-ALTER TABLE `users_permissions`
+ALTER TABLE `permissions`
   ADD INDEX(`userId`),
   ADD CONSTRAINT `fk_userid` FOREIGN KEY (`userId`) REFERENCES `users`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;

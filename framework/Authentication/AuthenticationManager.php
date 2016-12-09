@@ -13,6 +13,7 @@
 
 namespace SmoothPHP\Framework\Authentication;
 
+use SmoothPHP\Framework\Authentication\UserTypes\AbstractUser;
 use SmoothPHP\Framework\Authentication\UserTypes\AnonymousUser;
 use SmoothPHP\Framework\Authentication\UserTypes\User;
 use SmoothPHP\Framework\Core\Kernel;
@@ -42,6 +43,7 @@ class AuthenticationManager {
     private $defaultForm;
 
     // Active user
+    /* @var $user User|AbstractUser */
     private $user, $session, $permissions;
 
     public function initialize(Kernel $kernel) {
@@ -49,7 +51,11 @@ class AuthenticationManager {
         $this->loginSessionMap = $mysql->map(LoginSession::class);
         $this->activeSessionMap = $mysql->map(ActiveSession::class);
         $this->userMap = $this->userMap ?: $mysql->map(User::class);
-        $this->permissionsQuery = $mysql->prepare('SELECT `permission` FROM `users_permissions` WHERE `userId` = %d');
+        $this->permissionsQuery = $mysql->prepare('
+            SELECT `permission` FROM `permissions` WHERE `userId` = %d AND NOT ISNULL(`permission`)
+            UNION DISTINCT
+            SELECT `permission` FROM `permissions` WHERE `group` IN (SELECT `group` FROM `permissions` WHERE `userId` = %d AND NOT ISNULL(`group`)) AND NOT ISNULL(`permission`)
+        ');
 
         $formBuilder = new FormBuilder();
 
@@ -63,6 +69,8 @@ class AuthenticationManager {
         $formBuilder->add('submit', Types\SubmitType::class);
 
         $this->defaultForm = $formBuilder->getForm();
+
+        $this->permissions = array();
     }
 
     public function setUserClass($clazz) {
@@ -144,6 +152,9 @@ class AuthenticationManager {
         return $session;
     }
 
+    /**
+     * @return User|AbstractUser
+     */
     public function getActiveUser() {
         if (!$this->user) {
             $this->session = ActiveSession::readCookie($this->activeSessionMap);
@@ -151,11 +162,29 @@ class AuthenticationManager {
                 return new AnonymousUser();
             else {
                 $this->user = $this->userMap->fetch($this->session->getUserId());
-                $this->permissions = $this->permissionsQuery->execute($this->user->getId())->getAsArray();
+                $this->getPermissions($this->user);
             }
         }
 
         return $this->user;
+    }
+
+    /**
+     * @param int|User $user
+     * @return array
+     */
+    public function getPermissions($user) {
+        if ($user instanceof User)
+            $user = $user->getId();
+        if (!isset($this->permissions[$user]))
+            $this->permissions[$user] = $this->permissionsQuery->execute($user, $user)->getAsArray();
+        return $this->permissions[$user];
+    }
+
+    public function hasPermission($permission, $user = false) {
+        if (!$user)
+            $user = $this->user;
+        return in_array($permission, $this->getPermissions($user));
     }
 
     public function canGo() {
@@ -191,7 +220,7 @@ class AuthenticationManager {
             // Permissions
             else {
                 $required = (array) $routeOpts['authentication'];
-                $missing = array_diff($required, $this->permissions);
+                $missing = array_diff($required, $this->permissions[$user->getId()]);
                 if (count($missing) > 0)
                     return $request ? $this->determineNoAccessAction($request, $user->isLoggedIn()) : false;
             }
