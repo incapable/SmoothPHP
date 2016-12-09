@@ -18,6 +18,7 @@ use SmoothPHP\Framework\Cache\Assets\AssetsRegister;
 use SmoothPHP\Framework\Core\Abstracts\WebPrototype;
 use SmoothPHP\Framework\Database\MySQL;
 use SmoothPHP\Framework\Flow\Requests\Request;
+use SmoothPHP\Framework\Flow\Responses\AlternateErrorResponse;
 use SmoothPHP\Framework\Flow\Responses\PlainTextResponse;
 use SmoothPHP\Framework\Flow\Routing\RouteDatabase;
 use SmoothPHP\Framework\Localization\FileDataSource;
@@ -30,6 +31,7 @@ class Kernel {
     private $routeDatabase;
 
     // Runtime
+    private $errorHandler;
     private $templateEngine;
     private $assetsRegister;
     private $mysql;
@@ -39,6 +41,7 @@ class Kernel {
     public function __construct() {
         $this->config = new Config();
         $this->authentication = new AuthenticationManager();
+        $this->errorHandler = array($this, 'handleError');
     }
 
     public function loadPrototype(WebPrototype $prototype) {
@@ -59,6 +62,30 @@ class Kernel {
         $this->languagerepo->addSource(new FileDataSource(__ROOT__ . 'src/assets/strings/'));
         $prototype->registerRoutes($this->routeDatabase);
         $this->routeDatabase->initializeControllers($this);
+    }
+
+    public function error($message) {
+        global $request;
+        if (isset($request->meta->route)) {
+            $type = new $request->meta->route['content-type'](null);
+            if ($type instanceof AlternateErrorResponse) {
+                $type->buildErrorResponse($message);
+                return $type;
+            }
+        }
+
+        return call_user_func($this->errorHandler, $message);
+    }
+
+    public function setErrorHandler($errorHandler) {
+        if (!is_callable($errorHandler))
+            throw new \InvalidArgumentException('$errorHandler is not callable');
+
+        $this->errorHandler = $errorHandler;
+    }
+
+    private function handleError($message) {
+        return new PlainTextResponse($message);
     }
 
     /**
@@ -124,7 +151,7 @@ class Kernel {
         $resolvedRoute = $this->routeDatabase->resolve($request);
         if (!$resolvedRoute) {
             header('HTTP/1.1 404 Not found');
-            return new PlainTextResponse($this->languagerepo->getEntry('smooth_error_404'));
+            return $this->error($this->languagerepo->getEntry('smooth_error_404'));
         }
         return $resolvedRoute->buildResponse($this, $request);
     }

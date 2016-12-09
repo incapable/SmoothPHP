@@ -16,8 +16,14 @@ namespace SmoothPHP\Framework\Flow\Responses;
 use SmoothPHP\Framework\Core\Kernel;
 use SmoothPHP\Framework\Flow\Requests\Request;
 
-class JSON extends Response {
+class JSON extends Response implements AlternateErrorResponse {
     private $built;
+
+    public function buildErrorResponse($message) {
+        $this->controllerResponse = array(
+            'error' => $message
+        );
+    }
 
     public function build(Kernel $kernel, Request $request) {
         $this->built = json_encode($this->controllerResponse);
