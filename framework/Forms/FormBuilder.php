@@ -19,6 +19,8 @@ use SmoothPHP\Framework\Forms\Types as Types;
 
 class FormBuilder {
     private $action = null;
+
+    private $header = array();
     private $properties;
 
     /**
@@ -50,6 +52,10 @@ class FormBuilder {
             $this->action = $action;
     }
 
+    public function setTokenRequired($required) {
+        $this->header['token'] = $required;
+    }
+
     public function getForm() {
         $elements = array();
 
@@ -60,6 +66,6 @@ class FormBuilder {
             $elements[$key] = new FormContainer($element->getContainer());
         }
 
-        return new Form($this->action, $elements);
+        return new Form($this->action, $this->header, $elements);
     }
 }

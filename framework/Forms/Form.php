@@ -23,9 +23,9 @@ class Form extends FormContainer {
     private $hasResult;
     private $failReasons;
 
-    public function __construct($action, array $elements) {
+    public function __construct($action, array $headerArgs, array $elements) {
         parent::__construct(array(
-            'header' => new FormHeader($this),
+            'header' => new FormHeader($this, $headerArgs),
             'tablestart' => '<table>',
             'inputs' => new FormContainer($elements),
             'tableend' => '</table>',
