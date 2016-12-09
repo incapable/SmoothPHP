@@ -2,27 +2,20 @@
 
 namespace Test\Controllers;
 
+use SmoothPHP\Framework\Authentication\AuthenticationManager;
+use SmoothPHP\Framework\Core\Abstracts\Controller;
 use SmoothPHP\Framework\Flow\Responses\TemplateResponse;
-use SmoothPHP\Framework\Forms\FormBuilder;
-use SmoothPHP\Framework\Forms\Types as Types;
 use SmoothPHP\Framework\Flow\Requests\Request;
 
-class TestController {
+class TestController extends Controller {
 
-    public function index() {
-        $builder = new FormBuilder();
-        $builder->setAction('submit');
-        $builder->add('username', Types\StringType::class);
-        $builder->add('password', Types\PasswordType::class);
-        $builder->add('submit', Types\SubmitType::class);
+    public function login(AuthenticationManager $auth, Request $request) {
+        if ($auth->checkLoginResult($request))
+            return 'Successfully logged in!';
 
         return new TemplateResponse('test.tpl', array(
-            'form' => $builder->getForm()
+            'form' => $auth->getLoginForm($request)
         ));
-    }
-
-    public function onForm(Request $request) {
-
     }
 
 }
