@@ -39,9 +39,11 @@ class DereferenceOperatorElement extends Element {
             return new PrimitiveElement($left->getValue()->{$right->getValue()});
 
         if ($right instanceof FunctionOperatorElement && $tpl->performCalls) {
-            if ($left instanceof VariableElement)
-                throw new TemplateCompileException(sprintf("Template variable '%s' is not defined.", $left->getVarName()));
-            return new PrimitiveElement(call_user_func_array(array($left->getValue(), $right->getFunctionName()), $right->getPrimitiveArgs($tpl)));
+            if ($left instanceof VariableElement) {
+                if (!$tpl->isUncertain())
+                    throw new TemplateCompileException(sprintf("Template variable '%s' is not defined.", $left->getVarName()));
+            } else
+                return new PrimitiveElement(call_user_func_array(array($left->getValue(), $right->getFunctionName()), $right->getPrimitiveArgs($tpl)));
         }
         else
             $right = $right->optimize($tpl);
