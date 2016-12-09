@@ -41,6 +41,10 @@ class Form extends FormContainer {
         return $this->action;
     }
 
+    public function setValue($key, $value) {
+        $this->inputs->{$key}->input->setValue($value);
+    }
+
     public function setAction() {
         global $kernel;
         $action = func_get_arg(0);

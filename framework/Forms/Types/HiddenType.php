@@ -27,10 +27,6 @@ class HiddenType extends Type {
         ));
     }
 
-    public function setValue($value) {
-        $this->attributes['attr']['value'] = $value;
-    }
-
     public function getContainer() {
         return array(
             'rowstart' => '',

@@ -76,6 +76,10 @@ abstract class Type extends Constraint {
         return $this->field;
     }
 
+    public function setValue($value) {
+        $this->attributes['attr']['value'] = $value;
+    }
+
     public function generateLabel() {
         return sprintf('<label for="%s">%s</label>',
             $this->field,

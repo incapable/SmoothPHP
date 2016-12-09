@@ -17,11 +17,13 @@ use SmoothPHP\Framework\Authentication\UserTypes\AnonymousUser;
 use SmoothPHP\Framework\Authentication\UserTypes\User;
 use SmoothPHP\Framework\Core\Kernel;
 use SmoothPHP\Framework\Database\Mapper\MySQLObjectMapper;
+use SmoothPHP\Framework\Database\MySQLStatement;
 use SmoothPHP\Framework\Flow\Requests\Request;
 use SmoothPHP\Framework\Flow\Responses\PlainTextResponse;
 use SmoothPHP\Framework\Flow\Responses\RedirectResponse;
 use SmoothPHP\Framework\Flow\Responses\Response;
 use SmoothPHP\Framework\Forms\Constraints\MaximumLengthConstraint;
+use SmoothPHP\Framework\Forms\Form;
 use SmoothPHP\Framework\Forms\FormBuilder;
 use SmoothPHP\Framework\Forms\Types as Types;
 
@@ -34,7 +36,9 @@ class AuthenticationManager {
     // Login flow
     /* @var MySQLObjectMapper */
     private $loginSessionMap, $activeSessionMap, $userMap;
+    /* @var MySQLStatement */
     private $permissionsQuery;
+    /* @var Form */
     private $defaultForm;
 
     // Active user
@@ -82,7 +86,7 @@ class AuthenticationManager {
         if (!$session)
             $session = $this->assignLoginSession($request);
 
-        $this->defaultForm->inputs->_logintoken->input->setValue($session->getToken());
+        $this->defaultForm->setValue('_logintoken', $session->getToken());
 
         return $this->defaultForm;
     }
