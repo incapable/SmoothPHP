@@ -78,11 +78,11 @@ class ForeachElement extends Element {
     private static function runLoop(CompilerState $tpl, PrimitiveElement $collection, Element $body, $keyName, $valueName) {
         $result = new Chain();
 
-        $value = $collection->getValue();
-        if (method_exists($value, '__iterate'))
-            $value = $value->__iterate();
+        $rawCollection = $collection->getValue();
+        if (method_exists($rawCollection, '__iterate'))
+            $rawCollection = $rawCollection->__iterate();
 
-        foreach($value as $key => $value) {
+        foreach($rawCollection as $key => $value) {
             $scope = $tpl->createSubScope();
             if ($keyName != null)
                 $scope->vars->{$keyName} = new PrimitiveElement($key);
