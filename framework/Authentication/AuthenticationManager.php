@@ -203,7 +203,7 @@ class AuthenticationManager {
                 'ref' => $request->server->REQUEST_URI
                 )));
 
-        return new PlainTextResponse('No access');
+        return $kernel->error($kernel->getLanguageRepository()->getEntry('smooth_error_access'));
     }
 
     public function logout() {
