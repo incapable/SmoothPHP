@@ -27,6 +27,18 @@ class FormContainer extends Constraint {
         return $this->backing[$name];
     }
 
+    public function __iterate() {
+        return $this->backing;
+    }
+
+    public function __call($method, $args) {
+        foreach($this->backing as $sub)
+            if (method_exists($sub, $method))
+                return call_user_func_array(array($sub, $method), $args);
+
+        throw new \RuntimeException(sprintf('The method %s::%s does not exist.', __CLASS__, $method));
+    }
+
     public function __toString() {
         $result = '';
         foreach($this->backing as $element)
