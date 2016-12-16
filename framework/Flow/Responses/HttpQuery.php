@@ -7,8 +7,8 @@
  * Copyright (C) 2016 Rens Rikkerink
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * * * *
- * JSON.php
- * A response based on json_encode
+ * HttpQuery.php
+ * A response based on http_build_query
  */
 
 namespace SmoothPHP\Framework\Flow\Responses;
@@ -16,7 +16,7 @@ namespace SmoothPHP\Framework\Flow\Responses;
 use SmoothPHP\Framework\Core\Kernel;
 use SmoothPHP\Framework\Flow\Requests\Request;
 
-class JSON extends Response implements AlternateErrorResponse {
+class HttpQuery extends Response implements AlternateErrorResponse {
     private $built;
 
     public function buildErrorResponse($message) {
@@ -26,12 +26,12 @@ class JSON extends Response implements AlternateErrorResponse {
     }
 
     public function build(Kernel $kernel, Request $request) {
-        $this->built = json_encode($this->controllerResponse);
+        $this->built = http_build_query($this->controllerResponse);
     }
 
     protected function sendHeaders() {
         parent::sendHeaders();
-        header('Content-Type: application/x-www-form-urlencoded; charset=utf-8');
+        header('Content-Type: application/json; charset=utf-8');
     }
 
     protected function sendBody() {
