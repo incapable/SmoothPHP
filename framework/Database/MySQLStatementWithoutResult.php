@@ -17,6 +17,7 @@ namespace SmoothPHP\Framework\Database;
 class MySQLStatementWithoutResult extends MySQLStatement {
 
     public function createResult() {
+        $this->stmt->store_result();
         return $this->stmt->insert_id;
     }
 
