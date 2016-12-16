@@ -44,7 +44,7 @@ class AssetsRegister {
         if ($route) {
             $route->register(array(
                 'name' => 'assets_js',
-                'path' => '/javascript/...',
+                'path' => '/js/...',
                 'controller' => AssetsController::class,
                 'call' => 'getJS'
             ));

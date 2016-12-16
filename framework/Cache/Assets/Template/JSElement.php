@@ -34,7 +34,7 @@ class JSElement extends Element {
         $assetHandler = $tpl->vars->assets->getValue();
         foreach ($assetHandler->getJSFiles() as $js) {
             if (strtolower(substr($js, 0, 4)) != 'http')
-                $js = '/javascript/' . $js;
+                $js = '/js/' . $js;
             echo '<script type="text/javascript" src="' . $js . '"></script>';
         }
     }
