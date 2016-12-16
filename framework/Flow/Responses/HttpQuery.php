@@ -31,7 +31,7 @@ class HttpQuery extends Response implements AlternateErrorResponse {
 
     protected function sendHeaders() {
         parent::sendHeaders();
-        header('Content-Type: application/json; charset=utf-8');
+        header('Content-Type: application/x-www-form-urlencoded; charset=utf-8');
     }
 
     protected function sendBody() {
