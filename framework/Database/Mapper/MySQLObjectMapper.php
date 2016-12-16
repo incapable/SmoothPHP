@@ -35,10 +35,14 @@ class MySQLObjectMapper {
         if (!$this->classDef->isSubclassOf(MappedMySQLObject::class))
             throw new MySQLException("Attempting to map an object that is not a subclass of MappedMySQLObject");
 
-        $this->fields = array_map(function (\ReflectionProperty $field) {
+        $this->fields = array_filter(array_map(function (\ReflectionProperty $field) {
+            if ($field->isStatic())
+                return null;
             $field->setAccessible(true);
             return $field;
-        }, $this->classDef->getProperties());
+        }, $this->classDef->getProperties()), function($value) {
+            return $value != null;
+        });
 
         // Prepare queries
         {
