@@ -11,14 +11,20 @@
  * Prepared MySQL statement that does not produce a result
  */
 
-namespace SmoothPHP\Framework\Database;
+namespace SmoothPHP\Framework\Database\Statements;
 
 
 class MySQLStatementWithoutResult extends MySQLStatement {
 
     public function createResult() {
         $this->stmt->store_result();
-        return $this->stmt->insert_id;
+
+        $id = $this->stmt->insert_id;
+
+        $this->stmt->free_result();
+        $this->stmt->reset();
+
+        return $id;
     }
 
 }

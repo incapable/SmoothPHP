@@ -11,7 +11,10 @@
  * (Potentially) prepared MySQL statement
  */
 
-namespace SmoothPHP\Framework\Database;
+namespace SmoothPHP\Framework\Database\Statements;
+
+use SmoothPHP\Framework\Database\MySQL;
+use SmoothPHP\Framework\Database\MySQLResult;
 
 abstract class MySQLStatement {
     protected $stmt;

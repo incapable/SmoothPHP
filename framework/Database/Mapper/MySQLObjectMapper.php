@@ -15,7 +15,6 @@ namespace SmoothPHP\Framework\Database\Mapper;
 
 use SmoothPHP\Framework\Database\MySQL;
 use SmoothPHP\Framework\Database\MySQLException;
-use SmoothPHP\Framework\Database\MySQLStatement;
 
 define('MYSQL_NO_LIMIT', -1);
 
@@ -62,7 +61,7 @@ class MySQLObjectMapper {
 
                 $query .= ' FROM `' . $object->getTableName() . '` WHERE `id` = %d';
 
-                $this->fetch->statement = $this->mysql->prepare($query, false);
+                $this->fetch->statement = $this->mysql->prepareCustom($query);
                 call_user_func_array(array($this->fetch->statement->getMySQLi_stmt(), 'bind_result'), $this->fetch->references);
                 MySQL::checkError($this->fetch->statement->getMySQLi_stmt());
             }
@@ -148,7 +147,7 @@ class MySQLObjectMapper {
             if ($limit != -1)
                 $query .= ' LIMIT ' . $limit;
 
-            $prepared->statement = $this->mysql->prepare($query, false);
+            $prepared->statement = $this->mysql->prepareCustom($query);
             call_user_func_array(array($prepared->statement->getMySQLi_stmt(), 'bind_result'), $prepared->references);
             MySQL::checkError($prepared->statement->getMySQLi_stmt());
 
@@ -156,6 +155,8 @@ class MySQLObjectMapper {
                 call_user_func_array(array($prepared->statement, 'execute'), array_values($where));
             } else
                 $prepared->statement->execute();
+
+            $prepared->statement->getMySQLi_stmt()->store_result();
         }
 
         $results = array();
@@ -168,11 +169,12 @@ class MySQLObjectMapper {
             $results[] = $target;
         }
 
+        $prepared->statement->getMySQLi_stmt()->free_result();
         $prepared->statement->getMySQLi_stmt()->reset();
         MySQL::checkError($prepared->statement->getMySQLi_stmt());
 
         if ($limit == 1) {
-            if ($prepared->statement->getMySQLi_stmt()->num_rows == 0)
+            if (count($results) == 0)
                 return null;
             else
                 return current($results);

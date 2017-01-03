@@ -11,7 +11,9 @@
  * Prepared MySQL statement that produces a result
  */
 
-namespace SmoothPHP\Framework\Database;
+namespace SmoothPHP\Framework\Database\Statements;
+
+use SmoothPHP\Framework\Database\MySQLResult;
 
 class MySQLStatementWithResult extends MySQLStatement {
 

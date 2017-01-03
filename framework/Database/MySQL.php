@@ -15,6 +15,7 @@ namespace SmoothPHP\Framework\Database;
 
 use SmoothPHP\Framework\Core\Config;
 use SmoothPHP\Framework\Database\Mapper\MySQLObjectMapper;
+use SmoothPHP\Framework\Database\Statements as Statements;
 
 class MySQL {
     private $connection;
@@ -26,9 +27,13 @@ class MySQL {
         $this->maps = array();
     }
 
+    public function prepareCustom($query) {
+        return new Statements\MySQLCustomStatement($this->connection, $query);
+    }
+
     public function prepare($query, $returnsData = true) {
-        return $returnsData ? new MySQLStatementWithResult($this->connection, $query)
-            : new MySQLStatementWithoutResult($this->connection, $query);
+        return $returnsData ? new Statements\MySQLStatementWithResult($this->connection, $query)
+            : new Statements\MySQLStatementWithoutResult($this->connection, $query);
     }
 
     public function start() {
