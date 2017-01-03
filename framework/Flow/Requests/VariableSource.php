@@ -28,6 +28,14 @@ class VariableSource {
         return count($this->source) > 0;
     }
 
+    public function has() {
+        foreach(func_get_args() as $varName)
+            if (!isset($this->source[$varName]))
+                return false;
+
+        return true;
+    }
+
     public function getArray() {
         return $this->source;
     }

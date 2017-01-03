@@ -23,6 +23,10 @@ class FormContainer extends Constraint {
         $this->backing = $backing;
     }
 
+    public function __isset($name) {
+        return isset($this->backing[$name]);
+    }
+
     public function __get($name) {
         return $this->backing[$name];
     }

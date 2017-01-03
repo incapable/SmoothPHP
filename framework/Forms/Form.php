@@ -41,6 +41,10 @@ class Form extends FormContainer {
         return $this->action;
     }
 
+    public function hasField($key) {
+        return isset($this->inputs->{$key});
+    }
+
     public function setValue($key, $value) {
         $this->inputs->{$key}->input->setValue($value);
     }
