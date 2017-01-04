@@ -24,6 +24,7 @@ class MySQL {
     public function __construct(Config $config) {
         $prefix = ini_get('mysqli.allow_persistent') ? 'p:' : '';
         $this->connection = new \mysqli($prefix . $config->mysql_host, $config->mysql_user, $config->mysql_password, $config->mysql_database);
+        $this->connection->real_query('SET SESSION sql_mode = \'\';');
         $this->maps = array();
     }
 
