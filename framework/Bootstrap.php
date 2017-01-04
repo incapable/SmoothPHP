@@ -26,15 +26,13 @@ set_error_handler(function ($num, $str, $file, $line) {
     throw new ErrorException($str, 0, $num, $file, $line);
 });
 
-{
-    if (!defined('__ROOT__'))
-        define('__ROOT__', str_replace('public', '', $_SERVER['DOCUMENT_ROOT']));
+if (!defined('__ROOT__'))
+    define('__ROOT__', str_replace('public', '', $_SERVER['DOCUMENT_ROOT']));
 
-    require_once __ROOT__ . 'framework/Core/ClassLoader/BasicClassLoader.php';
+require_once __ROOT__ . 'framework/Core/ClassLoader/BasicClassLoader.php';
 
-    $classLoader = new BasicClassLoader();
-    $classLoader->register();
-}
+$classLoader = new BasicClassLoader();
+$classLoader->register();
 
 /* @var $kernel Kernel */
 $kernel = null;

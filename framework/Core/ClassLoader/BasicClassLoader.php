@@ -22,6 +22,15 @@ class BasicClassLoader {
         $this->prefixes[''] = __ROOT__ . 'src/';
     }
 
+    public function addPrefix($namespace, $path) {
+        if (!is_dir($path))
+            throw new \RuntimeException(sprintf('\'%s\' is not a valid class path', $path));
+
+        if (substr($namespace, 0, 1) == '\\')
+            $namespace = substr($namespace, 1);
+        $this->prefixes[$namespace] = $path;
+    }
+
     public function register() {
         spl_autoload_register(array($this, 'loadClass'), true, false);
     }
