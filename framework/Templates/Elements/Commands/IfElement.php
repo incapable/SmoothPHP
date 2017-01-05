@@ -74,7 +74,7 @@ class IfElement extends Element {
             } else
                 return new PrimitiveElement();
         } else
-            return new self($condition, $this->trueBody, $this->falseBody);
+            return new self($condition, $this->trueBody ? $this->trueBody->optimize($tpl) : null, $this->falseBody ? $this->falseBody->optimize($tpl) : null);
     }
 
     public function output(CompilerState $tpl) {

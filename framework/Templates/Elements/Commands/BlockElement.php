@@ -60,15 +60,15 @@ class BlockElement extends Element {
 
     public function optimize(CompilerState $tpl) {
         if ($tpl->finishing)
-            return $this->body;
+            return $this->body->optimize($tpl);
 
         $this->name = $this->name->optimize($tpl);
-        $this->body = $this->body->optimize($tpl);
 
         if (!($this->name instanceof PrimitiveElement))
             throw new TemplateCompileException("Could not determine block name at compile-time.");
         $name = $this->name->getValue();
 
+        $this->body = $this->body->optimize($tpl);
         if ($this->usage == self::USAGE_UNSPECIFIED) {
             if (isset($tpl->blocks[$name])) {
                 $tpl->blocks[$name]->body = $this->body;
@@ -78,7 +78,7 @@ class BlockElement extends Element {
             }
         } else {
             if (!isset($tpl->blocks[$name]))
-                throw new TemplateCompileException("Attempting to prepend/append to an unknown block '" . $this->name . "'.");
+                throw new TemplateCompileException("Attempting to prepend/append to an unknown block '" . $this->name->getValue() . "'.");
 
             $blockEl = $tpl->blocks[$name];
 
