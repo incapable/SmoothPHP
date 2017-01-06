@@ -13,6 +13,7 @@
 
 namespace SmoothPHP\Framework\Flow\Routing;
 
+use SmoothPHP\Framework\Core\Abstracts\Controller;
 use SmoothPHP\Framework\Core\Kernel;
 use SmoothPHP\Framework\Flow\Requests\Request;
 use SmoothPHP\Framework\Flow\Responses\PlainTextResponse;
@@ -149,6 +150,14 @@ class RouteDatabase {
             return $this->routes[$name];
         else
             return false;
+    }
+
+    /**
+     * @param $routeName
+     * @return Controller
+     */
+    public function getController($routeName) {
+        return $this->routes[$routeName]['controllercall']->getController();
     }
 
     public function buildPath() {
