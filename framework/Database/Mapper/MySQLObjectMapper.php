@@ -79,7 +79,7 @@ class MySQLObjectMapper {
                         $query .= ', ';
                     else
                         $first = false;
-                    $query .= '' . $field->getName() . '';
+                    $query .= '`' . $field->getName() . '`';
 
                     $value = $field->getValue($object);
                     if (is_int($value))
@@ -91,7 +91,7 @@ class MySQLObjectMapper {
 
                     $insertParams[] = $insertKey;
                     if ($field->getName() != 'id')
-                        $this->insert->params[$field->getName()] = '`' . $field->getName() . '` = ' . $insertKey;
+                        $this->insert->params[$field->getName()] = '`' . $field->getName() . '` = VALUES(`' . $field->getName() . '`)';
                 }, $this->fields);
 
                 $query .= ') VALUES (' . implode(', ', $insertParams) . ') ON DUPLICATE KEY UPDATE ' . implode(', ', array_values($this->insert->params));
@@ -185,15 +185,13 @@ class MySQLObjectMapper {
 
     public function insert(MappedMySQLObject $object) {
         $params = array();
+        /* @var $field \ReflectionProperty */
         $idField = null;
-        for ($i = 0; $i < 2; $i++)
-            foreach ($this->fields as $field) {
-                /* @var $field \ReflectionProperty */
-                if ($i == 0 || $field->getName() != 'id')
-                    $params[] = $field->getValue($object);
-                else
-                    $idField = $field;
-            }
+        foreach ($this->fields as $field) {
+            if ($field->getName() == 'id')
+                $idField = $field;
+            $params[] = $field->getValue($object);
+        }
 
         call_user_func_array(array($this->insert->statement, 'execute'), $params);
         MySQL::checkError($this->insert->statement->getMySQLi_stmt());
