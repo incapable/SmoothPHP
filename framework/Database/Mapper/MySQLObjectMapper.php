@@ -113,7 +113,7 @@ class MySQLObjectMapper {
      */
     public function fetch($where, $limit = 1) {
         $prepared = null;
-        if (ctype_digit($where)) {
+        if (is_int($where) || ctype_digit($where)) {
             $prepared = $this->fetch;
             $prepared->statement->execute($where);
         } else {
