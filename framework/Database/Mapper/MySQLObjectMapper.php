@@ -138,7 +138,7 @@ class MySQLObjectMapper {
 
                 $conditions = array();
                 array_walk($where, function(&$value, $key) use (&$conditions) {
-                    $conditions[] = sprintf('`%s` = %s', $key, is_numeric($value) ? '%d' : '%s');
+                    $conditions[] = sprintf('`%s` = %s', $key, is_int($value) || ctype_digit($value) ? '%d' : '%s');
                 });
                 $query .= implode(' ' . $whereSeparator . ' ', $conditions);
             } else
