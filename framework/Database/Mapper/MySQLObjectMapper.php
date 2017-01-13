@@ -144,7 +144,7 @@ class MySQLObjectMapper {
             } else
                 $query .= $where;
 
-            if ($limit != -1)
+            if ($limit != MYSQL_NO_LIMIT)
                 $query .= ' LIMIT ' . $limit;
 
             $prepared->statement = $this->mysql->prepareCustom($query);
