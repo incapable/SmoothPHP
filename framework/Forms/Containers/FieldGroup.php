@@ -1,5 +1,16 @@
 <?php
 
+/*!
+ * SmoothPHP
+ * This file is part of the SmoothPHP project.
+ * * * *
+ * Copyright (C) 2016 Rens Rikkerink
+ * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
+ * * * *
+ * FieldGroup.php
+ * Form element that lists several input types.
+ */
+
 namespace SmoothPHP\Framework\Forms\Containers;
 
 use SmoothPHP\Framework\Flow\Requests\Request;
@@ -17,7 +28,8 @@ class FieldGroup extends Type {
     }
 
     public function initialize(array $attributes) {
-        $childAttributes = $attributes;
+        $this->attributes = array_merge_recursive($this->attributes, $attributes);
+        $childAttributes = $this->attributes;
         unset($childAttributes['children']);
 
         $this->children = array();
