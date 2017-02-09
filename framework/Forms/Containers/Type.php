@@ -45,7 +45,7 @@ abstract class Type extends Constraint {
                 $this->constraints[] = new $constraint();
         }
 
-        if ($this->attributes['required'])
+        if (last($this->attributes['required']))
             $this->constraints[] = new RequiredConstraint();
 
         foreach($this->constraints as $constraint) {
@@ -95,7 +95,10 @@ abstract class Type extends Constraint {
             $attributes['name'] = $this->field;
 
             foreach ($attributes as $key => $attribute) {
-                $attribute = implode(' ', array_filter((array) $attribute));
+                if ($key == 'class')
+                    $attribute = implode(' ', array_filter((array) $attribute));
+                else
+                    $attribute = last($attribute);
                 if (isset($attribute) && strlen($attribute) > 0)
                     $htmlAttributes[] = sprintf('%s="%s"', $key, addcslashes($attribute, '"'));
             }
