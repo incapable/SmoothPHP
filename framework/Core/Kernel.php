@@ -150,7 +150,7 @@ class Kernel {
     public function getResponse(Request $request) {
         $resolvedRoute = $this->routeDatabase->resolve($request);
         if (!$resolvedRoute) {
-            header('HTTP/1.1 404 Not found');
+            http_response_code(404);
             return $this->error($this->languagerepo->getEntry('smooth_error_404'));
         }
         return $resolvedRoute->buildResponse($this, $request);

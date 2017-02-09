@@ -40,7 +40,7 @@ class FileStream extends Response {
         parent::sendHeaders();
 
         header('Content-Type: ' . $this->options['type']);
-        header('Content-Disposition: ' . (strpos($this->controllerResponse['type'], 'text/') == 0 ? 'inline' : 'attachment') . '; filename="' . $this->options['filename'] . '"');
+        header('Content-Disposition: ' . (strpos($this->controllerResponse['type'], 'text/') === 0 ? 'inline' : 'attachment') . '; filename="' . $this->options['filename'] . '"');
         if ($this->options['cors'])
             header('Access-Control-Allow-Origin: *');
 
@@ -60,11 +60,11 @@ class FileStream extends Response {
             header('ETag: ' . $eTag);
 
             if ($this->request->server->HTTP_IF_MODIFIED_SINCE && $lastModified > strtotime($this->request->server->HTTP_IF_MODIFIED_SINCE)) {
-                header('HTTP/1.1 304 Not modified');
+                http_response_code(304);
                 exit();
             }
             if ($this->request->server->HTTP_IF_NONE_MATCH && $this->request->server->HTTP_IF_NONE_MATCH == $eTag) {
-                header('HTTP/1.1 304 Not modified');
+                http_response_code(304);
                 exit();
             }
         }
