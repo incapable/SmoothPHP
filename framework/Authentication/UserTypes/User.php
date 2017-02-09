@@ -17,7 +17,6 @@ use SmoothPHP\Framework\Database\Mapper\MappedMySQLObject;
 
 class User extends MappedMySQLObject implements AbstractUser {
 
-    protected $username;
     protected $email;
     protected $password;
 

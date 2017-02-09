@@ -129,7 +129,7 @@ class AuthenticationManager {
             ));
 
             if (!$user || !password_verify($request->post->password, $user->getHashedPassword())) {
-                $form->addErrorMessage('Username and/or password are incorrect.');
+                $form->addErrorMessage('Email and/or password are incorrect.');
                 $session->increaseFailure();
                 $this->loginSessionMap->insert($session);
                 return false;
