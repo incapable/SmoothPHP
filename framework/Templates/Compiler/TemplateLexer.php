@@ -97,4 +97,14 @@ class TemplateLexer {
     public function remainder() {
         return substr($this->content, $this->pointer);
     }
+
+    public function getDebugSurroundings($incriminating) {
+        $surround = 10;
+        $start = $this->pointer - $surround;
+        return sprintf('%s%s%s',
+            substr($this->content, max(0, $start), $surround + min(0, $start)),
+            $incriminating,
+            substr($this->content, $this->pointer + strlen($incriminating), 10)
+        );
+    }
 }

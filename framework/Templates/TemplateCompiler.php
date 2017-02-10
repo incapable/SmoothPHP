@@ -98,7 +98,7 @@ class TemplateCompiler {
                     if ($char !== false)
                         $command .= $char;
                     else
-                        throw new TemplateCompileException("Template syntax error, unfinished command: " . self::DELIMITER_START . $command);
+                        throw new TemplateCompileException("Template syntax error, unfinished command: '" . self::DELIMITER_START . $command . "'' around '" . $lexer->getDebugSurroundings(self::DELIMITER_START . $command) . "'.");
                 }
 
                 $finishString();
@@ -139,7 +139,7 @@ class TemplateCompiler {
                     // Function call
                     $name = $chain->pop();
                     if (!($name instanceof Elements\PrimitiveElement))
-                        throw new TemplateCompileException("Attempting to call a function without a name.");
+                        throw new TemplateCompileException("Attempting to call a function without a name around " . $command->getDebugSurroundings('(') . ".");
 
                     $deref = false;
                     if ($chain->previous() instanceof DereferenceOperatorElement)
@@ -164,7 +164,7 @@ class TemplateCompiler {
                 if (isset($this->operators[$command->peekSingle()]))
                     call_user_func(array($this->operators[$command->peekSingle()], 'handle'), $this, $command, $lexer, $chain, $stackEnd);
                 else if (strlen($command->peekSingle()) > 0)
-                    throw new TemplateCompileException("Unknown operator '" . $command->peekSingle() . "'");
+                    throw new TemplateCompileException("Unknown operator '" . $command->peekSingle() . "' as found in '" . $command->getDebugSurroundings($command->peekSingle()) . "'");
             }
         }
 
