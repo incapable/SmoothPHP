@@ -35,7 +35,13 @@ class ResolvedRoute {
             }
         }
 
-        $response = $this->route['controllercall']->performCall($kernel, $request, $this->parameters);
+        try {
+            $response = $this->route['controllercall']->performCall($kernel, $request, $this->parameters);
+        } catch (\Exception $e) {
+            if (http_response_code() == 200)
+                http_response_code(500);
+            $response = $kernel->error(__ENV__ == 'prod' ? 'Something went wrong!' : $e->getMessage());
+        }
 
         if (!($response instanceof Response))
             $response = new $this->route['content-type']($response);
