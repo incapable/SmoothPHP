@@ -54,16 +54,14 @@ class MySQLObjectMapper {
                 $this->fetch = new PreparedMapStatement();
 
                 $query .= implode(', ', array_map(function (\ReflectionProperty $field) {
-                    $this->fetch->params[$field->getName()] = null;
-                    $this->fetch->references[] = &$this->fetch->params[$field->getName()];
+                    $this->fetch->references[] = null;
+                    $this->fetch->params[$field->getName()] = &$this->fetch->references[count($this->fetch->references) - 1];
                     return '`' . $field->getName() . '`';
                 }, $this->fields));
 
                 $query .= ' FROM `' . $object->getTableName() . '` WHERE `id` = %d';
 
                 $this->fetch->statement = $this->mysql->prepareCustom($query);
-                call_user_func_array(array($this->fetch->statement->getMySQLi_stmt(), 'bind_result'), $this->fetch->references);
-                MySQL::checkError($this->fetch->statement->getMySQLi_stmt());
             }
 
             // Set up insert/update query
@@ -115,15 +113,16 @@ class MySQLObjectMapper {
         $prepared = null;
         if (is_int($where) || ctype_digit($where)) {
             $prepared = $this->fetch;
-            $prepared->statement->execute($where);
+            $prepared->statement->execute((int) $where);
+            call_user_func_array(array($prepared->statement->getMySQLi_stmt(), 'bind_result'), $prepared->references);
         } else {
             $query = 'SELECT ';
 
             $prepared = new PreparedMapStatement();
 
             $query .= implode(', ', array_map(function (\ReflectionProperty $field) use (&$prepared) {
-                $prepared->params[$field->getName()] = null;
-                $prepared->references[] = &$prepared->params[$field->getName()];
+                $prepared->references[] = null;
+                $prepared->params[$field->getName()] = &$prepared->references[count($prepared->references) - 1];
                 return '`' . $field->getName() . '`';
             }, $this->fields));
 
@@ -148,16 +147,17 @@ class MySQLObjectMapper {
                 $query .= ' LIMIT ' . $limit;
 
             $prepared->statement = $this->mysql->prepareCustom($query);
-            call_user_func_array(array($prepared->statement->getMySQLi_stmt(), 'bind_result'), $prepared->references);
-            MySQL::checkError($prepared->statement->getMySQLi_stmt());
 
             if (is_array($where)) {
                 call_user_func_array(array($prepared->statement, 'execute'), array_values($where));
             } else
                 $prepared->statement->execute();
 
-            $prepared->statement->getMySQLi_stmt()->store_result();
+            call_user_func_array(array($prepared->statement->getMySQLi_stmt(), 'bind_result'), $prepared->references);
+            MySQL::checkError($prepared->statement->getMySQLi_stmt());
         }
+
+        $prepared->statement->getMySQLi_stmt()->store_result();
 
         $results = array();
         while($prepared->statement->getMySQLi_stmt()->fetch()) {
