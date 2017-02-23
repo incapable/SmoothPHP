@@ -30,7 +30,12 @@ class XML extends Response implements AlternateErrorResponse {
     }
 
     public function build(Kernel $kernel, Request $request) {
-        $this->built = self::fromArray($this->controllerResponse)->saveXML();
+        if (is_array($this->controllerResponse))
+            $this->built = self::fromArray($this->controllerResponse)->saveXML();
+        else if ($this->controllerResponse instanceof \DOMDocument)
+            $this->built = $this->controllerResponse->saveXML();
+        else
+            throw new \InvalidArgumentException('Returned controller response is not an array or DOMDocument.');
     }
 
     protected function sendHeaders() {
@@ -43,7 +48,7 @@ class XML extends Response implements AlternateErrorResponse {
     }
 
     public static function fromArray(array $arrayDoc) {
-        $doc = new \DOMDocument();
+        $doc = new \DOMDocument('1.0', 'UTF-8');
         self::transformArrayToDOMNode($doc, $doc, $arrayDoc);
         return $doc;
     }
