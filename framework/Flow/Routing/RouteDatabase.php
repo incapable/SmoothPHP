@@ -190,4 +190,14 @@ class RouteDatabase {
         return $path;
     }
 
+    public function buildFullPath() {
+        $path = call_user_func_array(array($this, 'buildPath'), func_get_args());
+        $route = $this->getRoute(func_get_arg(0));
+
+        $protocol = (!empty($s['HTTPS']) && $s['HTTPS'] == 'on') ? 'https' : 'http';
+        $host = $route['domain'] != self::WILDCARD_INPUT ? $route['domain'] : $_SERVER['HTTP_HOST'];
+
+        return sprintf('%s://%s%s', $protocol, $host, $path);
+    }
+
 }
