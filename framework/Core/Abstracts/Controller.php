@@ -27,7 +27,8 @@ abstract class Controller {
 
     protected static function redirect() {
         $route = func_get_arg(0);
-        $args = array_splice(func_get_args(), 1);
+        $args = func_get_args();
+        $args = array_splice($args, 1);
         return new RedirectResponse($route, $args);
     }
 
