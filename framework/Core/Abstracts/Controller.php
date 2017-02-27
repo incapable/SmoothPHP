@@ -25,7 +25,9 @@ abstract class Controller {
         return new TemplateResponse($template, $templateArgs);
     }
 
-    protected static function redirect($route, array $args = array()) {
+    protected static function redirect() {
+        $route = func_get_arg(0);
+        $args = array_splice(func_get_args(), 1);
         return new RedirectResponse($route, $args);
     }
 
