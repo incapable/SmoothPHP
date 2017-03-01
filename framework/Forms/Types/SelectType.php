@@ -52,26 +52,22 @@ class SelectType extends Type {
     }
 
     public function __toString() {
-        try {
-            $attributes = $this->attributes['attr'];
+        $attributes = $this->attributes['attr'];
 
-            $attributes['id'] = $this->field;
-            $attributes['name'] = $this->field;
+        $attributes['id'] = $this->field;
+        $attributes['name'] = $this->field;
 
-            $mode = last($this->attributes['options_mode']);
-            $options = array();
-            $optionsAttr = $this->transformAttributes($this->attributes['options_attr']);
+        $mode = last($this->attributes['options_mode']);
+        $options = array();
+        $optionsAttr = $this->transformAttributes($this->attributes['options_attr']);
 
-            foreach ($this->attributes['options'] as $key => $value) {
-                $optionValue = ((($mode >> 4) & self::KEY_SELECTOR) == self::KEY_SELECTOR) ? $key : $value;
-                $labelValue = (($mode & self::KEY_SELECTOR) == self::KEY_SELECTOR) ? $key : $value;
-                $options[] = sprintf('<option value="%s" %s>%s</option>', $optionValue, $optionsAttr, $labelValue);
-            }
-
-            return sprintf('<select %s>%s</select>', $this->transformAttributes($attributes), implode(' ', $options));
-        } catch (\Exception $e) {
-            return '';
+        foreach ($this->attributes['options'] as $key => $value) {
+            $optionValue = ((($mode >> 4) & self::KEY_SELECTOR) == self::KEY_SELECTOR) ? $key : $value;
+            $labelValue = (($mode & self::KEY_SELECTOR) == self::KEY_SELECTOR) ? $key : $value;
+            $options[] = sprintf('<option value="%s" %s>%s</option>', $optionValue, $optionsAttr, $labelValue);
         }
+
+        return sprintf('<select %s>%s</select>', $this->transformAttributes($attributes), implode(' ', $options));
     }
 
 }
