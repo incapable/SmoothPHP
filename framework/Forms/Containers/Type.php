@@ -88,26 +88,30 @@ abstract class Type extends Constraint {
 
     public function __toString() {
         try {
-            $htmlAttributes = array();
             $attributes = $this->attributes['attr'];
 
             $attributes['id'] = $this->field;
             $attributes['name'] = $this->field;
 
-            foreach ($attributes as $key => $attribute) {
-                if ($key == 'class')
-                    $attribute = implode(' ', array_filter((array) $attribute));
-                else
-                    $attribute = last($attribute);
-                if (isset($attribute) && strlen($attribute) > 0)
-                    $htmlAttributes[] = sprintf('%s="%s"', $key, addcslashes($attribute, '"'));
-            }
-
-            return sprintf('<input %s />', implode(' ', $htmlAttributes));
+            return sprintf('<input %s />', $this->transformAttributes($attributes));
         } catch (\Exception $e) {
-            var_dump($e);
             return '';
         }
+    }
+
+    protected function transformAttributes(array $attributes) {
+        $htmlAttributes = array();
+
+        foreach ($attributes as $key => $attribute) {
+            if ($key == 'class')
+                $attribute = implode(' ', array_filter((array) $attribute));
+            else
+                $attribute = last($attribute);
+            if (isset($attribute) && strlen($attribute) > 0)
+                $htmlAttributes[] = sprintf('%s="%s"', $key, addcslashes($attribute, '"'));
+        }
+
+        return implode(' ', $htmlAttributes);
     }
 
     protected static function getLabel($field) {
