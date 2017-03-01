@@ -53,6 +53,11 @@ class SelectType extends Type {
 
     public function __toString() {
         try {
+            $attributes = $this->attributes['attr'];
+
+            $attributes['id'] = $this->field;
+            $attributes['name'] = $this->field;
+
             $mode = last($this->attributes['options_mode']);
             $options = array();
             $optionsAttr = $this->transformAttributes($this->attributes['options_attr']);
@@ -63,7 +68,7 @@ class SelectType extends Type {
                 $options[] = sprintf('<option value="%s" %s>%s</option>', $optionValue, $optionsAttr, $labelValue);
             }
 
-            return sprintf('<select %s>%s</select>', $this->transformAttributes($this->attributes['attr']), implode(' ', $options));
+            return sprintf('<select %s>%s</select>', $this->transformAttributes($attributes), implode(' ', $options));
         } catch (\Exception $e) {
             return '';
         }
