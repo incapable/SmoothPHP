@@ -56,14 +56,7 @@ class RecaptchaType extends Type {
     }
 
     public function __toString() {
-        $htmlAttributes = array();
-        $attributes = $this->attributes['attr'];
-
-        foreach($attributes as $key => $attribute)
-            if (isset($attribute) && strlen($attribute) > 0)
-                $htmlAttributes[] = sprintf('%s="%s"', $key, addcslashes($attribute, '"'));
-
-        return sprintf('<div %s></div>', implode(' ', $htmlAttributes));
+        return sprintf('<div %s></div>', $this->transformAttributes($this->attributes['attr']));
     }
 
 }
