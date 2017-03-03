@@ -34,7 +34,7 @@ class Uninstall extends Command {
 
         print( 'Dropping constraints...' . PHP_EOL );
         $constraints = $mysql->fetch( "
-			SELECT
+			SELECT DISTINCT
 			    CONCAT('ALTER TABLE `',
 			            K.TABLE_NAME,
 			            '` DROP FOREIGN KEY `',
