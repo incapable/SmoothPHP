@@ -29,10 +29,11 @@ class SelectType extends Type {
     public function __construct($field) {
         parent::__construct($field);
         $this->attributes = array_replace_recursive($this->attributes, array(
-            'options_mode' => self::KEY_VALUE_PAIR,
+            'options_mode' => self::KEY_VALUE_INVERSE,
             'strict' => true,
             'options' => array(),
-            'options_attr' => array()
+            'options_attr' => array(),
+            'required' => false
         ));
     }
 
