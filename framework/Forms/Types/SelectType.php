@@ -33,6 +33,7 @@ class SelectType extends Type {
             'strict' => true,
             'options' => array(),
             'options_attr' => array(),
+            'selected' => null,
             'required' => false
         ));
     }
@@ -65,7 +66,9 @@ class SelectType extends Type {
         foreach ($this->attributes['options'] as $key => $value) {
             $optionValue = ((($mode >> 4) & self::KEY_SELECTOR) == self::KEY_SELECTOR) ? $key : $value;
             $labelValue = (($mode & self::KEY_SELECTOR) == self::KEY_SELECTOR) ? $key : $value;
-            $options[] = sprintf('<option value="%s" %s>%s</option>', $optionValue, $optionsAttr, $labelValue);
+            $selected = last($this->attributes['selected']);
+            $selected = $selected != null && ( $key == $selected || $value == $selected ) ? ' selected' : '';
+            $options[] = sprintf('<option value="%s"%s%s>%s</option>', $optionValue, strlen($optionsAttr) ? ' ' . $optionsAttr : '', $selected, $labelValue);
         }
 
         return sprintf('<select %s>%s</select>', $this->transformAttributes($attributes), implode(' ', $options));

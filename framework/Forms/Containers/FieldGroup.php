@@ -31,6 +31,7 @@ class FieldGroup extends Type {
         $this->attributes = array_merge_recursive($this->attributes, $attributes);
         $childAttributes = $this->attributes;
         unset($childAttributes['children']);
+        unset($childAttributes['required']);
 
         $this->children = array();
 
@@ -39,8 +40,8 @@ class FieldGroup extends Type {
             /* @var $element Type */
             $element = new $value['type']($value['field']);
             $element->initialize(array_merge_recursive($childAttributes, $value));
-            $this->children[$value['field']] = new FormContainer(array(
-                'groupseparator' => $first ? '' : '</td></tr><tr><td></td><td>',
+            $this->children[] = new FormContainer(array(
+                'groupseparator' => $first ? '' : sprintf('</td></tr><tr class="fieldgroup_%s"><td></td><td>', $this->field),
                 'input' => $element
             ));
             $first = false;
@@ -49,7 +50,7 @@ class FieldGroup extends Type {
 
     public function getContainer() {
         return array(
-            'rowstart' => '<tr><td>',
+            'rowstart' => sprintf('<tr class="fieldgroup_%s"><td>', $this->field),
             'label' => $this->generateLabel(),
             'rowseparator' => '</td><td>',
             'children' => new FormContainer($this->children),

@@ -87,16 +87,12 @@ abstract class Type extends Constraint {
     }
 
     public function __toString() {
-        try {
-            $attributes = $this->attributes['attr'];
+        $attributes = $this->attributes['attr'];
 
-            $attributes['id'] = $this->field;
-            $attributes['name'] = $this->field;
+        $attributes['id'] = $this->field;
+        $attributes['name'] = $this->field;
 
-            return sprintf('<input %s />', $this->transformAttributes($attributes));
-        } catch (\Exception $e) {
-            return '';
-        }
+        return sprintf('<input %s />', $this->transformAttributes($attributes));
     }
 
     protected function transformAttributes(array $attributes) {
