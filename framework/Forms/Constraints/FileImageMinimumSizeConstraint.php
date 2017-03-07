@@ -7,8 +7,8 @@
  * Copyright (C) 2016 Rens Rikkerink
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * * * *
- * FileImageSizeConstraint.php
- * Constraint for file image uploads that require certain image dimensions.
+ * FileImageMinimumSizeConstraint.php
+ * Constraint for file image uploads that require certain minimum image dimensions.
  */
 
 namespace SmoothPHP\Framework\Forms\Constraints;
@@ -16,12 +16,12 @@ namespace SmoothPHP\Framework\Forms\Constraints;
 use SmoothPHP\Framework\Forms\Constraint;
 use SmoothPHP\Framework\Flow\Requests\Request;
 
-class FileImageSizeConstraint extends Constraint {
-    private $min, $max;
+class FileImageMinimumSizeConstraint extends Constraint {
+    private $width, $height;
 
-    public function __construct($max, $min = array(0, 0)) {
-        $this->min = $min;
-        $this->max = $max;
+    public function __construct($width, $height) {
+        $this->width = $width;
+        $this->height = $height;
     }
 
     public function setAttributes(array &$attributes) {
@@ -35,15 +35,10 @@ class FileImageSizeConstraint extends Constraint {
             return;
         }
 
-        if ($imageSize[0] < $this->min[0] || $imageSize[1] < $this->min[1]) {
+        if ($imageSize[0] < $this->width || $imageSize[1] < $this->height) {
             global $kernel;
-            $failReasons[] = sprintf($kernel->getLanguageRepository()->getEntry('smooth_form_file_image_toosmall'), $label, $this->min[0], $this->min[1]);
+            $failReasons[] = sprintf($kernel->getLanguageRepository()->getEntry('smooth_form_file_image_toosmall'), $label, $this->width, $this->height);
             return;
-        }
-
-        if ($imageSize[0] > $this->max[0] || $imageSize[1] > $this->max[1]) {
-            global $kernel;
-            $failReasons[] = sprintf($kernel->getLanguageRepository()->getEntry('smooth_form_file_image_toolarge'), $label, $this->max[0], $this->max[1]);
         }
     }
 
