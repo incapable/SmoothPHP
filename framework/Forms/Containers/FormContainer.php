@@ -50,12 +50,14 @@ class FormContainer extends Constraint {
         return $result;
     }
 
-    public function checkConstraint(Request $request, $name, $value, array &$failReasons) {
+    public function checkConstraint(Request $request, $name, $label, $value, array &$failReasons) {
         foreach($this->backing as $element)
             if ($element instanceof Constraint) {
-                if ($element instanceof Type)
+                if ($element instanceof Type) {
                     $value = $request->post->get($element->getFieldName());
-                $element->checkConstraint($request, null, $value, $failReasons);
+                    $element->checkConstraint($request, $element->getFieldName(), null, $value, $failReasons);
+                } else
+                    $element->checkConstraint($request, null, null, $value, $failReasons);
             }
     }
 

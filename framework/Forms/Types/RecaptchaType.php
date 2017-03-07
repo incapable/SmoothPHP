@@ -36,7 +36,7 @@ class RecaptchaType extends Type {
         $kernel->getAssetsRegister()->addJS('https://www.google.com/recaptcha/api.js');
     }
 
-    public function checkConstraint(Request $request, $name, $value, array &$failReasons) {
+    public function checkConstraint(Request $request, $name, $label, $value, array &$failReasons) {
         global $kernel;
         $context = stream_context_create(array(
             'http' => array(

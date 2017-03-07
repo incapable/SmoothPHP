@@ -7,8 +7,8 @@
  * Copyright (C) 2016 Rens Rikkerink
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * * * *
- * MinimumLengthConstraint.php
- * Constraint for forms that requires this particular field to have a minimum length.
+ * FileSizeConstraint.php
+ * Constraint for forms that require a file size limitation.
  */
 
 namespace SmoothPHP\Framework\Forms\Constraints;
@@ -16,21 +16,21 @@ namespace SmoothPHP\Framework\Forms\Constraints;
 use SmoothPHP\Framework\Forms\Constraint;
 use SmoothPHP\Framework\Flow\Requests\Request;
 
-class MinimumLengthConstraint extends Constraint {
-    private $minLength;
+class FileSizeConstraint extends Constraint {
+    private $fileSize;
 
-    public function __construct($minLength = 0) {
-        $this->minLength = $minLength;
+    public function __construct($fileSize) {
+        $this->fileSize = $fileSize;
     }
 
     public function setAttributes(array &$attributes) {
-        $attributes['attr']['minlength'] = $this->minLength;
+        // TODO Add javascript file-size checking
     }
 
     public function checkConstraint(Request $request, $name, $label, $value, array &$failReasons) {
-        if (strlen($value) < $this->minLength) {
+        if ($request->files->{$name}->size > $this->fileSize) {
             global $kernel;
-            $failReasons[] = sprintf($kernel->getLanguageRepository()->getEntry('smooth_form_minlength'), $label, $this->minLength);
+            $failReasons[] = sprintf($kernel->getLanguageRepository()->getEntry('smooth_form_file_size'), $label);
         }
     }
 

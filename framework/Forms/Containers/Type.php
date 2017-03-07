@@ -65,10 +65,10 @@ abstract class Type extends Constraint {
         );
     }
 
-    public function checkConstraint(Request $request, $name, $value, array &$failReasons) {
+    public function checkConstraint(Request $request, $name, $label, $value, array &$failReasons) {
         foreach($this->constraints as $constraint)
             /* @var $constraint Constraint */
-            $constraint->checkConstraint($request, $this->attributes['label'], $value, $failReasons);
+            $constraint->checkConstraint($request, $name, $this->attributes['label'], $value, $failReasons);
         $this->attributes['attr']['value'] = $value;
     }
 

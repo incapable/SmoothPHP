@@ -27,10 +27,10 @@ class MaximumLengthConstraint extends Constraint {
         $attributes['attr']['maxlength'] = $this->maxLength;
     }
 
-    public function checkConstraint(Request $request, $name, $value, array &$failReasons) {
+    public function checkConstraint(Request $request, $name, $label, $value, array &$failReasons) {
         if (strlen($value) > $this->maxLength) {
             global $kernel;
-            $failReasons[] = sprintf($kernel->getLanguageRepository()->getEntry('smooth_form_maxlength'), $name, $this->maxLength);
+            $failReasons[] = sprintf($kernel->getLanguageRepository()->getEntry('smooth_form_maxlength'), $label, $this->maxLength);
         }
     }
 

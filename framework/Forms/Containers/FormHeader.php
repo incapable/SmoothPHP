@@ -31,7 +31,8 @@ class FormHeader extends Constraint {
             'token' => true,
             'attr' => array(
                 'method' => 'post',
-                'class' => 'smoothform'
+                'class' => 'smoothform',
+                'enctype' => 'multipart/form-data'
             )
         ), $attributes);
     }
@@ -60,7 +61,7 @@ class FormHeader extends Constraint {
         return sprintf('<form %s />%s', implode(' ', $htmlAttributes), $tokenInput);
     }
 
-    public function checkConstraint(Request $request, $name, $value, array &$failReasons) {
+    public function checkConstraint(Request $request, $name, $label, $value, array &$failReasons) {
         if ($this->attributes['token']) {
             $key = array_search($request->post->_token, $_SESSION[self::SESSION_KEY], true);
             if ($key === false) {

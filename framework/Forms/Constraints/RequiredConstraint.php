@@ -22,10 +22,10 @@ class RequiredConstraint extends Constraint {
         $attributes['attr']['required'] = 'required';
     }
 
-    public function checkConstraint(Request $request, $name, $value, array &$failReasons) {
+    public function checkConstraint(Request $request, $name, $label, $value, array &$failReasons) {
         if (!isset($value) || strlen($value) == 0) {
             global $kernel;
-            $failReasons[] = sprintf($kernel->getLanguageRepository()->getEntry('smooth_form_required'), $name);
+            $failReasons[] = sprintf($kernel->getLanguageRepository()->getEntry('smooth_form_required'), $label);
         }
     }
 

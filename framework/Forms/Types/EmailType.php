@@ -30,8 +30,8 @@ class EmailType extends Type {
         ));
     }
 
-    public function checkConstraint(Request $request, $name, $value, array &$failReasons) {
-        parent::checkConstraint($request, $name, $value, $failReasons);
+    public function checkConstraint(Request $request, $name, $label, $value, array &$failReasons) {
+        parent::checkConstraint($request, $name, $label, $value, $failReasons);
 
         if (!$request->post->email->get($this->field)) {
             global $kernel;

@@ -13,21 +13,24 @@
 
 namespace SmoothPHP\Framework\Flow\Requests;
 
+use SmoothPHP\Framework\Flow\Requests\Files\FileSource;
+
 class Request {
-    private $getr, $postr, $serverr;
+    private $getr, $postr, $serverr, $filesr;
     public $meta;
 
     /**
      * @return \SmoothPHP\Framework\Flow\Requests\Request
      */
     public static function createFromGlobals() {
-        return new Request($_GET, $_POST, $_SERVER);
+        return new Request($_GET, $_POST, $_SERVER, $_FILES);
     }
 
-    public function __construct(array $get, array $post, array $server) {
+    public function __construct(array $get, array $post, array $server, array $files = array()) {
         $this->getr = new VariableSource($get);
         $this->postr = new VariableSource($post);
         $this->serverr = new VariableSource($server);
+        $this->filesr = new FileSource($files);
         $this->meta = new \stdClass();
     }
 
@@ -41,6 +44,7 @@ class Request {
             case "get":
             case "post":
             case "server":
+            case "files":
                 return $this->{$scope . 'r'};
             default:
                 throw new \Exception("Invalid scope.");

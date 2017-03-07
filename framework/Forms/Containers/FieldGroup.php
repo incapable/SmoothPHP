@@ -58,7 +58,7 @@ class FieldGroup extends Type {
         );
     }
 
-    public function checkConstraint(Request $request, $name, $value, array &$failReasons) {
+    public function checkConstraint(Request $request, $name, $label, $value, array &$failReasons) {
         foreach($this->children as $element)
             if ($element instanceof Constraint) {
                 if ($element instanceof Type)

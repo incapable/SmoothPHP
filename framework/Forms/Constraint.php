@@ -19,6 +19,6 @@ abstract class Constraint {
 
     public function setAttributes(array &$attributes) {}
 
-    public abstract function checkConstraint(Request $request, $name, $value, array &$failReasons);
+    public abstract function checkConstraint(Request $request, $name, $label, $value, array &$failReasons);
 
 }

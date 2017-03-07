@@ -38,8 +38,8 @@ class SelectType extends Type {
         ));
     }
 
-    public function checkConstraint(Request $request, $name, $value, array &$failReasons) {
-        parent::checkConstraint($request, $name, $value, $failReasons);
+    public function checkConstraint(Request $request, $name, $label, $value, array &$failReasons) {
+        parent::checkConstraint($request, $name, $label, $value, $failReasons);
 
         if ($this->attributes['strict']) {
             $mode = last($this->attributes['options_mode']);
@@ -48,7 +48,7 @@ class SelectType extends Type {
 
             if (!in_array($value, $options)) {
                 global $kernel;
-                $failReasons[] = sprintf($kernel->getLanguageRepository()->getEntry('smooth_form_selectvalue'), $value, $name);
+                $failReasons[] = sprintf($kernel->getLanguageRepository()->getEntry('smooth_form_selectvalue'), $value, $label);
             }
         }
     }
