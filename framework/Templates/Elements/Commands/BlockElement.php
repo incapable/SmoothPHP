@@ -29,6 +29,7 @@ class BlockElement extends Element {
     private $name;
     private $usage;
     private $body;
+    private $definer;
 
     public static function handle(TemplateCompiler $compiler, TemplateLexer $command, TemplateLexer $lexer, Chain $chain) {
         $args = new Chain();
@@ -56,47 +57,50 @@ class BlockElement extends Element {
         $this->name = $name;
         $this->usage = $usage;
         $this->body = $body;
+        $this->definer = false;
     }
 
     public function optimize(CompilerState $tpl) {
-        if ($tpl->finishing)
-            return $this->body->optimize($tpl);
+        if ($tpl->performCalls) {
+            $this->name = $this->name->optimize($tpl);
 
-        $this->name = $this->name->optimize($tpl);
+            if (!($this->name instanceof PrimitiveElement))
+                throw new TemplateCompileException("Could not determine block name at compile-time.");
+            $name = $this->name->getValue();
 
-        if (!($this->name instanceof PrimitiveElement))
-            throw new TemplateCompileException("Could not determine block name at compile-time.");
-        $name = $this->name->getValue();
-
-        $this->body = $this->body->optimize($tpl);
-        if ($this->usage == self::USAGE_UNSPECIFIED) {
-            if (isset($tpl->blocks[$name])) {
-                $tpl->blocks[$name]->body = $this->body;
+            $this->body = $this->body->optimize($tpl);
+            if ($this->usage == self::USAGE_UNSPECIFIED) {
+                if (isset($tpl->blocks[$name])) {
+                    $tpl->blocks[$name]->body = $this->body;
+                } else {
+                    $tpl->blocks[$name] = $this;
+                    $this->definer = true;
+                }
             } else {
-                $tpl->blocks[$name] = $this;
-                return $this;
-            }
-        } else {
-            if (!isset($tpl->blocks[$name]))
-                throw new TemplateCompileException("Attempting to prepend/append to an unknown block '" . $this->name->getValue() . "'.");
+                if (!isset($tpl->blocks[$name]))
+                    throw new TemplateCompileException("Attempting to prepend/append to an unknown block '" . $this->name->getValue() . "'.");
 
-            $blockEl = $tpl->blocks[$name];
+                $blockEl = $tpl->blocks[$name];
 
-            $chain = new Chain();
-            if ($this->usage == self::USAGE_PREPEND) {
-                $chain->addElement($this->body);
-                $chain->addElement($blockEl->body);
-            } else if ($this->usage == self::USAGE_APPEND) {
-                $chain->addElement($blockEl->body);
-                $chain->addElement($this->body);
+                $chain = new Chain();
+                if ($this->usage == self::USAGE_PREPEND) {
+                    $chain->addElement($this->body);
+                    $chain->addElement($blockEl->body);
+                } else if ($this->usage == self::USAGE_APPEND) {
+                    $chain->addElement($blockEl->body);
+                    $chain->addElement($this->body);
+                }
+                $blockEl->body = $chain->optimize($tpl);
+
+                return new PrimitiveElement();
             }
-            $blockEl->body = $chain->optimize($tpl);
         }
 
-        return new PrimitiveElement();
+        return $this;
     }
 
     public function output(CompilerState $tpl) {
-        // Do nothing
+        if ($this->definer)
+            $this->body->output($tpl);
     }
 }
