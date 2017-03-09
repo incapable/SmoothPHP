@@ -48,7 +48,7 @@ class VariableSource {
             return $filter == FILTER_VALIDATE_BOOLEAN ? null : false;
 
         if ($filter == FILTER_VALIDATE_ARRAY)
-            return $this->source[$varName];
+            return (array) $this->source[$varName];
 
         $value = trim($this->source[$varName]);
         $options = array(
