@@ -34,16 +34,19 @@ class MySQLResult {
             return true;
     }
 
-    public function getAsArray() {
-        $arrays = array_values($this->results);
+    public function getAsArray($flatten = true) {
+        if ($flatten) {
+            $arrays = array_values($this->results);
 
-        if (isset($arrays[0]) && is_array($arrays[0]) && count($arrays[0]) == 1) {
-            $arrays = array_map(function($value) {
-                return current($value);
-            }, $arrays);
-        }
+            if (isset($arrays[0]) && is_array($arrays[0]) && count($arrays[0]) == 1) {
+                $arrays = array_map(function ($value) {
+                    return current($value);
+                }, $arrays);
+            }
 
-        return $arrays;
+            return $arrays;
+        } else
+            return $this->results;
     }
 
     public function __get($varName) {
