@@ -17,6 +17,8 @@ class Config {
     public $default_language = 'en_us';
     public $detect_language = true;
 
+    public $date_format = 'l, d-M-Y H:i:s';
+
     public $mysql_enabled = false;
     public $mysql_host = 'localhost';
     public $mysql_database = 'smoothphp';
