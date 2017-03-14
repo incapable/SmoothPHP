@@ -29,7 +29,7 @@ class Cron extends Command {
         $kernel->registerCron($mgr);
         $website->registerCron($mgr);
 
-        if (count($argv) > 1) {
+        if (count($argv) >= 1) {
             switch ($argv[0]) {
                 case 'install':
                     $mgr->install();
@@ -38,7 +38,7 @@ class Cron extends Command {
                     $mgr->uninstall();
                     return;
                 case 'run':
-                    if (count($argv) > 2) {
+                    if (count($argv) >= 2) {
                         $mgr->run($kernel, $argv[1]);
                         return;
                     }
