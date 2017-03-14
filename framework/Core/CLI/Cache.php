@@ -31,6 +31,4 @@ class Cache extends Command {
         print('Cache has been cleared.' . PHP_EOL);
     }
 
-
-
 }
