@@ -29,16 +29,20 @@ class Cron extends Command {
         $kernel->registerCron($mgr);
         $website->registerCron($mgr);
 
-        switch($argv[0]) {
-            case 'install':
-                $mgr->install();
-                return;
-            case 'uninstall':
-                $mgr->uninstall();
-                return;
-            case 'run':
-                $mgr->run($kernel, $argv[1]);
-                return;
+        if (count($argv) > 1) {
+            switch ($argv[0]) {
+                case 'install':
+                    $mgr->install();
+                    return;
+                case 'uninstall':
+                    $mgr->uninstall();
+                    return;
+                case 'run':
+                    if (count($argv) > 2) {
+                        $mgr->run($kernel, $argv[1]);
+                        return;
+                    }
+            }
         }
 
         print('Usage: smoothphp cron <install|uninstall|run> [jobname]' . PHP_EOL);
