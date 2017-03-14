@@ -16,6 +16,7 @@ namespace SmoothPHP\Framework\Core;
 use SmoothPHP\Framework\Authentication\AuthenticationManager;
 use SmoothPHP\Framework\Cache\Assets\AssetsRegister;
 use SmoothPHP\Framework\Core\Abstracts\WebPrototype;
+use SmoothPHP\Framework\Core\Cron\CronManager;
 use SmoothPHP\Framework\Database\MySQL;
 use SmoothPHP\Framework\Flow\Requests\Request;
 use SmoothPHP\Framework\Flow\Responses\AlternateErrorResponse;
@@ -42,6 +43,14 @@ class Kernel {
         $this->config = new Config();
         $this->authentication = new AuthenticationManager();
         $this->errorHandler = array($this, 'handleError');
+    }
+
+    public function registerCron(CronManager $mgr) {
+        if ($this->config->authentication_enabled) {
+            $mgr->newJob('authentication_clean_sessions', '@hourly', function(Kernel $kernel) {
+                $kernel->getMySQL()->execute('DELETE FROM `loginsessions` WHERE `lastUpdate` < UNIX_TIMESTAMP((NOW() - INTERVAL 1 HOUR))');
+            });
+        }
     }
 
     public function loadPrototype(WebPrototype $prototype) {

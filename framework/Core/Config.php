@@ -13,6 +13,8 @@
 
 namespace SmoothPHP\Framework\Core;
 
+use SmoothPHP\Framework\Core\Cron\Handlers\CronTab;
+
 class Config {
     public $default_language = 'en_us';
     public $detect_language = true;
@@ -28,6 +30,8 @@ class Config {
 
     public $authentication_enabled = false;
     public $authentication_loginroute = null;
+
+    public $cron_handler = CronTab::class;
 
     public $recaptcha_site_key = '';
     public $recaptcha_site_secret = '';
