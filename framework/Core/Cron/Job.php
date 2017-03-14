@@ -1,5 +1,16 @@
 <?php
 
+/*!
+ * SmoothPHP
+ * This file is part of the SmoothPHP project.
+ * * * *
+ * Copyright (C) 2016 Rens Rikkerink
+ * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
+ * * * *
+ * Job.php
+ * Class representing an individual cron job, not to be used by the developer
+ */
+
 namespace SmoothPHP\Framework\Core\Cron;
 
 use SmoothPHP\Framework\Core\Kernel;

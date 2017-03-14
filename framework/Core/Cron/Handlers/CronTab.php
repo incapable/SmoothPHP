@@ -1,5 +1,16 @@
 <?php
 
+/*!
+ * SmoothPHP
+ * This file is part of the SmoothPHP project.
+ * * * *
+ * Copyright (C) 2016 Rens Rikkerink
+ * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
+ * * * *
+ * CronTab.php
+ * CronHandler implementation for unix's crontab
+ */
+
 namespace SmoothPHP\Framework\Core\Cron\Handlers;
 
 use SmoothPHP\Framework\Core\Cron\CronHandler;

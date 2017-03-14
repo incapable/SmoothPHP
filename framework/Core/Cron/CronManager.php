@@ -1,5 +1,16 @@
 <?php
 
+/*!
+ * SmoothPHP
+ * This file is part of the SmoothPHP project.
+ * * * *
+ * Copyright (C) 2016 Rens Rikkerink
+ * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
+ * * * *
+ * CronManager.php
+ * Class managing all known cron jobs, installing and running them
+ */
+
 namespace SmoothPHP\Framework\Core\Cron;
 
 use SmoothPHP\Framework\Core\Kernel;
