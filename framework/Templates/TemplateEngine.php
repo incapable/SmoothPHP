@@ -50,11 +50,12 @@ class TemplateEngine {
     }
 
     public function simpleFetch($absoluteFile, array $args = array()) {
-        return $this->prepareOutput($this->compiler->compile($absoluteFile), $args);
+        return $this->prepareOutput($this->compiler->compile($absoluteFile), $args, false);
     }
 
-    private function prepareOutput($template, array $args) {
+    private function prepareOutput($template, array $args, $allowMinify = __ENV__ != 'dev') {
         $state = new CompilerState();
+        $state->allowMinify = $allowMinify;
         foreach($args as $key => $value)
             $state->vars->{$key} = new PrimitiveElement($value);
         $state->performCalls = true;

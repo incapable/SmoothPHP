@@ -43,6 +43,12 @@ class Kernel {
         $this->config = new Config();
         $this->authentication = new AuthenticationManager();
         $this->errorHandler = array($this, 'handleError');
+
+        if (__ENV__ != 'dev') {
+            global $classLoader;
+            $classLoader->addPrefix('tubalmartin\\CSSmin', __ROOT__ . 'framework/meta/vendor/CSSmin/');
+            $classLoader->addPrefix('JShrink', __ROOT__ . 'framework/meta/vendor/JShrink/');
+        }
     }
 
     public function registerCron(CronManager $mgr) {

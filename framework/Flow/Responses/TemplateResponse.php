@@ -13,6 +13,7 @@
 
 namespace SmoothPHP\Framework\Flow\Responses;
 
+use PHPWee\HtmlMin;
 use SmoothPHP\Framework\Core\Kernel;
 use SmoothPHP\Framework\Flow\Requests\Request;
 

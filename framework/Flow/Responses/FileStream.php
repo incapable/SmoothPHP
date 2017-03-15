@@ -45,7 +45,7 @@ class FileStream extends Response {
             header('Access-Control-Allow-Origin: *');
 
         if ($this->options['cache']) {
-            $eTag = md5_file($this->options['url']);
+            $eTag = cached_md5_file($this->options['url']);
             $lastModified = filemtime($this->options['url']);
 
             if (__ENV__ != 'dev') {

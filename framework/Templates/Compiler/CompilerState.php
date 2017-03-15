@@ -19,6 +19,7 @@ class CompilerState {
     public $uncertainDepth;
     public $finishing;
     public $performCalls;
+    public $allowMinify;
 
     public function __construct() {
         $this->vars = new Scope();
@@ -26,6 +27,7 @@ class CompilerState {
         $this->uncertainVars = 0;
         $this->finishing = false;
         $this->performCalls = false;
+        $this->allowMinify = false;
     }
 
     public function createSubScope() {
@@ -35,6 +37,7 @@ class CompilerState {
         $copy->blocks = $this->blocks;
         $copy->finishing = $this->finishing;
         $copy->performCalls = $this->performCalls;
+        $copy->allowMinify = $this->allowMinify;
 
         return $copy;
     }

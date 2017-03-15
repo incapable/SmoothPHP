@@ -29,6 +29,17 @@ class AssetsController extends Controller {
         ));
     }
 
+    public function getCompiledJS($hash) {
+        $file = __ROOT__ . 'cache/js/compiled.' . $hash . '.js';
+
+        return new FileStream(array(
+            'cache' => true,
+            'type' => 'text/javascript',
+            'filename' => 'compiled.js',
+            'url' => $file
+        ));
+    }
+
     public function getCSS(AssetsRegister $register, array $path) {
         $file = $register->getCSSPath(implode('/', $path));
 
@@ -36,6 +47,17 @@ class AssetsController extends Controller {
             'cache' => true,
             'type' => 'text/css',
             'filename' => end($path),
+            'url' => $file
+        ));
+    }
+
+    public function getCompiledCSS($hash) {
+        $file = __ROOT__ . 'cache/css/compiled.' . $hash . '.css';
+
+        return new FileStream(array(
+            'cache' => true,
+            'type' => 'text/css',
+            'filename' => 'compiled.css',
             'url' => $file
         ));
     }
@@ -50,7 +72,7 @@ class AssetsController extends Controller {
             str_replace(array('/', '\\'), array('_', '_'), $srcFile),
             $matches[2],
             $matches[3],
-            md5_file($srcFileFull),
+            cached_md5_file($srcFileFull),
             $matches[4]);
 
         return new FileStream(array(

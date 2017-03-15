@@ -13,8 +13,10 @@
 
 namespace SmoothPHP\Framework\Cache\Assets;
 
+use JShrink\Minifier;
 use SmoothPHP\Framework\Cache\Builder\FileCacheProvider;
 use SmoothPHP\Framework\Core\Kernel;
+use tubalmartin\CSSmin\CSSmin;
 
 class AssetsRegister {
     /* @var $jsCache FileCacheProvider */
@@ -29,48 +31,81 @@ class AssetsRegister {
         $this->js = array();
         $this->css = array();
 
-        $parser = function($filePath) use ($kernel) {
+        $simpleLoader = function ($filePath) use ($kernel) {
             return $kernel->getTemplateEngine()->simpleFetch($filePath, array(
                 'assets' => $kernel->getAssetsRegister(),
                 'route' => $kernel->getRouteDatabase()
             ));
         };
 
-        $this->jsCache = new FileCacheProvider('js', null, $parser);
-        $this->cssCache = new FileCacheProvider('css', null, $parser);
+        if (__ENV__ == 'dev') {
+            $this->jsCache = new FileCacheProvider('js', null, $simpleLoader);
+            $this->cssCache = new FileCacheProvider('css', null, $simpleLoader);
+        } else {
+            $this->jsCache = new FileCacheProvider('js', 'final.js', function($filePath) use ($simpleLoader) {
+                $raw = $simpleLoader($filePath);
+                return Minifier::minify($raw);
+            });
+
+            $cssmin = new CSSmin();
+            $this->cssCache = new FileCacheProvider('css', 'final.css', function($filePath) use ($simpleLoader, $cssmin) {
+                $raw = $simpleLoader($filePath);
+                return $cssmin->run($raw);
+            });
+        }
         $this->imageCache = new ImageCache('images');
 
         $route = $kernel->getRouteDatabase();
         if ($route) {
-            $route->register(array(
-                'name' => 'assets_js',
-                'path' => '/js/...',
-                'controller' => AssetsController::class,
-                'call' => 'getJS'
-            ));
-            $route->register(array(
-                'name' => 'assets_css',
-                'path' => '/css/...',
-                'controller' => AssetsController::class,
-                'call' => 'getCSS'
-            ));
             $route->register(array(
                 'name' => 'assets_images',
                 'path' => '/images/...',
                 'controller' => AssetsController::class,
                 'call' => 'getImage'
             ));
+
+            if (__ENV__ != 'dev') {
+                $route->register(array(
+                    'name' => 'assets_css_compiled',
+                    'path' => '/css/%/compiled.css',
+                    'controller' => AssetsController::class,
+                    'call' => 'getCompiledCSS'
+                ));
+                $route->register(array(
+                    'name' => 'assets_js_compiled',
+                    'path' => '/js/%/compiled.js',
+                    'controller' => AssetsController::class,
+                    'call' => 'getCompiledJS'
+                ));
+            } else {
+                $route->register(array(
+                    'name' => 'assets_js',
+                    'path' => '/js/...',
+                    'controller' => AssetsController::class,
+                    'call' => 'getJS'
+                ));
+                $route->register(array(
+                    'name' => 'assets_css',
+                    'path' => '/css/...',
+                    'controller' => AssetsController::class,
+                    'call' => 'getCSS'
+                ));
+            }
         }
+    }
+
+    public static function getSourcePath($type, $file) {
+        $path = sprintf('%ssrc/assets/%s/%s', __ROOT__, $type, $file);
+        if (!file_exists($path))
+            throw new \RuntimeException($type . " file '" . $file . "' does not exist.");
+        return $path;
     }
 
     public function addJS($file) {
         $this->js[] = $file;
         if (strtolower(substr($file, 0, 4)) != 'http') {
-            $path = sprintf('%ssrc/assets/js/%s', __ROOT__, $file);
-            if (file_exists($path)) {
-                $this->jsCache->fetch($path);
-            } else
-                throw new \RuntimeException("Javascript file '" . $file . "' does not exist.");
+            $path = self::getSourcePath('js', $file);
+            $this->jsCache->fetch($path);
         }
     }
 
@@ -79,28 +114,19 @@ class AssetsRegister {
     }
 
     public function getJSPath($file) {
-        $path = sprintf('%ssrc/assets/js/%s', __ROOT__, $file);
-        if (!file_exists($path))
-            throw new \RuntimeException();
-        return $this->jsCache->getCachePath($path);
+        return $this->jsCache->getCachePath(self::getSourcePath('js', $file));
     }
 
     public function addCSS($file) {
         $this->css[] = $file;
         if (strtolower(substr($file, 0, 4)) != 'http') {
-            $path = sprintf('%ssrc/assets/css/%s', __ROOT__, $file);
-            if (file_exists($path)) {
-                $this->cssCache->fetch($path);
-            } else
-                throw new \RuntimeException("CSS file '" . $file . "' does not exist.");
+            $path = self::getSourcePath('css', $file);
+            $this->cssCache->fetch($path);
         }
     }
 
     public function getCSSPath($file) {
-        $path = sprintf('%ssrc/assets/css/%s', __ROOT__, $file);
-        if (!file_exists($path))
-            throw new \RuntimeException();
-        return $this->cssCache->getCachePath($path);
+        return $this->cssCache->getCachePath(self::getSourcePath('css', $file));
     }
 
     public function getCSSFiles() {
@@ -108,11 +134,19 @@ class AssetsRegister {
     }
 
     public function getImage($file, $width = null, $height = null) {
-        $path = sprintf('%ssrc/assets/images/%s', __ROOT__, $file);
-        if (file_exists($path)) {
-            $this->imageCache->ensureCache($path, $width, $height);
+        $cachePath = $this->imageCache->ensureCache(self::getSourcePath('images', $file), $width, $height);
+        $fileInfo = pathinfo($file);
 
-            $fileInfo = pathinfo($file);
+        $mimes = array(
+            'jpg' => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'gif' => 'image/gif',
+            'png' => 'image/png'
+        );
+
+        if (__ENV__ != 'dev' && filesize($cachePath) <= 10000) {
+            return sprintf('data:%s;base64,%s', $mimes[$fileInfo['extension']], base64_encode(file_get_contents($cachePath)));
+        } else {
             $virtualPath = sprintf('/images/%s%s.%dx%d.%s',
                 $fileInfo['dirname'] == '.' ? '' : ($fileInfo['dirname'] . '/'),
                 $fileInfo['filename'],
@@ -121,8 +155,7 @@ class AssetsRegister {
                 $fileInfo['extension']);
 
             return $virtualPath;
-        } else
-            throw new \RuntimeException("Image '" . $file . "' does not exist.");
+        }
     }
 
 }

@@ -49,7 +49,30 @@ class PrimitiveElement extends Element {
     }
 
     public function optimize(CompilerState $tpl) {
+        if ($tpl->allowMinify && is_string($this->value)) {
+            $minified = $this->minify($this->value);
+            if ($minified != $this->value)
+                return new PrimitiveElement($minified);
+        }
         return $this;
+    }
+
+    private function minify($buffer) {
+        $search = array(
+            '/\>[^\S ]+/s',     // strip whitespaces after tags, except space
+            '/[^\S ]+\</s',     // strip whitespaces before tags, except space
+            '/(\s)+/s',         // shorten multiple whitespace sequences
+            '/<!--(.|\s)*?-->/' // Remove HTML comments
+        );
+
+        $replace = array(
+            '>',
+            '<',
+            '\\1',
+            ''
+        );
+
+        return preg_replace($search, $replace, $buffer);
     }
 
     public function output(CompilerState $tpl) {

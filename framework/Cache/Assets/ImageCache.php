@@ -43,7 +43,7 @@ class ImageCache {
 
         // Check if the cache exists
         if (file_exists($cacheFile))
-            return;
+            return $cacheFile;
 
         // If we get to this point, the above return has not returned.
         // Which means we have to generate a new cache
@@ -79,13 +79,14 @@ class ImageCache {
             }
 
             $lock->unlock();
-            return;
         }
+
+        return $cacheFile;
     }
 
     public function getCachePath($sourceFile, $width, $height, &$fileName = null) {
         $fileName = str_replace(array('/', '\\'), array('_', '_'), str_replace(__ROOT__, '', $sourceFile));
-        $checksum = md5_file($sourceFile);
+        $checksum = cached_md5_file($sourceFile);
 
         return sprintf($this->cacheFileFormat, $fileName, $width, $height, $checksum, pathinfo($sourceFile, PATHINFO_EXTENSION));
     }
