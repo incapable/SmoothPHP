@@ -48,8 +48,11 @@ class JSElement extends Element {
                 continue;
             }
 
-            $files[] = $js;
+            $files[] = $assetsRegister->getJSPath($js);
         }
+
+        if (count($files) == 0)
+            return;
 
         $hash = md5(implode(',', $files));
 
@@ -59,7 +62,7 @@ class JSElement extends Element {
             if ($lock->lock()) {
                 $contents = '';
                 array_walk($files, function ($file) use ($assetsRegister, &$contents) {
-                    $contents .= '; ' . file_get_contents($assetsRegister->getJSPath($file));
+                    $contents .= '; ' . file_get_contents($file);
                 });
 
                 $optimized = Minifier::minify($contents);

@@ -49,8 +49,11 @@ class CSSElement extends Element {
                 continue;
             }
 
-            $files[] = $css;
+            $files[] = $assetsRegister->getCSSPath($css);
         }
+
+        if (count($files) == 0)
+            return;
 
         $hash = md5(implode(',', $files));
 
@@ -60,7 +63,7 @@ class CSSElement extends Element {
             if ($lock->lock()) {
                 $contents = '';
                 array_walk($files, function ($file) use ($assetsRegister, &$contents) {
-                    $contents .= ' ' . file_get_contents($assetsRegister->getCSSPath($file));
+                    $contents .= ' ' . file_get_contents($file);
                 });
 
                 $cssmin = new CSSmin();
