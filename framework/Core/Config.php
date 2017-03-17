@@ -20,6 +20,7 @@ class Config {
     public $detect_language = true;
 
     public $date_format = 'l, d-M-Y H:i:s';
+    public $image_inline_threshold = 10000;
 
     public $mysql_enabled = false;
     public $mysql_host = 'localhost';
