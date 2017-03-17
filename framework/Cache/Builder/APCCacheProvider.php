@@ -56,7 +56,7 @@ class APCCacheProvider extends RuntimeCacheProvider {
 
             if ($lock->lock()) {
                 $newCache = call_user_func($cacheBuilder, $realPath);
-                call_user_func($this->cacheStore, self::$apcKey . $realPath);
+                call_user_func($this->cacheStore, self::$apcKey . $realPath, $newCache);
                 return $newCache;
             } else
                 return call_user_func($this->cacheFetch, self::$apcKey . $realPath);
