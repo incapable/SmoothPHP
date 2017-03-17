@@ -56,10 +56,10 @@ class APCCacheProvider extends RuntimeCacheProvider {
 
             if ($lock->lock()) {
                 $newCache = call_user_func($cacheBuilder, $realPath);
-                call_user_func($this->cacheStore, self::$apcKey . $realPath, $newCache);
+                call_user_func($this->cacheStore, self::$apcKey . $realPath, new APCCacheItem($checksum, $newCache));
                 return $newCache;
             } else
-                return call_user_func($this->cacheFetch, self::$apcKey . $realPath);
+                return call_user_func($this->cacheFetch, self::$apcKey . $realPath)->value;
         }
     }
 
@@ -68,4 +68,9 @@ class APCCacheProvider extends RuntimeCacheProvider {
 class APCCacheItem {
     public $md5;
     public $value;
+
+    public function __construct($md5, $value) {
+        $this->md5 = $md5;
+        $this->value = $value;
+    }
 }
