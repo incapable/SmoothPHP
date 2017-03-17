@@ -16,6 +16,7 @@ namespace SmoothPHP\Framework\Flow\Routing;
 use SmoothPHP\Framework\Core\Abstracts\Controller;
 use SmoothPHP\Framework\Core\Kernel;
 use SmoothPHP\Framework\Flow\Requests\Request;
+use SmoothPHP\Framework\Flow\Requests\Robots;
 use SmoothPHP\Framework\Flow\Responses\PlainTextResponse;
 
 class RouteDatabase {
@@ -35,7 +36,8 @@ class RouteDatabase {
             'method' => 'GET',
             'domain' => self::WILDCARD_INPUT,
             'https' => HTTPS::IGNORE,
-            'content-type' => PlainTextResponse::class
+            'content-type' => PlainTextResponse::class,
+            'robots' => Robots::AUTO
         );
     }
 
@@ -153,6 +155,10 @@ class RouteDatabase {
             return false;
     }
 
+    public function getAllRoutes() {
+        return $this->routes;
+    }
+
     /**
      * @param $routeName
      * @return Controller
@@ -221,6 +227,7 @@ class RouteDatabase {
     private function assembleFullPath(array $route, array $args) {
         $path = $this->assemblePath($route, $args);
 
+        global $request;
         switch($route['https']) {
             case HTTPS::ENFORCE_ACTIVE:
                 $protocol = 'https';
@@ -229,10 +236,9 @@ class RouteDatabase {
                 $protocol = 'http';
                 break;
             default:
-                global $request;
                 $protocol = $request->isSecure() ? 'https' : 'http';
         }
-        $host = $route['domain'] != self::WILDCARD_INPUT ? $route['domain'] : $_SERVER['HTTP_HOST'];
+        $host = $route['domain'] != self::WILDCARD_INPUT ? $route['domain'] : $request->server->HTTP_HOST;
 
         return sprintf('%s://%s%s', $protocol, $host, $path);
     }

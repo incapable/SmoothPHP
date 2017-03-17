@@ -19,6 +19,7 @@ use SmoothPHP\Framework\Core\Abstracts\WebPrototype;
 use SmoothPHP\Framework\Core\Cron\CronManager;
 use SmoothPHP\Framework\Database\MySQL;
 use SmoothPHP\Framework\Flow\Requests\Request;
+use SmoothPHP\Framework\Flow\Requests\Robots;
 use SmoothPHP\Framework\Flow\Responses\AlternateErrorResponse;
 use SmoothPHP\Framework\Flow\Responses\PlainTextResponse;
 use SmoothPHP\Framework\Flow\Routing\RouteDatabase;
@@ -68,6 +69,8 @@ class Kernel {
         else
             $this->authentication = null;
         $this->languagerepo->addSource(new FileDataSource(__ROOT__ . 'src/assets/strings/'));
+        if ($this->config->enable_robots)
+            Robots::registerRoute($this->routeDatabase);
         $prototype->registerRoutes($this->routeDatabase);
         $this->routeDatabase->initializeControllers($this);
     }

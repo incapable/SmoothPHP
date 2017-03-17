@@ -16,6 +16,7 @@ namespace SmoothPHP\Framework\Cache\Assets;
 use JShrink\Minifier;
 use SmoothPHP\Framework\Cache\Builder\FileCacheProvider;
 use SmoothPHP\Framework\Core\Kernel;
+use SmoothPHP\Framework\Flow\Requests\Robots;
 use tubalmartin\CSSmin\CSSmin;
 
 class AssetsRegister {
@@ -46,7 +47,8 @@ class AssetsRegister {
                 'name' => 'assets_images',
                 'path' => '/images/...',
                 'controller' => AssetsController::class,
-                'call' => 'getImage'
+                'call' => 'getImage',
+                'robots' => Robots::HIDE
             ));
 
             if (__ENV__ != 'dev') {
@@ -54,26 +56,30 @@ class AssetsRegister {
                     'name' => 'assets_css_compiled',
                     'path' => '/css/%/compiled.css',
                     'controller' => AssetsController::class,
-                    'call' => 'getCompiledCSS'
+                    'call' => 'getCompiledCSS',
+                    'robots' => Robots::HIDE
                 ));
                 $route->register(array(
                     'name' => 'assets_js_compiled',
                     'path' => '/js/%/compiled.js',
                     'controller' => AssetsController::class,
-                    'call' => 'getCompiledJS'
+                    'call' => 'getCompiledJS',
+                    'robots' => Robots::HIDE
                 ));
             } else {
                 $route->register(array(
                     'name' => 'assets_js',
                     'path' => '/js/...',
                     'controller' => AssetsController::class,
-                    'call' => 'getJS'
+                    'call' => 'getJS',
+                    'robots' => Robots::HIDE
                 ));
                 $route->register(array(
                     'name' => 'assets_css',
                     'path' => '/css/...',
                     'controller' => AssetsController::class,
-                    'call' => 'getCSS'
+                    'call' => 'getCSS',
+                    'robots' => Robots::HIDE
                 ));
             }
         }

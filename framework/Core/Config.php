@@ -33,6 +33,7 @@ class Config {
     public $authentication_loginroute = null;
 
     public $cron_handler = CronTab::class;
+    public $enable_robots = true;
 
     public $recaptcha_site_key = '';
     public $recaptcha_site_secret = '';
