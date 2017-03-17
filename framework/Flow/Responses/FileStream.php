@@ -34,6 +34,9 @@ class FileStream extends Response {
             'cache' => false,
             'cors' => true
         ), $options);
+
+        if (!file_exists($this->options['url']))
+            throw new \RuntimeException("File does not exist!");
     }
 
     protected function sendHeaders() {

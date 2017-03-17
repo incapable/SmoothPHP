@@ -25,12 +25,15 @@ function last($array) {
 /**
  * Method that wraps md5_file with a simple caching mechanism to prevent calculating the same file multiple times
  * @param $filename string Path to the file
- * @return string m5 checksum
+ * @return string|null md5 checksum or null if the file doesn't exist
  * @note The results and file existence are cached, consecutive calls to this function will return even if the file no longer exists.
  */
 function cached_md5_file($filename) {
     static $md5Cache = array();
     $filename = realpath($filename);
+
+    if (!file_exists($filename))
+        return null;
 
     if (!isset($md5Cache[$filename]))
         $md5Cache[$filename] = $result = md5_file($filename);

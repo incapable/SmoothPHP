@@ -14,7 +14,9 @@
 namespace SmoothPHP\Framework\Cache\Assets;
 
 use SmoothPHP\Framework\Core\Abstracts\Controller;
+use SmoothPHP\Framework\Core\Kernel;
 use SmoothPHP\Framework\Flow\Responses\FileStream;
+use SmoothPHP\Framework\Localization\LanguageRepository;
 
 class AssetsController extends Controller {
 
@@ -62,7 +64,7 @@ class AssetsController extends Controller {
         ));
     }
 
-    public function getImage(array $path) {
+    public function getImage(Kernel $kernel, LanguageRepository $language, array $path) {
         preg_match('/^(.+?)(?:\.([0-9]+?)x([0-9]+?))?\.([a-z]+)$/', implode('/', $path), $matches);
 
         $srcFile = sprintf('src/assets/images/%s.%s', $matches[1], $matches[4]);
@@ -74,6 +76,11 @@ class AssetsController extends Controller {
             $matches[3],
             cached_md5_file($srcFileFull),
             $matches[4]);
+
+        if (!file_exists($cacheFile))  {
+            http_response_code(404);
+            return $kernel->error($language->getEntry('smooth_error_404'));
+        }
 
         return new FileStream(array(
             'cache' => true,
