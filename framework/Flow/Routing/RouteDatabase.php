@@ -199,13 +199,13 @@ class RouteDatabase {
     private function assemblePath(array $route, array $args) {
         $path = $route['path'];
         for($i = 0; $i < count($args); $i++) {
-            $path = preg_replace('/' . self::WILDCARD_INPUT . '/', $args[$i], $path, 1, $count);
+            $path = preg_replace('/' . preg_quote(self::WILDCARD_INPUT, '/') . '/', $args[$i], $path, 1, $count);
             if ($count == 1)
                 continue;
             else {
                 if (strpos($path, self::VARARGS_INPUT) !== false) {
                     $varArgs = implode('/', array_splice($args, $i));
-                    $path = preg_replace('/' . self::VARARGS_INPUT . '/', $varArgs, $path);
+                    $path = preg_replace('/' . preg_quote(self::VARARGS_INPUT, '/') . '/', $varArgs, $path);
                     break;
                 } else
                     throw new \Exception('Not enough arguments given, route \'%s\' requested argument %d, %d given.', func_get_arg(0), $i, count($args));
