@@ -70,6 +70,7 @@ class JSElement extends Element {
             }
         }
 
-        echo sprintf(self::FORMAT, '/js/' . $hash . '/compiled.js');
+        global $kernel;
+        echo sprintf(self::FORMAT, $kernel->getRouteDatabase()->buildPath('assets_js_compiled', $hash));
     }
 }

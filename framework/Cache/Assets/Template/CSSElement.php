@@ -72,7 +72,8 @@ class CSSElement extends Element {
             }
         }
 
-        echo sprintf(self::FORMAT, '/css/' . $hash . '/compiled.css');
+        global $kernel;
+        echo sprintf(self::FORMAT, $kernel->getRouteDatabase()->buildPath('assets_css_compiled', $hash));
     }
 
 }

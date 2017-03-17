@@ -26,11 +26,12 @@ class DebugCSSElement extends Element {
     }
 
     public function output(CompilerState $tpl) {
+        global $kernel;
         /* @var $assetsRegister \SmoothPHP\Framework\Cache\Assets\AssetsRegister */
         $assetsRegister = $tpl->vars->assets->getValue();
         foreach (array_unique($assetsRegister->getCSSFiles()) as $css) {
             if (strtolower(substr($css, 0, 4)) != 'http')
-                $css = '/css/' . $css;
+                $css = $kernel->getRouteDatabase()->buildPath('assets_css', $css);
             echo sprintf(CSSElement::FORMAT, $css);
         }
     }

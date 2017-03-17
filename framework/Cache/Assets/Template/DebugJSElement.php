@@ -26,11 +26,14 @@ class DebugJSElement extends Element {
     }
 
     public function output(CompilerState $tpl) {
+        global $kernel;
         /* @var $assetsRegister \SmoothPHP\Framework\Cache\Assets\AssetsRegister */
         $assetsRegister = $tpl->vars->assets->getValue();
+        $routes = $kernel->getRouteDatabase();
+
         foreach (array_unique($assetsRegister->getJSFiles()) as $js) {
             if (strtolower(substr($js, 0, 4)) != 'http')
-                $js = '/js/' . $js;
+                $js = call_user_func_array(array($routes, 'buildPath'), array_merge(array('assets_js'), explode('/', $js)));
             echo sprintf(JSElement::FORMAT, $js);
         }
     }
