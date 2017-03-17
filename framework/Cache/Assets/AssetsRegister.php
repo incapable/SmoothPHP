@@ -130,7 +130,7 @@ class AssetsRegister {
         );
 
         global $kernel;
-        if (__ENV__ != 'dev' && filesize($cachePath) <= $kernel->getConfig()->image_inline_threshold) {
+        if (__ENV__ != 'dev' && isset($mimes[$fileInfo['extension']]) && filesize($cachePath) <= $kernel->getConfig()->image_inline_threshold) {
             return sprintf('data:%s;base64,%s', $mimes[$fileInfo['extension']], base64_encode(file_get_contents($cachePath)));
         } else {
             $virtualPath = sprintf('/images/%s%s.%dx%d.%s',
