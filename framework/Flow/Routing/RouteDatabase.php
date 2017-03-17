@@ -34,6 +34,7 @@ class RouteDatabase {
         $this->defaults = array(
             'method' => 'GET',
             'domain' => self::WILDCARD_INPUT,
+            'https' => HTTPS::IGNORE,
             'content-type' => PlainTextResponse::class
         );
     }
@@ -161,14 +162,41 @@ class RouteDatabase {
     }
 
     public function buildPath() {
-        if (func_num_args() < 1)
+        list($route, $args) = $this->validateRoute(func_get_args());
+
+        global $request;
+        switch($route['https']) {
+            case HTTPS::ENFORCE_ACTIVE:
+                if (!$request->isSecure())
+                    return $this->assembleFullPath($route, $args);
+                break;
+            case HTTPS::ENFORCE_INACTIVE:
+                if ($request->isSecure())
+                    return $this->assembleFullPath($route, $args);
+                break;
+            default:
+        }
+
+        return $this->assemblePath($route, $args);
+    }
+
+    public function buildFullPath() {
+        list($route, $args) = $this->validateRoute(func_get_args());
+        return $this->assemblePath($route, $args);
+    }
+
+    private function validateRoute(array $args) {
+        if (count($args) < 0)
             throw new \Exception('RouteDatabase#buildPath(...) called with no arguments, requires at least 1.');
 
-        $route = $this->getRoute(func_get_arg(0));
+        $route = $this->getRoute($args[0]);
         if (!$route)
-            throw new \Exception(sprintf('Route \'%s\' does not exist.', func_get_arg(0)));
+            throw new \Exception(sprintf('Route \'%s\' does not exist.', $args[0]));
 
-        $args = array_slice(func_get_args(), 1);
+        return array($route, array_slice($args, 1));
+    }
+
+    private function assemblePath(array $route, array $args) {
         $path = $route['path'];
         for($i = 0; $i < count($args); $i++) {
             $path = preg_replace('/' . self::WILDCARD_INPUT . '/', $args[$i], $path, 1, $count);
@@ -190,11 +218,20 @@ class RouteDatabase {
         return $path;
     }
 
-    public function buildFullPath() {
-        $path = call_user_func_array(array($this, 'buildPath'), func_get_args());
-        $route = $this->getRoute(func_get_arg(0));
+    private function assembleFullPath(array $route, array $args) {
+        $path = $this->assemblePath($route, $args);
 
-        $protocol = (!empty($s['HTTPS']) && $s['HTTPS'] == 'on') ? 'https' : 'http';
+        switch($route['https']) {
+            case HTTPS::ENFORCE_ACTIVE:
+                $protocol = 'https';
+                break;
+            case HTTPS::ENFORCE_INACTIVE:
+                $protocol = 'http';
+                break;
+            default:
+                global $request;
+                $protocol = $request->isSecure() ? 'https' : 'http';
+        }
         $host = $route['domain'] != self::WILDCARD_INPUT ? $route['domain'] : $_SERVER['HTTP_HOST'];
 
         return sprintf('%s://%s%s', $protocol, $host, $path);

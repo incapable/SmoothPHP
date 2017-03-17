@@ -15,7 +15,9 @@ namespace SmoothPHP\Framework\Flow\Routing;
 
 use SmoothPHP\Framework\Core\Kernel;
 use SmoothPHP\Framework\Flow\Requests\Request;
+use SmoothPHP\Framework\Flow\Responses\RedirectResponse;
 use SmoothPHP\Framework\Flow\Responses\Response;
+use SmoothPHP\Framework\Flow\Responses\TemplateResponse;
 
 class ResolvedRoute {
     private $route;
@@ -27,6 +29,7 @@ class ResolvedRoute {
     }
 
     public function buildResponse(Kernel $kernel, Request $request) {
+        // Do we have access to this route?
         if ($kernel->getConfig()->authentication_enabled) {
             $authResponse = $kernel->getAuthenticationManager()->verifyAccess($request, $this->route, $this->parameters);
             if ($authResponse instanceof Response) {
@@ -35,17 +38,32 @@ class ResolvedRoute {
             }
         }
 
-        // try {
-            $response = $this->route['controllercall']->performCall($kernel, $request, $this->parameters);
-        // } catch (\Exception $e) {
-        //    if (http_response_code() == 200)
-        //        http_response_code(500);
-        //    $response = $kernel->error(__ENV__ == 'prod' ? 'Something went wrong!' : $e->getMessage());
-        //}
+        // Does this route enforce SSL?
+        if (__ENV__ == 'prod'
+            && ($this->route['https'] == HTTPS::ENFORCE_ACTIVE && !$request->isSecure())
+            || ($this->route['https'] == HTTPS::ENFORCE_INACTIVE && $request->isSecure())) {
+            $response = new RedirectResponse($this->route['name'], $this->parameters);
+            $response->build($kernel, $request);
+            return $response;
+        }
 
+        // Build the response normally, wrap it in a try-catch clause if we're in production environment
+        if (__ENV__ == 'prod')
+            try {
+                $response = $this->route['controllercall']->performCall($kernel, $request, $this->parameters);
+            } catch (\Exception $e) {
+                if (http_response_code() == 200)
+                    http_response_code(500);
+                $response = $kernel->error($kernel->getLanguageRepository()->getEntry('smooth_error'));
+            }
+        else
+            $response = $this->route['controllercall']->performCall($kernel, $request, $this->parameters);
+
+        // If the response isn't already wrapped, wrap it in the specified content-type
         if (!($response instanceof Response))
             $response = new $this->route['content-type']($response);
 
+        // Prepare the response (rendering etc)
         $response->build($kernel, $request);
         return $response;
     }
