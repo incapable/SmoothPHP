@@ -18,23 +18,40 @@ use SmoothPHP\Framework\Database\Mapper\MySQLObjectMapper;
 use SmoothPHP\Framework\Database\Statements as Statements;
 
 class MySQL {
+    /* @var \mysqli */
     private $connection;
+    private $config;
     private $maps;
 
     public function __construct(Config $config) {
-        $prefix = ini_get('mysqli.allow_persistent') ? 'p:' : '';
-        $this->connection = new \mysqli($prefix . $config->mysql_host, $config->mysql_user, $config->mysql_password, $config->mysql_database);
-        $this->connection->real_query('SET SESSION sql_mode = \'\';');
+        $this->config = $config;
+        $this->__wakeup();
         $this->maps = array();
     }
 
+    public function __sleep() {
+        return array('config', 'maps');
+    }
+
+    public function __wakeup() {
+        if (!isset($this->connection)) {
+            $prefix = ini_get('mysqli.allow_persistent') ? 'p:' : '';
+            $this->connection = new \mysqli($prefix . $this->config->mysql_host, $this->config->mysql_user, $this->config->mysql_password, $this->config->mysql_database);
+            $this->connection->real_query('SET SESSION sql_mode = \'\';');
+        }
+    }
+
+    public function getConnection() {
+        return $this->connection;
+    }
+
     public function prepareCustom($query) {
-        return new Statements\MySQLCustomStatement($this->connection, $query);
+        return new Statements\MySQLCustomStatement($this, $query);
     }
 
     public function prepare($query, $returnsData = true) {
-        return $returnsData ? new Statements\MySQLStatementWithResult($this->connection, $query)
-            : new Statements\MySQLStatementWithoutResult($this->connection, $query);
+        return $returnsData ? new Statements\MySQLStatementWithResult($this, $query)
+            : new Statements\MySQLStatementWithoutResult($this, $query);
     }
 
     public function start() {

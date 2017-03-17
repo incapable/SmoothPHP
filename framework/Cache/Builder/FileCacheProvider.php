@@ -22,7 +22,7 @@ class FileCacheProvider extends CacheProvider {
     private $cacheBuilder;
     private $readCache, $writeCache;
 
-    public function __construct($folder, $ext = null, callable $cacheBuilder = null, callable $readCache = null, callable $writeCache = null) {
+    public function __construct($folder, $ext = null, $cacheBuilder = null, $readCache = null, $writeCache = null) {
         $ext = $ext ?: $folder;
         $this->cacheFileFormat = sprintf('%scache/%s/%s.%s.%s', __ROOT__, $folder, '%s', '%s', $ext);
 
@@ -31,7 +31,7 @@ class FileCacheProvider extends CacheProvider {
         $this->writeCache = $writeCache ?: 'file_put_contents';
     }
 
-    public function fetch($sourceFile, callable $cacheBuilder = null, callable $readCache = null, callable $writeCache = null) {
+    public function fetch($sourceFile, $cacheBuilder = null, $readCache = null, $writeCache = null) {
         $cacheBuilder = $cacheBuilder ?: $this->cacheBuilder;
         $readCache = $readCache ?: $this->readCache;
         $writeCache = $writeCache ?: $this->writeCache;

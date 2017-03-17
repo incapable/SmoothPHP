@@ -43,12 +43,6 @@ class Kernel {
         $this->config = new Config();
         $this->authentication = new AuthenticationManager();
         $this->errorHandler = array($this, 'handleError');
-
-        if (__ENV__ != 'dev') {
-            global $classLoader;
-            $classLoader->addPrefix('tubalmartin\\CSSmin', __ROOT__ . 'framework/meta/vendor/CSSmin/');
-            $classLoader->addPrefix('JShrink', __ROOT__ . 'framework/meta/vendor/JShrink/');
-        }
     }
 
     public function registerCron(CronManager $mgr) {
@@ -60,8 +54,7 @@ class Kernel {
     }
 
     public function loadPrototype(WebPrototype $prototype) {
-        session_name('sm_sid');
-        session_start();
+        $this->__wakeup();
 
         $this->routeDatabase = new RouteDatabase();
         $this->assetsRegister = new AssetsRegister();
@@ -77,6 +70,17 @@ class Kernel {
         $this->languagerepo->addSource(new FileDataSource(__ROOT__ . 'src/assets/strings/'));
         $prototype->registerRoutes($this->routeDatabase);
         $this->routeDatabase->initializeControllers($this);
+    }
+
+    public function __wakeup() {
+        session_name('sm_sid');
+        session_start();
+
+        if (__ENV__ != 'dev') {
+            global $classLoader;
+            $classLoader->addPrefix('tubalmartin\\CSSmin', __ROOT__ . 'framework/meta/vendor/CSSmin/');
+            $classLoader->addPrefix('JShrink', __ROOT__ . 'framework/meta/vendor/JShrink/');
+        }
     }
 
     public function error($message) {

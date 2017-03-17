@@ -17,29 +17,49 @@ use SmoothPHP\Framework\Database\MySQL;
 use SmoothPHP\Framework\Database\MySQLResult;
 
 abstract class MySQLStatement {
-    protected $stmt;
-    private $args;
+    protected $mysql;
 
-    public function __construct(\mysqli $connection, $query) {
+    protected $query;
+    protected $params;
+    protected $args;
+
+    /* @var \mysqli_stmt */
+    private $stmt;
+
+    public function __construct(MySQL $mysql, $query) {
+        $this->mysql = $mysql;
+        $this->params = array('');
         $this->args = array();
-        $params = array('');
-        $query = preg_replace_callback('/%(d|f|s)/', function (array $matches) use (&$params) {
-            $params[0] .= $matches[1];
+
+        $this->query = preg_replace_callback('/%(d|f|s)/', function (array $matches) {
+            $this->params[0] .= $matches[1];
             $this->args[] = null;
-            $params[] = &$this->args[count($this->args) - 1];
+            $this->params[] = &$this->args[count($this->args) - 1];
             return '?';
         }, $query);
 
-        $this->stmt = $connection->prepare($query);
-        MySQL::checkError($connection);
+        $this->verifyStmtAwake();
+    }
 
-        if (count($params) > 1) {
-            call_user_func_array(array($this->stmt, 'bind_param'), $params);
-            MySQL::checkError($this->stmt);
+    public function __sleep() {
+        return array('mysql', 'query', 'params', 'args');
+    }
+
+    private function verifyStmtAwake() {
+        if (!isset($this->stmt)) {
+            $this->mysql->__wakeup();
+            $this->stmt = $this->mysql->getConnection()->prepare($this->query);
+            MySQL::checkError($this->mysql->getConnection());
+
+            if (count($this->params) > 1) {
+                call_user_func_array(array($this->stmt, 'bind_param'), $this->params);
+                MySQL::checkError($this->stmt);
+            }
         }
     }
 
     public function getMySQLi_stmt() {
+        $this->verifyStmtAwake();
         return $this->stmt;
     }
 
@@ -47,6 +67,8 @@ abstract class MySQLStatement {
      * @return MySQLResult|int
      */
     public function execute() {
+        $this->verifyStmtAwake();
+
         $args = func_get_args();
         if (isset($args[0]) && is_array($args[0]))
             $args = $args[0];

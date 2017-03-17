@@ -26,20 +26,8 @@ class TemplateEngine {
     public function __construct() {
         $this->compiler = new TemplateCompiler();
 
-        $compileCache = new FileCacheProvider('ctpl', 'ctpl',
-            function ($fileName) {
-                return $this->compiler->compile($fileName);
-            },
-            function ($fileName) {
-                return unserialize(gzinflate(file_get_contents($fileName)));
-            },
-            function ($fileName, $data) {
-                file_put_contents($fileName, gzdeflate(serialize($data)));
-            }
-        );
-        $this->runtimeCache = RuntimeCacheProvider::create(function ($fileName) use ($compileCache) {
-            return $compileCache->fetch($fileName);
-        });
+        $compileCache = new FileCacheProvider('ctpl', 'ctpl', array($this->compiler, 'compile'), array(TemplateEngine::class, 'deserializeTemplate'), array(TemplateEngine::class, 'serializeTemplate'));
+        $this->runtimeCache = RuntimeCacheProvider::create(array($compileCache, 'fetch'));
     }
 
     public function fetch($templateName, array $args) {
@@ -65,6 +53,14 @@ class TemplateEngine {
         ob_start();
         $template->output($state);
         return ob_get_clean();
+    }
+
+    public static function deserializeTemplate($fileName) {
+        return unserialize(gzinflate(file_get_contents($fileName)));
+    }
+
+    public static function serializeTemplate($fileName, $data) {
+        file_put_contents($fileName, gzdeflate(serialize($data)));
     }
 
 }

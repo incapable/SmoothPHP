@@ -19,14 +19,15 @@ class MySQLStatementWithResult extends MySQLStatement {
 
     public function createResult() {
         $resultList = array();
+        $stmt = $this->getMySQLi_stmt();
 
-        $result = $this->stmt->get_result();
+        $result = $stmt->get_result();
 
         while ($data = $result->fetch_assoc())
             $resultList[] = $data;
 
-        $this->stmt->free_result();
-        $this->stmt->reset();
+        $stmt->free_result();
+        $stmt->reset();
 
         return new MySQLResult($resultList);
     }

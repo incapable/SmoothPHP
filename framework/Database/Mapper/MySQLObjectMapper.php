@@ -21,7 +21,7 @@ define('MYSQL_NO_LIMIT', -1);
 class MySQLObjectMapper {
     private $mysql;
 
-    private $classDef;
+    private $className, $classDef;
     private $fields;
 
     private $fetch, $insert, $delete;
@@ -29,6 +29,7 @@ class MySQLObjectMapper {
     public function __construct(MySQL $mysql, $clazz) {
         $this->mysql = $mysql;
 
+        $this->className = $clazz;
         $this->classDef = new \ReflectionClass($clazz);
 
         if (!$this->classDef->isSubclassOf(MappedMySQLObject::class))
@@ -102,6 +103,18 @@ class MySQLObjectMapper {
                 $this->delete = $this->mysql->prepare($query, false);
             }
         }
+    }
+
+    public function __wakeup() {
+        $this->classDef = new \ReflectionClass($this->className);
+        $this->fields = array_filter(array_map(function (\ReflectionProperty $field) {
+            if ($field->isStatic())
+                return null;
+            $field->setAccessible(true);
+            return $field;
+        }, $this->classDef->getProperties()), function($value) {
+            return $value != null;
+        });
     }
 
     /**

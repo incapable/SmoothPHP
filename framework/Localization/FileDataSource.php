@@ -20,6 +20,11 @@ class FileDataSource implements DataSource {
     private $folder;
 
     public function __construct($folder) {
+        $this->__wakeup();
+        $this->folder = $folder;
+    }
+
+    public function __wakeup() {
         if (!isset(self::$cache))
             self::$cache = RuntimeCacheProvider::create(function($folder) {
                 $dir = opendir($folder);
@@ -31,7 +36,6 @@ class FileDataSource implements DataSource {
                 }
                 return array_change_key_case($entries, CASE_LOWER);
             });
-        $this->folder = $folder;
     }
 
     public function getAvailableLanguages() {

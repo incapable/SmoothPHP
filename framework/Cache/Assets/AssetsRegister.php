@@ -31,27 +31,12 @@ class AssetsRegister {
         $this->js = array();
         $this->css = array();
 
-        $simpleLoader = function ($filePath) use ($kernel) {
-            return $kernel->getTemplateEngine()->simpleFetch($filePath, array(
-                'assets' => $kernel->getAssetsRegister(),
-                'route' => $kernel->getRouteDatabase()
-            ));
-        };
-
         if (__ENV__ == 'dev') {
-            $this->jsCache = new FileCacheProvider('js', null, $simpleLoader);
-            $this->cssCache = new FileCacheProvider('css', null, $simpleLoader);
+            $this->jsCache = new FileCacheProvider('js', null, array(AssetsRegister::class, 'simpleLoad'));
+            $this->cssCache = new FileCacheProvider('css', null, array(AssetsRegister::class, 'simpleLoad'));
         } else {
-            $this->jsCache = new FileCacheProvider('js', 'final.js', function($filePath) use ($simpleLoader) {
-                $raw = $simpleLoader($filePath);
-                return Minifier::minify($raw);
-            });
-
-            $cssmin = new CSSmin();
-            $this->cssCache = new FileCacheProvider('css', 'final.css', function($filePath) use ($simpleLoader, $cssmin) {
-                $raw = $simpleLoader($filePath);
-                return $cssmin->run($raw);
-            });
+            $this->jsCache = new FileCacheProvider('js', 'final.js', array(AssetsRegister::class, 'minifyJS'));
+            $this->cssCache = new FileCacheProvider('css', 'final.css', array(AssetsRegister::class, 'minifyCSS'));
         }
         $this->imageCache = new ImageCache('images');
 
@@ -156,6 +141,22 @@ class AssetsRegister {
 
             return $virtualPath;
         }
+    }
+
+    public static function simpleLoad($filePath) {
+        global $kernel;
+        return $kernel->getTemplateEngine()->simpleFetch($filePath, array(
+            'assets' => $kernel->getAssetsRegister(),
+            'route' => $kernel->getRouteDatabase()
+        ));
+    }
+
+    public static function minifyCSS($filePath) {
+        return (new CSSmin())->run(self::simpleLoad($filePath));
+    }
+
+    public static function minifyJS($filePath) {
+        return Minifier::minify(self::simpleLoad($filePath));
     }
 
 }

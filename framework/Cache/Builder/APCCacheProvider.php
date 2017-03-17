@@ -25,6 +25,9 @@ class APCCacheProvider extends RuntimeCacheProvider {
         $this->cacheStore = $cacheStore;
 
         if (!isset(self::$apcKey)) {
+            if (!is_dir(__ROOT__ . 'cache/'))
+                mkdir(__ROOT__ . 'cache/', FileCacheProvider::PERMS);
+
             $cacheFile = __ROOT__ . 'cache/apc_app_id';
             if (!file_exists($cacheFile)) {
                 self::$apcKey = md5(mt_rand(0, 99999));
@@ -37,9 +40,9 @@ class APCCacheProvider extends RuntimeCacheProvider {
         parent::__construct($cacheBuilder);
     }
 
-    public function fetch($sourceFile, callable $cacheBuilder = null, callable $readCache = null, callable $writeCache = null) {
+    public function fetch($sourceFile, $cacheBuilder = null, $readCache = null, $writeCache = null) {
         $cacheBuilder = $cacheBuilder ?: $this->cacheBuilder;
-        if (file_exists($sourceFile)) {
+        if (file_exists($sourceFile) && !is_dir($sourceFile)) {
             $realPath = realpath($sourceFile);
             $checksum = cached_md5_file($realPath);
         } else {
@@ -55,7 +58,7 @@ class APCCacheProvider extends RuntimeCacheProvider {
             $lock = new Lock(md5($realPath));
 
             if ($lock->lock()) {
-                $newCache = call_user_func($cacheBuilder, $realPath);
+                $newCache = call_user_func($cacheBuilder, $sourceFile);
                 call_user_func($this->cacheStore, self::$apcKey . $realPath, new APCCacheItem($checksum, $newCache));
                 return $newCache;
             } else
