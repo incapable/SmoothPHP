@@ -44,6 +44,7 @@ class FileStream extends Response {
 
         header('Content-Type: ' . $this->options['type']);
         header('Content-Disposition: ' . (strpos($this->controllerResponse['type'], 'text/') === 0 ? 'inline' : 'attachment') . '; filename="' . $this->options['filename'] . '"');
+        header('Content-Length: ' . filesize($this->options['url']));
         if ($this->options['cors'])
             header('Access-Control-Allow-Origin: *');
 
