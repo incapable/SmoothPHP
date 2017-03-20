@@ -30,7 +30,7 @@ class Robots extends Controller {
         $route->register(array(
             'name' => 'robots_txt',
             'path' => '/robots.txt',
-            'controller' => Robots::class,
+            'controller' => self::class,
             'call' => 'getRobots',
             'content-type' => FileStream::class
         ));

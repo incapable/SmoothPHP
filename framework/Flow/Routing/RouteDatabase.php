@@ -41,6 +41,10 @@ class RouteDatabase {
         );
     }
 
+    public function setDefault($field, $value) {
+        $this->defaults[$field] = $value;
+    }
+
     public function register(array $routeOptions) {
         $routeOpts = array_merge($this->defaults, $routeOptions);
 
