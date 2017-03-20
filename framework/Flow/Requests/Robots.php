@@ -32,7 +32,8 @@ class Robots extends Controller {
             'path' => '/robots.txt',
             'controller' => self::class,
             'call' => 'getRobots',
-            'content-type' => FileStream::class
+            'content-type' => FileStream::class,
+            'robots' => self::HIDE
         ));
     }
 
