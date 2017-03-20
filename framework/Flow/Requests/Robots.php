@@ -84,7 +84,7 @@ class Robots extends Controller {
         }
 
         sort($robots);
-        array_unshift($robots, 'User-Agent: *');
+        array_unshift($robots, 'User-agent: *');
 
         return $robots;
     }
