@@ -13,7 +13,7 @@
 
 namespace SmoothPHP\Framework\Core\ClassLoader;
 
-class BasicClassLoader {
+class BasicClassLoader implements ClassLoader {
     private $prefixes;
 
     public function __construct() {

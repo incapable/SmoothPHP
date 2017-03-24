@@ -13,11 +13,14 @@
 
 namespace SmoothPHP\Framework\Core\Abstracts;
 
+use SmoothPHP\Framework\Core\ClassLoader\ClassLoader;
 use SmoothPHP\Framework\Core\Cron\CronManager;
 use SmoothPHP\Framework\Core\Kernel;
 use SmoothPHP\Framework\Flow\Routing\RouteDatabase;
 
 abstract class WebPrototype {
+
+    public function prepareClassloader(ClassLoader $loader) {}
 
     public abstract function initialize(Kernel $kernel);
 

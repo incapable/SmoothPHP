@@ -22,8 +22,8 @@ if (__ENV__ != 'prod') {
 }
 
 // Set an error handler that uses exceptions instead
-set_error_handler(function ($num, $str, $file, $line) {
-    throw new ErrorException($str, 0, $num, $file, $line);
+set_error_handler(function ($severity, $msg, $file, $line) {
+    throw new ErrorException($msg, 0, $severity, $file, $line);
 });
 
 if (!defined('__ROOT__'))
@@ -38,7 +38,9 @@ $classLoader->register();
 /* @var $kernel Kernel */
 $kernel = null;
 
-return function(WebPrototype $prototype) {
+return function(WebPrototype $prototype) use ($classLoader) {
+    $prototype->prepareClassloader($classLoader);
+
     global $kernel;
     $kernel = RuntimeCacheProvider::create(function() use (&$kernel, $prototype) {
         $kernel = new Kernel();
