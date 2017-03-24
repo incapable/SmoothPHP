@@ -13,6 +13,8 @@
 
 namespace SmoothPHP\Framework\Core\ClassLoader;
 
+require_once __DIR__ . '/ClassLoader.php';
+
 class BasicClassLoader implements ClassLoader {
     private $prefixes;
 
