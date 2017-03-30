@@ -66,7 +66,6 @@ class VariableSource {
                 break;
             default:
                 $value = filter_var($value, FILTER_SANITIZE_STRING);
-                $options['flags'] |= FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH;
         }
 
         return filter_var($value, $filter, $options);
