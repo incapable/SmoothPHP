@@ -15,6 +15,12 @@ namespace SmoothPHP\Framework\Flow\Requests;
 
 use SmoothPHP\Framework\Flow\Requests\Files\FileSource;
 
+/**
+ * @property \SmoothPHP\Framework\Flow\Requests\VariableSource get
+ * @property \SmoothPHP\Framework\Flow\Requests\VariableSource post
+ * @property \SmoothPHP\Framework\Flow\Requests\VariableSource server
+ * @property \SmoothPHP\Framework\Flow\Requests\VariableSource files
+ */
 class Request {
     private $getr, $postr, $serverr, $filesr;
     public $meta;
