@@ -11,7 +11,7 @@
  * An active session (post-login) which keeps track of an user that is logged in.
  */
 
-namespace SmoothPHP\Framework\Authentication;
+namespace SmoothPHP\Framework\Authentication\Sessions;
 
 use SmoothPHP\Framework\Authentication\UserTypes\User;
 use SmoothPHP\Framework\Database\Mapper\MappedMySQLObject;
@@ -22,26 +22,23 @@ class ActiveSession extends MappedMySQLObject {
     const SESSION_KEY = 'sm_ases';
 
     private $userId;
+    private $ip;
     private $selector;
     private $validator;
 
     public function __construct(User $user) {
+        global $request;
         $this->userId = $user->getId();
-        $this->selector = bin2hex(openssl_random_pseudo_bytes(16));
+        $this->ip = $request->server->REMOTE_ADDR;
 
-        $validator = base64_encode(openssl_random_pseudo_bytes(64));
-        $this->validator = hash('sha512', $validator, false);
+        $this->selector = bin2hex(random_bytes(16));
+        $validator = random_bytes(72);
+        $this->validator = password_hash($validator, PASSWORD_DEFAULT);
 
-        $domain = explode('.', $_SERVER['SERVER_NAME']);
-        if (count($domain) < 2)
-            $cookieDomain = $_SERVER['SERVER_NAME'];
-        else
-            $cookieDomain = sprintf('.%s.%s', $domain[count($domain) - 2], $domain[count($domain) - 1]);
-
-        setcookie(self::SESSION_KEY, sprintf('%s:%s', $this->selector, $validator),
+        setcookie(self::SESSION_KEY, sprintf('%s:%s', $this->selector, base64_encode($validator)),
             0, // This cookie expires at the end of the session
             '/', // This cookie applies to all sub-paths
-            $cookieDomain, // Apply it to this host and all its subdomains
+            cookie_domain(), // Apply it to this host and all its subdomains
             false, // This cookie does not require HTTPS
             false); // This cookie can be transferred over non-HTTP
     }
@@ -61,15 +58,17 @@ class ActiveSession extends MappedMySQLObject {
             if (count($cookie) != 2)
                 return null;
 
+            global $request;
             /* @var $session ActiveSession */
             $session = $map->fetch(array(
+                'ip' => $request->server->REMOTE_ADDR,
                 'selector' => $cookie[0]
             ));
 
             if (!$session)
                 return null;
 
-            if (!hash_equals($session->validator, hash('sha512', $cookie[1], false)))
+            if (!password_verify(base64_decode($cookie[1]), $session->validator))
                 return null;
 
             return $session;

@@ -31,6 +31,8 @@ class Config {
 
     public $authentication_enabled = false;
     public $authentication_loginroute = null;
+    public $authentication_rememberme = true;
+    public $authentication_longlived_age = 604800; // 1 week by default
 
     public $cron_handler = CronTab::class;
     public $enable_robots = true;

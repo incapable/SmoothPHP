@@ -37,7 +37,7 @@ class CheckboxType extends Type {
 
     public function __toString() {
         if (last($this->attributes['mergelabel']))
-            return sprintf('<label>%s%s</label>', parent::__toString(), last($this->attributes['label']));
+            return sprintf('<label>%s %s</label>', parent::__toString(), last($this->attributes['label']));
         else
             return parent::__toString();
     }

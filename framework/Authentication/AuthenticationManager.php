@@ -13,6 +13,9 @@
 
 namespace SmoothPHP\Framework\Authentication;
 
+use SmoothPHP\Framework\Authentication\Sessions\ActiveSession;
+use SmoothPHP\Framework\Authentication\Sessions\LoginSession;
+use SmoothPHP\Framework\Authentication\Sessions\LongLivedSession;
 use SmoothPHP\Framework\Authentication\UserTypes\AbstractUser;
 use SmoothPHP\Framework\Authentication\UserTypes\AnonymousUser;
 use SmoothPHP\Framework\Authentication\UserTypes\User;
@@ -35,7 +38,7 @@ class AuthenticationManager {
 
     // Login flow
     /* @var MySQLObjectMapper */
-    private $loginSessionMap, $activeSessionMap, $userMap;
+    private $loginSessionMap, $activeSessionMap, $longLivedMap, $userMap;
     /* @var MySQLStatement */
     private $permissionsQuery;
     /* @var Form */
@@ -49,6 +52,7 @@ class AuthenticationManager {
         $mysql = $kernel->getMySQL();
         $this->loginSessionMap = $mysql->map(LoginSession::class);
         $this->activeSessionMap = $mysql->map(ActiveSession::class);
+        $this->longLivedMap = $mysql->map(LongLivedSession::class);
         $this->userMap = $this->userMap ?: $mysql->map(User::class);
         $this->permissionsQuery = $mysql->prepare('
             SELECT `permission` FROM `permissions` WHERE `userId` = %d AND NOT ISNULL(`permission`)
@@ -65,6 +69,12 @@ class AuthenticationManager {
                 new MaximumLengthConstraint(72) // For hashing we use BCRYPT, which is limited to 72 characters
             )
         ));
+        if ($kernel->getConfig()->authentication_rememberme) {
+            $formBuilder->add('rememberme', Types\CheckboxType::class, array(
+                'label' => 'Remember me',
+                'mergelabel' => false
+            ));
+        }
         $formBuilder->add('submit', Types\SubmitType::class);
 
         $this->defaultForm = $formBuilder->getForm();
@@ -139,6 +149,12 @@ class AuthenticationManager {
             $activeSession = new ActiveSession($user);
             $this->activeSessionMap->insert($activeSession);
 
+            global $kernel;
+            if ($kernel->getConfig()->authentication_rememberme && $request->post->rememberme) {
+                $longLivedSession = new LongLivedSession($user, $activeSession);
+                $this->longLivedMap->insert($longLivedSession);
+            }
+
             return true;
         } else
             return false;
@@ -155,14 +171,29 @@ class AuthenticationManager {
      * @return User|AbstractUser
      */
     public function getActiveUser() {
+        global $kernel;
+
         if (!$this->user) {
             $this->session = ActiveSession::readCookie($this->activeSessionMap);
+            if ($this->session == null && $kernel->getConfig()->authentication_rememberme) {
+                $longlived = LongLivedSession::readCookie($this->longLivedMap);
+
+                if ($longlived != null) {
+                    $this->user = $this->userMap->fetch($longlived->getUserId());
+                    $this->activeSessionMap->delete($longlived->getActiveSessionId());
+                    $this->session = new ActiveSession($this->user);
+                    $this->activeSessionMap->insert($this->session);
+
+                    $longlived->updateSession($this->session);
+                    $this->longLivedMap->insert($longlived);
+                }
+            } else
+                $this->user = $this->userMap->fetch($this->session->getUserId());
+
             if ($this->session == null)
                 return new AnonymousUser();
-            else {
-                $this->user = $this->userMap->fetch($this->session->getUserId());
-                $this->getPermissions($this->user);
-            }
+
+            $this->getPermissions($this->user);
         }
 
         return $this->user;
@@ -240,15 +271,18 @@ class AuthenticationManager {
 
     public function logout() {
         $this->getActiveUser();
-        if ($this->session)
+        if ($this->session) {
             $this->activeSessionMap->delete($this->session);
 
-        $domain = explode('.', $_SERVER['SERVER_NAME']);
-        if (count($domain) < 2)
-            $cookieDomain = $_SERVER['SERVER_NAME'];
-        else
-            $cookieDomain = sprintf('.%s.%s', $domain[count($domain) - 2], $domain[count($domain) - 1]);
-        setcookie(ActiveSession::SESSION_KEY, '-', 1, '/', $cookieDomain, false, false);
+            $longlived = $this->longLivedMap->fetch(array(
+                'activeSessionId' => $this->session->getId()
+            ));
+            if ($longlived)
+                $this->longLivedMap->delete($longlived);
+        }
+
+        setcookie(ActiveSession::SESSION_KEY, '-', 1, '/', cookie_domain(), false, false);
+        setcookie(LongLivedSession::SESSION_KEY, '-', 1, '/', cookie_domain(), false, false);
     }
 
 }

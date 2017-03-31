@@ -213,8 +213,15 @@ class MySQLObjectMapper {
             $idField->setValue($object, $id);
     }
 
-    public function delete(MappedMySQLObject $object) {
-        $this->delete->execute($object->getId());
+    /**
+     * @param MappedMySQLObject|int $object
+     */
+    public function delete($object) {
+        if ($object instanceof MappedMySQLObject)
+            $id = $object->getId();
+        else
+            $id = $object;
+        $this->delete->execute($id);
     }
 
 }

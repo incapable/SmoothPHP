@@ -11,7 +11,7 @@
  * Main class for handling authentication.
  */
 
-namespace SmoothPHP\Framework\Authentication;
+namespace SmoothPHP\Framework\Authentication\Sessions;
 
 use SmoothPHP\Framework\Database\Mapper\MappedMySQLObject;
 use SmoothPHP\Framework\Flow\Requests\Request;
@@ -25,7 +25,7 @@ class LoginSession extends MappedMySQLObject {
 
     public function __construct(Request $request) {
         $this->ip = $request->server->REMOTE_ADDR;
-        $this->token = base64_encode(openssl_random_pseudo_bytes(128));
+        $this->token = base64_encode(random_bytes(128));
         $this->lastUpdate = time();
         $this->failedAttempts = 0;
     }

@@ -42,3 +42,22 @@ function cached_md5_file($filename) {
 
     return $result;
 }
+
+function cookie_domain() {
+    global $request;
+    $domain = explode('.', $request->server->SERVER_NAME);
+    if (count($domain) < 2)
+        $cookieDomain = $request->server->SERVER_NAME;
+    else
+        $cookieDomain = sprintf('.%s.%s', $domain[count($domain) - 2], $domain[count($domain) - 1]);
+    return $cookieDomain;
+}
+
+/*
+ * If we don't have PHP7's random_bytes, fall back to openssl_random_pseudo_bytes
+ */
+if (!function_exists('random_bytes')) {
+    function random_bytes($length) {
+        return openssl_random_pseudo_bytes($length);
+    }
+}

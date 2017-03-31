@@ -22,9 +22,18 @@ CREATE TABLE `loginsessions` (
 CREATE TABLE `sessions` (
   `id` int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `userId` int(11) NOT NULL,
+  `ip` varchar(50) NOT NULL,
   `selector` varchar(255) NOT NULL,
   `validator` varchar(255) NOT NULL
 ) ENGINE=MEMORY;
+
+CREATE TABLE `longlivedsessions` (
+  `id` int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  `userId` int(11) NOT NULL,
+  `activeSessionId` int(11) NOT NULL,
+  `selector` varchar(255) NOT NULL,
+  `validator` varchar(255) NOT NULL
+) ENGINE=InnoDB;
 
 ALTER TABLE `permissions`
   ADD INDEX(`userId`),
