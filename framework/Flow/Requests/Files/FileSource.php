@@ -24,6 +24,9 @@ class FileSource {
     }
 
     public function __get($name) {
+        if (!isset($this->source[$name]))
+            return false;
+        
         return $this->source[$name];
     }
 }
