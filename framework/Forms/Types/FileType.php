@@ -27,19 +27,22 @@ class FileType extends Type {
             'required' => false
         ));
     }
-
     public function checkConstraint(Request $request, $name, $label, $value, array &$failReasons) {
-        parent::checkConstraint($request, $name, $label, $value, $failReasons);
-
         global $kernel;
         $language = $kernel->getLanguageRepository();
+
+        if (!$request->files->{$name} && $this->attributes['required']) {
+            $failReasons[] = sprintf($kernel->getLanguageRepository()->getEntry('smooth_form_file_required'), $label);;
+            return;
+        }
+
+        parent::checkConstraint($request, $name, $label, $value, $failReasons);
 
         switch($request->files->{$name}->error) {
             case UPLOAD_ERR_OK:
                 break;
             case UPLOAD_ERR_NO_FILE:
-                if ($this->attributes['required'])
-                    $failReasons[] = $language->getEntry('smooth_form_file_none');
+                $failReasons[] = $language->getEntry('smooth_form_file_none');
                 break;
             case UPLOAD_ERR_FORM_SIZE:
             case UPLOAD_ERR_INI_SIZE:
@@ -49,5 +52,6 @@ class FileType extends Type {
                 $failReasons[] = sprintf($language->getEntry('smooth_form_file_genericerror'), $label);
         }
     }
+
 
 }
