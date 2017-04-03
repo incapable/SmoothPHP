@@ -31,8 +31,8 @@ class FileType extends Type {
         global $kernel;
         $language = $kernel->getLanguageRepository();
 
-        if (!$request->files->{$name} && $this->attributes['required']) {
-            $failReasons[] = sprintf($kernel->getLanguageRepository()->getEntry('smooth_form_file_required'), $label);;
+        if ((!$request->files->{$name} || $request->files->{$name}->error == UPLOAD_ERR_NO_FILE) && $this->attributes['required']) {
+            $failReasons[] = sprintf($kernel->getLanguageRepository()->getEntry('smooth_form_file_required'), $label);
             return;
         }
 
@@ -42,7 +42,8 @@ class FileType extends Type {
             case UPLOAD_ERR_OK:
                 break;
             case UPLOAD_ERR_NO_FILE:
-                $failReasons[] = $language->getEntry('smooth_form_file_none');
+                if (!$this->attributes['required'])
+                    $failReasons[] = $language->getEntry('smooth_form_file_none');
                 break;
             case UPLOAD_ERR_FORM_SIZE:
             case UPLOAD_ERR_INI_SIZE:
