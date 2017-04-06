@@ -39,18 +39,19 @@ class FileType extends Type {
             return;
         }
 
-        parent::checkConstraint($request, $name, $label, $value, $failReasons);
-
         switch($request->files->{$name}->error) {
             case UPLOAD_ERR_OK:
                 break;
             case UPLOAD_ERR_FORM_SIZE:
             case UPLOAD_ERR_INI_SIZE:
                 $failReasons[] = sprintf($language->getEntry('smooth_form_file_size'), $label);
-                break;
+                return;
             default:
                 $failReasons[] = sprintf($language->getEntry('smooth_form_file_genericerror'), $label);
+                return;
         }
+
+        parent::checkConstraint($request, $name, $label, $value, $failReasons);
     }
 
 
