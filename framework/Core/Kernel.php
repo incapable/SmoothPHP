@@ -72,7 +72,9 @@ class Kernel {
         if ($this->config->enable_robots)
             Robots::registerRoute($this->routeDatabase);
         $prototype->registerRoutes($this->routeDatabase);
-        $this->routeDatabase->initializeControllers($this);
+
+        if (__ENV__ != 'dev')
+            $this->routeDatabase->initializeControllers($this);
     }
 
     public function __wakeup() {

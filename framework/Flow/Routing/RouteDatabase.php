@@ -108,6 +108,11 @@ class RouteDatabase {
             return false;
         }
 
+        if (__ENV__ == 'dev' && !isset($routeOpts['controllercall'])) {
+            $controller = new $routeOpts['controller'];
+            $routeOpts['controllercall'] = new ControllerCall($controller, $routeOpts['call']);
+        }
+
         $request->meta->route = $routeOpts;
         return new ResolvedRoute($routeOpts, $parameters);
     }
