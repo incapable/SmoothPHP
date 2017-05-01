@@ -15,6 +15,14 @@ namespace SmoothPHP\Framework\Flow\Requests;
 
 define('FILTER_VALIDATE_ARRAY', 'array');
 
+/**
+ * @property VariableSource int
+ * @property VariableSource float
+ * @property VariableSource boolean
+ * @property VariableSource email
+ * @property VariableSource url
+ * @property VariableSource array
+ */
 class VariableSource {
     private $source;
     private $filter;
