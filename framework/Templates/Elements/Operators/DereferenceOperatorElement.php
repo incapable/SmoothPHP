@@ -20,49 +20,48 @@ use SmoothPHP\Framework\Templates\Elements\Element;
 use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
 
 class DereferenceOperatorElement extends Element {
-    private $left, $right;
+	private $left, $right;
 
-    public function __construct(Element $left, Element $right = null) {
-        $this->left = $left;
-        $this->right = $right;
-    }
+	public function __construct(Element $left, Element $right = null) {
+		$this->left = $left;
+		$this->right = $right;
+	}
 
-    public function setRight(Element $right) {
-        $this->right = $right;
-    }
+	public function setRight(Element $right) {
+		$this->right = $right;
+	}
 
-    public function optimize(CompilerState $tpl) {
-        $left = $this->left->optimize($tpl);
-        $right = $this->right;
+	public function optimize(CompilerState $tpl) {
+		$left = $this->left->optimize($tpl);
+		$right = $this->right;
 
-        if ($tpl->performCalls && $left instanceof PrimitiveElement && $right instanceof PrimitiveElement)
-            return new PrimitiveElement($left->getValue()->{$right->getValue()});
+		if ($tpl->performCalls && $left instanceof PrimitiveElement && $right instanceof PrimitiveElement)
+			return new PrimitiveElement($left->getValue()->{$right->getValue()});
 
-        if ($right instanceof FunctionOperatorElement && $tpl->performCalls) {
-            if ($left instanceof VariableElement) {
-                if (!$tpl->isUncertain())
-                    throw new TemplateCompileException(sprintf("Template variable '%s' is not defined.", $left->getVarName()));
-            } else
-                return new PrimitiveElement(call_user_func_array(array($left->getValue(), $right->getFunctionName()), $right->getPrimitiveArgs($tpl)));
-        }
-        else
-            $right = $right->optimize($tpl);
+		if ($right instanceof FunctionOperatorElement && $tpl->performCalls) {
+			if ($left instanceof VariableElement) {
+				if (!$tpl->isUncertain())
+					throw new TemplateCompileException(sprintf("Template variable '%s' is not defined.", $left->getVarName()));
+			} else
+				return new PrimitiveElement(call_user_func_array([$left->getValue(), $right->getFunctionName()], $right->getPrimitiveArgs($tpl)));
+		} else
+			$right = $right->optimize($tpl);
 
-        return new self($left, $right);
-    }
+		return new self($left, $right);
+	}
 
-    public function output(CompilerState $tpl) {
-        $optimized = $this->optimize($tpl);
+	public function output(CompilerState $tpl) {
+		$optimized = $this->optimize($tpl);
 
-        if (!($optimized->left instanceof PrimitiveElement))
-            throw new TemplateCompileException("Could not determine left-hand of '->' at runtime.");
-        else {
-            if ($optimized->right instanceof PrimitiveElement)
-                echo $optimized->left->getValue()->{$optimized->right->getValue()};
-            else if ($optimized->right instanceof FunctionOperatorElement)
-                echo call_user_func_array(array($optimized->left->getValue(), $optimized->right->getFunctionName()), $optimized->right->getPrimitiveArgs($tpl));
-            else
-                throw new TemplateCompileException("Right-hand of '->' is invalid.");
-        }
-    }
+		if (!($optimized->left instanceof PrimitiveElement))
+			throw new TemplateCompileException("Could not determine left-hand of '->' at runtime.");
+		else {
+			if ($optimized->right instanceof PrimitiveElement)
+				echo $optimized->left->getValue()->{$optimized->right->getValue()};
+			else if ($optimized->right instanceof FunctionOperatorElement)
+				echo call_user_func_array([$optimized->left->getValue(), $optimized->right->getFunctionName()], $optimized->right->getPrimitiveArgs($tpl));
+			else
+				throw new TemplateCompileException("Right-hand of '->' is invalid.");
+		}
+	}
 }

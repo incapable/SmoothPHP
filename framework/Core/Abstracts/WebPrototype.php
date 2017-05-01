@@ -20,12 +20,14 @@ use SmoothPHP\Framework\Flow\Routing\RouteDatabase;
 
 abstract class WebPrototype {
 
-    public function prepareClassloader(ClassLoader $loader) {}
+	public function prepareClassloader(ClassLoader $loader) {
+	}
 
-    public abstract function initialize(Kernel $kernel);
+	public abstract function initialize(Kernel $kernel);
 
-    public function registerCron(CronManager $mgr) {}
+	public function registerCron(CronManager $mgr) {
+	}
 
-    public abstract function registerRoutes(RouteDatabase $routes);
+	public abstract function registerRoutes(RouteDatabase $routes);
 
 }

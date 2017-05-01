@@ -21,14 +21,14 @@ use SmoothPHP\Framework\Templates\TemplateCompiler;
 
 class ElseElement extends Element {
 
-    public static function handle(TemplateCompiler $compiler, TemplateLexer $command, TemplateLexer $lexer, Chain $chain, $stackEnd = null) {
-        $chain->addElement(new self());
-    }
+	public static function handle(TemplateCompiler $compiler, TemplateLexer $command, TemplateLexer $lexer, Chain $chain, $stackEnd = null) {
+		$chain->addElement(new self());
+	}
 
-    public function optimize(CompilerState $tpl) {
-        return $this;
-    }
+	public function optimize(CompilerState $tpl) {
+		return $this;
+	}
 
-    public function output(CompilerState $tpl) {
-    }
+	public function output(CompilerState $tpl) {
+	}
 }

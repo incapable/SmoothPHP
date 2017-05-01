@@ -14,19 +14,19 @@
 namespace SmoothPHP\Framework\Flow\Requests\Files;
 
 class FileSource {
-    private $source;
+	private $source;
 
-    public function __construct(array $source) {
-        $this->source = array();
+	public function __construct(array $source) {
+		$this->source = [];
 
-        foreach($source as $name => $element)
-            $this->source[$name] = new FileElement($element);
-    }
+		foreach ($source as $name => $element)
+			$this->source[$name] = new FileElement($element);
+	}
 
-    public function __get($name) {
-        if (!isset($this->source[$name]))
-            return false;
-        
-        return $this->source[$name];
-    }
+	public function __get($name) {
+		if (!isset($this->source[$name]))
+			return false;
+
+		return $this->source[$name];
+	}
 }

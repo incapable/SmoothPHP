@@ -17,18 +17,18 @@ use SmoothPHP\Framework\Core\Kernel;
 
 class Cache extends Command {
 
-    public function getDescription() {
-        return 'Deletes the cache.';
-    }
+	public function getDescription() {
+		return 'Deletes the cache.';
+	}
 
-    public function handle(Kernel $kernel, array $argv) {
-        $this->traverse( __ROOT__ . 'cache', function($file, $isDir) {
-            if ($isDir)
-                rmdir($file);
-            else
-                unlink($file);
-        } );
-        print('Cache has been cleared.' . PHP_EOL);
-    }
+	public function handle(Kernel $kernel, array $argv) {
+		$this->traverse(__ROOT__ . 'cache', function ($file, $isDir) {
+			if ($isDir)
+				rmdir($file);
+			else
+				unlink($file);
+		});
+		print('Cache has been cleared.' . PHP_EOL);
+	}
 
 }

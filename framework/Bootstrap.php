@@ -17,17 +17,17 @@ use SmoothPHP\Framework\Core\ClassLoader\BasicClassLoader;
 use SmoothPHP\Framework\Cache\Builder\RuntimeCacheProvider;
 
 if (__ENV__ != 'prod') {
-    ini_set('display_errors', '1');
-    error_reporting(E_ALL);
+	ini_set('display_errors', '1');
+	error_reporting(E_ALL);
 }
 
 // Set an error handler that uses exceptions instead
 set_error_handler(function ($severity, $msg, $file, $line) {
-    throw new ErrorException($msg, 0, $severity, $file, $line);
+	throw new ErrorException($msg, 0, $severity, $file, $line);
 });
 
 if (!defined('__ROOT__'))
-    define('__ROOT__', str_replace('public', '', $_SERVER['DOCUMENT_ROOT']));
+	define('__ROOT__', str_replace('public', '', $_SERVER['DOCUMENT_ROOT']));
 
 require_once __ROOT__ . 'framework/Core/Utilities.php';
 require_once __ROOT__ . 'framework/Core/ClassLoader/BasicClassLoader.php';
@@ -38,13 +38,13 @@ $classLoader->register();
 /* @var $kernel Kernel */
 $kernel = null;
 
-return function(WebPrototype $prototype) use ($classLoader) {
-    $prototype->prepareClassloader($classLoader);
+return function (WebPrototype $prototype) use ($classLoader) {
+	$prototype->prepareClassloader($classLoader);
 
-    global $kernel;
-    $kernel = RuntimeCacheProvider::create(function() use (&$kernel, $prototype) {
-        $kernel = new Kernel();
-        $kernel->loadPrototype($prototype);
-        return $kernel;
-    })->fetch("kernel");
+	global $kernel;
+	$kernel = RuntimeCacheProvider::create(function () use (&$kernel, $prototype) {
+		$kernel = new Kernel();
+		$kernel->loadPrototype($prototype);
+		return $kernel;
+	})->fetch("kernel");
 };

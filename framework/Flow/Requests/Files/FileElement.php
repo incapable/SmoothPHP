@@ -14,27 +14,28 @@
 namespace SmoothPHP\Framework\Flow\Requests\Files;
 
 class FileElement {
-    private $file;
+	private $file;
 
-    public function __construct(array $file) {
-        $this->file = $file;
-    }
+	public function __construct(array $file) {
+		$this->file = $file;
+	}
 
-    public function __get($name) {
-        switch($name) {
-            case 'location':
-                $name = 'tmp_name';
-            case 'name':
-            case 'tmp_name':
-            case 'error':
-            case 'size':
-                return $this->file[$name];
-        }
-    }
+	public function __get($name) {
+		switch ($name) {
+			case 'location':
+				$name = 'tmp_name';
+			// fallthrough
+			case 'name':
+			case 'tmp_name':
+			case 'error':
+			case 'size':
+				return $this->file[$name];
+		}
+	}
 
-    public function saveAs($path) {
-        if (!move_uploaded_file($this->file['tmp_name'], $path))
-            throw new \RuntimeException('Could not move uploaded file.');
-    }
+	public function saveAs($path) {
+		if (!move_uploaded_file($this->file['tmp_name'], $path))
+			throw new \RuntimeException('Could not move uploaded file.');
+	}
 
 }

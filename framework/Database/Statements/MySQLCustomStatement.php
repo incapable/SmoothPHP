@@ -15,8 +15,8 @@ namespace SmoothPHP\Framework\Database\Statements;
 
 class MySQLCustomStatement extends MySQLStatement {
 
-    public function createResult() {
-        return null;
-    }
+	public function createResult() {
+		return null;
+	}
 
 }

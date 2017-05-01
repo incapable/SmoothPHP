@@ -17,25 +17,25 @@ use SmoothPHP\Framework\Core\Kernel;
 use SmoothPHP\Framework\Flow\Requests\Request;
 
 class JSON extends Response implements AlternateErrorResponse {
-    private $built;
+	private $built;
 
-    public function buildErrorResponse($message) {
-        $this->controllerResponse = array(
-            'error' => $message
-        );
-    }
+	public function buildErrorResponse($message) {
+		$this->controllerResponse = [
+			'error' => $message
+		];
+	}
 
-    public function build(Kernel $kernel, Request $request) {
-        $this->built = json_encode($this->controllerResponse);
-    }
+	public function build(Kernel $kernel, Request $request) {
+		$this->built = json_encode($this->controllerResponse);
+	}
 
-    protected function sendHeaders() {
-        parent::sendHeaders();
-        header('Content-Type: application/json; charset=utf-8');
-    }
+	protected function sendHeaders() {
+		parent::sendHeaders();
+		header('Content-Type: application/json; charset=utf-8');
+	}
 
-    protected function sendBody() {
-        echo $this->built;
-    }
+	protected function sendBody() {
+		echo $this->built;
+	}
 
 }

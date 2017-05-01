@@ -23,57 +23,57 @@ use SmoothPHP\Framework\Templates\TemplateCompiler;
 use tubalmartin\CSSmin\CSSmin;
 
 class CSSElement extends Element {
-    const FORMAT = '<link rel="stylesheet" type="text/css" href="%s" />';
-    const COMPILED_PATH = __ROOT__ . 'cache/css/compiled.%s.css';
+	const FORMAT = '<link rel="stylesheet" type="text/css" href="%s" />';
+	const COMPILED_PATH = __ROOT__ . 'cache/css/compiled.%s.css';
 
-    public static function handle(TemplateCompiler $compiler, TemplateLexer $command, TemplateLexer $lexer, Chain $chain, $stackEnd) {
-        if (__ENV__ == 'dev')
-            $chain->addElement(new DebugCSSElement());
-        else
-            $chain->addElement(new self());
-    }
+	public static function handle(TemplateCompiler $compiler, TemplateLexer $command, TemplateLexer $lexer, Chain $chain, $stackEnd) {
+		if (__ENV__ == 'dev')
+			$chain->addElement(new DebugCSSElement());
+		else
+			$chain->addElement(new self());
+	}
 
-    public function optimize(CompilerState $tpl) {
-        return $this;
-    }
+	public function optimize(CompilerState $tpl) {
+		return $this;
+	}
 
-    public function output(CompilerState $tpl) {
-        /* @var $assetsRegister \SmoothPHP\Framework\Cache\Assets\AssetsRegister */
-        $assetsRegister = $tpl->vars->assets->getValue();
+	public function output(CompilerState $tpl) {
+		/* @var $assetsRegister \SmoothPHP\Framework\Cache\Assets\AssetsRegister */
+		$assetsRegister = $tpl->vars->assets->getValue();
 
-        $files = array();
+		$files = [];
 
-        foreach (array_unique($assetsRegister->getCSSFiles()) as $css) {
-            if (strtolower(substr($css, 0, 4)) == 'http') {
-                echo sprintf(self::FORMAT, $css);
-                continue;
-            }
+		foreach (array_unique($assetsRegister->getCSSFiles()) as $css) {
+			if (strtolower(substr($css, 0, 4)) == 'http') {
+				echo sprintf(self::FORMAT, $css);
+				continue;
+			}
 
-            $files[] = $assetsRegister->getCSSPath($css);
-        }
+			$files[] = $assetsRegister->getCSSPath($css);
+		}
 
-        if (count($files) == 0)
-            return;
+		if (count($files) == 0)
+			return;
 
-        $hash = md5(implode(',', $files));
+		$hash = md5(implode(',', $files));
 
-        if (!file_exists(sprintf(self::COMPILED_PATH, $hash))) {
-            $lock = new Lock('compiled.css.' . $hash);
+		if (!file_exists(sprintf(self::COMPILED_PATH, $hash))) {
+			$lock = new Lock('compiled.css.' . $hash);
 
-            if ($lock->lock()) {
-                $contents = '';
-                array_walk($files, function ($file) use ($assetsRegister, &$contents) {
-                    $contents .= ' ' . file_get_contents($file);
-                });
+			if ($lock->lock()) {
+				$contents = '';
+				array_walk($files, function ($file) use ($assetsRegister, &$contents) {
+					$contents .= ' ' . file_get_contents($file);
+				});
 
-                $cssmin = new CSSmin();
-                $optimized = $cssmin->run($contents);
-                file_put_contents(sprintf(self::COMPILED_PATH, $hash), $optimized);
-            }
-        }
+				$cssmin = new CSSmin();
+				$optimized = $cssmin->run($contents);
+				file_put_contents(sprintf(self::COMPILED_PATH, $hash), $optimized);
+			}
+		}
 
-        global $kernel;
-        echo sprintf(self::FORMAT, $kernel->getRouteDatabase()->buildPath('assets_css_compiled', $hash));
-    }
+		global $kernel;
+		echo sprintf(self::FORMAT, $kernel->getRouteDatabase()->buildPath('assets_css_compiled', $hash));
+	}
 
 }

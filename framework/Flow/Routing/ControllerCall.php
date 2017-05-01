@@ -22,75 +22,89 @@ use SmoothPHP\Framework\Flow\Requests\Request;
 use SmoothPHP\Framework\Localization\LanguageRepository;
 
 class ControllerCall {
-    private $instanceRefs;
-    private $parameters;
+	private $instanceRefs;
+	private $parameters;
 
-    private $callable;
-    private $controllerArgs;
+	private $callable;
+	private $controllerArgs;
 
-    public function __construct(Controller $controller, $call) {
-        $this->instanceRefs = array();
-        $this->controllerArgs = array();
-        $this->parameters = array();
+	public function __construct(Controller $controller, $call) {
+		$this->instanceRefs = [];
+		$this->controllerArgs = [];
+		$this->parameters = [];
 
-        $this->callable = array($controller, $call);
-        $method = new \ReflectionMethod(get_class($controller), $call);
-        $i = -1;
+		$this->callable = [$controller, $call];
+		$method = new \ReflectionMethod(get_class($controller), $call);
+		$i = -1;
 
-        foreach ($method->getParameters() as $parameter) {
-            $className = $parameter->getClass() ? $parameter->getClass()->name : null;
-            switch ($className) {
-                case Request::class:
-                case Kernel::class:
-                case RouteDatabase::class:
-                case AssetsRegister::class:
-                case LanguageRepository::class:
-                case MySQL::class:
-                case AuthenticationManager::class:
-                    $this->controllerArgs[] = &$this->getRef($className);
-                    break;
-                default: // Mixed-type arg, url-argument
-                    $this->parameters[++$i] = null;
-                    $this->controllerArgs[] = &$this->parameters[$i];
-                    break;
-            }
-        }
-    }
+		foreach ($method->getParameters() as $parameter) {
+			$className = $parameter->getClass() ? $parameter->getClass()->name : null;
+			switch ($className) {
+				case Request::class:
+				case Kernel::class:
+				case RouteDatabase::class:
+				case AssetsRegister::class:
+				case LanguageRepository::class:
+				case MySQL::class:
+				case AuthenticationManager::class:
+					$this->controllerArgs[] = &$this->getRef($className);
+					break;
+				default: // Mixed-type arg, url-argument
+					$this->parameters[++$i] = null;
+					$this->controllerArgs[] = &$this->parameters[$i];
+					break;
+			}
+		}
+	}
 
-    private function &getRef($clazz) {
-        if (!isset($this->instanceRefs[$clazz]))
-            $this->instanceRefs[$clazz] = false;
+	private function &getRef($clazz) {
+		if (!isset($this->instanceRefs[$clazz]))
+			$this->instanceRefs[$clazz] = false;
 
-        return $this->instanceRefs[$clazz];
-    }
+		return $this->instanceRefs[$clazz];
+	}
 
-    public function getController() {
-        return $this->callable[0];
-    }
+	public function getController() {
+		return $this->callable[0];
+	}
 
-    /**
-     * @return \SmoothPHP\Framework\Flow\Responses\Response|mixed
-     */
-    public function performCall(Kernel $kernel, Request $request, array $args) {
-        $this->setRef(Kernel::class, function() use ($kernel) { return $kernel; });
-        $this->setRef(Request::class, function() use ($request) { return $request; });
-        $this->setRef(RouteDatabase::class, function() use ($kernel) { return $kernel->getRouteDatabase(); });
-        $this->setRef(AssetsRegister::class, function() use ($kernel) { return $kernel->getAssetsRegister(); });
-        $this->setRef(LanguageRepository::class, function() use ($kernel) { return $kernel->getLanguageRepository(); });
-        $this->setRef(MySQL::class, function() use ($kernel) { return $kernel->getMySQL(); });
-        $this->setRef(AuthenticationManager::class, function() use ($kernel) { return $kernel->getAuthenticationManager(); });
+	/**
+	 * @return \SmoothPHP\Framework\Flow\Responses\Response|mixed
+	 */
+	public function performCall(Kernel $kernel, Request $request, array $args) {
+		$this->setRef(Kernel::class, function () use ($kernel) {
+			return $kernel;
+		});
+		$this->setRef(Request::class, function () use ($request) {
+			return $request;
+		});
+		$this->setRef(RouteDatabase::class, function () use ($kernel) {
+			return $kernel->getRouteDatabase();
+		});
+		$this->setRef(AssetsRegister::class, function () use ($kernel) {
+			return $kernel->getAssetsRegister();
+		});
+		$this->setRef(LanguageRepository::class, function () use ($kernel) {
+			return $kernel->getLanguageRepository();
+		});
+		$this->setRef(MySQL::class, function () use ($kernel) {
+			return $kernel->getMySQL();
+		});
+		$this->setRef(AuthenticationManager::class, function () use ($kernel) {
+			return $kernel->getAuthenticationManager();
+		});
 
-        $i = 0;
-        foreach ($args as $arg) {
-            $this->parameters[$i++] = $arg;
-        }
+		$i = 0;
+		foreach ($args as $arg) {
+			$this->parameters[$i++] = $arg;
+		}
 
-        return call_user_func_array($this->callable, $this->controllerArgs);
-    }
+		return call_user_func_array($this->callable, $this->controllerArgs);
+	}
 
-    private function setRef($clazz, callable $builder) {
-        if (isset($this->instanceRefs[$clazz]))
-            $this->instanceRefs[$clazz] = $builder();
-    }
+	private function setRef($clazz, callable $builder) {
+		if (isset($this->instanceRefs[$clazz]))
+			$this->instanceRefs[$clazz] = $builder();
+	}
 
 }

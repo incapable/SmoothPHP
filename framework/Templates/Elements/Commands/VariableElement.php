@@ -17,28 +17,28 @@ use SmoothPHP\Framework\Templates\Compiler\CompilerState;
 use SmoothPHP\Framework\Templates\Elements\Element;
 
 class VariableElement extends Element {
-    private $varName;
+	private $varName;
 
-    public function __construct($varName) {
-        $this->varName = $varName;
-    }
+	public function __construct($varName) {
+		$this->varName = $varName;
+	}
 
-    public function getVarName() {
-        return $this->varName;
-    }
+	public function getVarName() {
+		return $this->varName;
+	}
 
-    public function optimize(CompilerState $tpl) {
-        if ($tpl->isUncertain())
-            return $this;
+	public function optimize(CompilerState $tpl) {
+		if ($tpl->isUncertain())
+			return $this;
 
-        $var = $tpl->vars->{$this->varName};
-        if ($var != null)
-            return $var;
-        else
-            return $this;
-    }
+		$var = $tpl->vars->{$this->varName};
+		if ($var != null)
+			return $var;
+		else
+			return $this;
+	}
 
-    public function output(CompilerState $tpl) {
-        $tpl->vars->{$this->varName}->output($tpl);
-    }
+	public function output(CompilerState $tpl) {
+		$tpl->vars->{$this->varName}->output($tpl);
+	}
 }

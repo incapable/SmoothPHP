@@ -17,28 +17,28 @@ use SmoothPHP\Framework\Database\Mapper\MappedMySQLObject;
 
 class User extends MappedMySQLObject implements AbstractUser {
 
-    protected $email;
-    protected $password;
+	protected $email;
+	protected $password;
 
-    public function getTableName() {
-        return 'users';
-    }
+	public function getTableName() {
+		return 'users';
+	}
 
-    public function getHashedPassword() {
-        return $this->password;
-    }
+	public function getHashedPassword() {
+		return $this->password;
+	}
 
-    public function isLoggedIn() {
-        return true;
-    }
+	public function isLoggedIn() {
+		return true;
+	}
 
-    public function __get($name) {
-        return $this->{$name};
-    }
+	public function __get($name) {
+		return $this->{$name};
+	}
 
-    public static function getInstance() {
-        global $kernel;
-        return $kernel->getAuthenticationManager()->getActiveUser();
-    }
+	public static function getInstance() {
+		global $kernel;
+		return $kernel->getAuthenticationManager()->getActiveUser();
+	}
 
 }

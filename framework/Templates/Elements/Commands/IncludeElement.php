@@ -23,42 +23,42 @@ use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
 use SmoothPHP\Framework\Templates\TemplateCompiler;
 
 class IncludeElement extends Element {
-    private $file;
-    private $md5;
+	private $file;
+	private $md5;
 
-    public static function handle(TemplateCompiler $compiler, TemplateLexer $command, TemplateLexer $lexer, Chain $chain) {
-        $args = new Chain();
-        $compiler->handleCommand($command, $lexer, $args);
-        $args = $args->getAll();
+	public static function handle(TemplateCompiler $compiler, TemplateLexer $command, TemplateLexer $lexer, Chain $chain) {
+		$args = new Chain();
+		$compiler->handleCommand($command, $lexer, $args);
+		$args = $args->getAll();
 
-        if (!($args[0] instanceof PrimitiveElement))
-            throw new TemplateCompileException("Include file path could not be resolved at parse time.");
+		if (!($args[0] instanceof PrimitiveElement))
+			throw new TemplateCompileException("Include file path could not be resolved at parse time.");
 
-        $path = sprintf('%ssrc/templates/%s', __ROOT__, $args[0]->getValue());
+		$path = sprintf('%ssrc/templates/%s', __ROOT__, $args[0]->getValue());
 
-        $include = new Chain();
-        $compiler->read(new TemplateLexer(file_get_contents($path)), $include);
+		$include = new Chain();
+		$compiler->read(new TemplateLexer(file_get_contents($path)), $include);
 
-        $chain->addElement(new self($path));
-        $chain->addElement($include);
-    }
+		$chain->addElement(new self($path));
+		$chain->addElement($include);
+	}
 
-    public function __construct($file) {
-        $this->file = $file;
-        $this->md5 = cached_md5_file($file);
-    }
+	public function __construct($file) {
+		$this->file = $file;
+		$this->md5 = cached_md5_file($file);
+	}
 
-    public function __wakeup() {
-        if (cached_md5_file($this->file) != $this->md5)
-            throw new CacheExpiredException();
-    }
+	public function __wakeup() {
+		if (cached_md5_file($this->file) != $this->md5)
+			throw new CacheExpiredException();
+	}
 
-    public function optimize(CompilerState $tpl) {
-        return $this;
-    }
+	public function optimize(CompilerState $tpl) {
+		return $this;
+	}
 
-    public function output(CompilerState $tpl) {
-        return '';
-    }
+	public function output(CompilerState $tpl) {
+		return '';
+	}
 
 }

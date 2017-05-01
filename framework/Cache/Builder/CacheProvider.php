@@ -15,6 +15,6 @@ namespace SmoothPHP\Framework\Cache\Builder;
 
 abstract class CacheProvider {
 
-    abstract function fetch($sourceFile, $cacheBuilder = null, $readCache = null, $writeCache = null);
+	abstract function fetch($sourceFile, $cacheBuilder = null, $readCache = null, $writeCache = null);
 
 }

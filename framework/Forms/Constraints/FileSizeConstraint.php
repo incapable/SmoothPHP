@@ -17,21 +17,21 @@ use SmoothPHP\Framework\Forms\Constraint;
 use SmoothPHP\Framework\Flow\Requests\Request;
 
 class FileSizeConstraint extends Constraint {
-    private $fileSize;
+	private $fileSize;
 
-    public function __construct($fileSize) {
-        $this->fileSize = $fileSize;
-    }
+	public function __construct($fileSize) {
+		$this->fileSize = $fileSize;
+	}
 
-    public function setAttributes(array &$attributes) {
-        // TODO Add javascript file-size checking
-    }
+	public function setAttributes(array &$attributes) {
+		// TODO Add javascript file-size checking
+	}
 
-    public function checkConstraint(Request $request, $name, $label, $value, array &$failReasons) {
-        if ($request->files->{$name}->size > $this->fileSize) {
-            global $kernel;
-            $failReasons[] = sprintf($kernel->getLanguageRepository()->getEntry('smooth_form_file_size'), $label);
-        }
-    }
+	public function checkConstraint(Request $request, $name, $label, $value, array &$failReasons) {
+		if ($request->files->{$name}->size > $this->fileSize) {
+			global $kernel;
+			$failReasons[] = sprintf($kernel->getLanguageRepository()->getEntry('smooth_form_file_size'), $label);
+		}
+	}
 
 }

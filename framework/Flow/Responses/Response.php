@@ -17,23 +17,23 @@ use SmoothPHP\Framework\Core\Kernel;
 use SmoothPHP\Framework\Flow\Requests\Request;
 
 abstract class Response {
-    protected $controllerResponse;
+	protected $controllerResponse;
 
-    public function __construct($controllerResponse) {
-        $this->controllerResponse = $controllerResponse;
-    }
+	public function __construct($controllerResponse) {
+		$this->controllerResponse = $controllerResponse;
+	}
 
-    public abstract function build(Kernel $kernel, Request $request);
+	public abstract function build(Kernel $kernel, Request $request);
 
-    protected function sendHeaders() {
-        header('X-Powered-By: SmoothPHP');
-    }
+	protected function sendHeaders() {
+		header('X-Powered-By: SmoothPHP');
+	}
 
-    protected abstract function sendBody();
+	protected abstract function sendBody();
 
-    public function send() {
-        $this->sendHeaders();
-        $this->sendBody();
-    }
+	public function send() {
+		$this->sendHeaders();
+		$this->sendBody();
+	}
 
 }

@@ -19,17 +19,18 @@ use SmoothPHP\Framework\Flow\Responses\TemplateResponse;
 
 abstract class Controller {
 
-    public function onInitialize(Kernel $kernel) {}
+	public function onInitialize(Kernel $kernel) {
+	}
 
-    protected static function render($template, array $templateArgs = array()) {
-        return new TemplateResponse($template, $templateArgs);
-    }
+	protected static function render($template, array $templateArgs = []) {
+		return new TemplateResponse($template, $templateArgs);
+	}
 
-    protected static function redirect() {
-        $route = func_get_arg(0);
-        $args = func_get_args();
-        $args = array_splice($args, 1);
-        return new RedirectResponse($route, $args);
-    }
+	protected static function redirect() {
+		$route = func_get_arg(0);
+		$args = func_get_args();
+		$args = array_splice($args, 1);
+		return new RedirectResponse($route, $args);
+	}
 
 }

@@ -17,19 +17,19 @@ use SmoothPHP\Framework\Database\MySQLResult;
 
 class MySQLStatementWithResult extends MySQLStatement {
 
-    public function createResult() {
-        $resultList = array();
-        $stmt = $this->getMySQLi_stmt();
+	public function createResult() {
+		$resultList = [];
+		$stmt = $this->getMySQLi_stmt();
 
-        $result = $stmt->get_result();
+		$result = $stmt->get_result();
 
-        while ($data = $result->fetch_assoc())
-            $resultList[] = $data;
+		while ($data = $result->fetch_assoc())
+			$resultList[] = $data;
 
-        $stmt->free_result();
-        $stmt->reset();
+		$stmt->free_result();
+		$stmt->reset();
 
-        return new MySQLResult($resultList);
-    }
+		return new MySQLResult($resultList);
+	}
 
 }

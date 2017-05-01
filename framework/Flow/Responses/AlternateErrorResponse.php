@@ -15,6 +15,6 @@ namespace SmoothPHP\Framework\Flow\Responses;
 
 interface AlternateErrorResponse {
 
-    public function buildErrorResponse($message);
+	public function buildErrorResponse($message);
 
 }

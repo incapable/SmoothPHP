@@ -18,61 +18,61 @@ use SmoothPHP\Framework\Forms\Constraint;
 use SmoothPHP\Framework\Forms\Types\StringType;
 
 class FieldGroup extends Type {
-    private $children;
+	private $children;
 
-    public function __construct($field) {
-        parent::__construct($field);
-        $this->attributes = array_replace_recursive($this->attributes, array(
-            'children' => array()
-        ));
-    }
+	public function __construct($field) {
+		parent::__construct($field);
+		$this->attributes = array_replace_recursive($this->attributes, [
+			'children' => []
+		]);
+	}
 
-    public function initialize(array $attributes) {
-        $this->attributes = array_merge_recursive($this->attributes, $attributes);
-        $childAttributes = $this->attributes;
-        unset($childAttributes['children']);
-        unset($childAttributes['required']);
+	public function initialize(array $attributes) {
+		$this->attributes = array_merge_recursive($this->attributes, $attributes);
+		$childAttributes = $this->attributes;
+		unset($childAttributes['children']);
+		unset($childAttributes['required']);
 
-        $this->children = array();
+		$this->children = [];
 
-        $first = true;
-        foreach ($attributes['children'] as $value) {
-            /* @var $element Type */
-            $element = new $value['type']($value['field']);
-            $element->initialize(array_merge_recursive($childAttributes, $value));
-            $this->children[] = new FormContainer(array(
-                'groupseparator' => $first ? '' : sprintf('</td></tr><tr class="fieldgroup_%s"><td></td><td>', $this->field),
-                'input' => $element
-            ));
-            $first = false;
-        }
-    }
+		$first = true;
+		foreach ($attributes['children'] as $value) {
+			/* @var $element Type */
+			$element = new $value['type']($value['field']);
+			$element->initialize(array_merge_recursive($childAttributes, $value));
+			$this->children[] = new FormContainer([
+				'groupseparator' => $first ? '' : sprintf('</td></tr><tr class="fieldgroup_%s"><td></td><td>', $this->field),
+				'input'          => $element
+			]);
+			$first = false;
+		}
+	}
 
-    public function getContainer() {
-        return array(
-            'rowstart' => sprintf('<tr class="fieldgroup_%s"><td>', $this->field),
-            'label' => $this->generateLabel(),
-            'rowseparator' => '</td><td>',
-            'children' => new FormContainer($this->children),
-            'rowend' => '</td></tr>'
-        );
-    }
+	public function getContainer() {
+		return [
+			'rowstart'     => sprintf('<tr class="fieldgroup_%s"><td>', $this->field),
+			'label'        => $this->generateLabel(),
+			'rowseparator' => '</td><td>',
+			'children'     => new FormContainer($this->children),
+			'rowend'       => '</td></tr>'
+		];
+	}
 
-    public function checkConstraint(Request $request, $name, $label, $value, array &$failReasons) {
-        foreach($this->children as $element)
-            if ($element instanceof Constraint) {
-                if ($element instanceof Type)
-                    $value = $request->post->get($element->getFieldName());
-                $element->checkConstraint($request, null, $value, $failReasons);
-            }
-    }
+	public function checkConstraint(Request $request, $name, $label, $value, array &$failReasons) {
+		foreach ($this->children as $element)
+			if ($element instanceof Constraint) {
+				if ($element instanceof Type)
+					$value = $request->post->get($element->getFieldName());
+				$element->checkConstraint($request, null, $value, $failReasons);
+			}
+	}
 
-    public static function child($field, $type = null, array $attributes = array()) {
-        return array_merge_recursive(array(
-            'field' => $field,
-            'type' => $type ?: StringType::class,
-            'attr' => array()
-        ), $attributes);
-    }
+	public static function child($field, $type = null, array $attributes = []) {
+		return array_merge_recursive([
+			'field' => $field,
+			'type'  => $type ?: StringType::class,
+			'attr'  => []
+		], $attributes);
+	}
 
 }

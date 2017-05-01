@@ -19,48 +19,48 @@ use SmoothPHP\Framework\Templates\Compiler\CompilerState;
 use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
 
 class TemplateEngine {
-    private $compiler;
+	private $compiler;
 
-    private $runtimeCache;
+	private $runtimeCache;
 
-    public function __construct() {
-        $this->compiler = new TemplateCompiler();
+	public function __construct() {
+		$this->compiler = new TemplateCompiler();
 
-        $compileCache = new FileCacheProvider('ctpl', 'ctpl', array($this->compiler, 'compile'), array(TemplateEngine::class, 'deserializeTemplate'), array(TemplateEngine::class, 'serializeTemplate'));
-        $this->runtimeCache = RuntimeCacheProvider::create(array($compileCache, 'fetch'));
-    }
+		$compileCache = new FileCacheProvider('ctpl', 'ctpl', [$this->compiler, 'compile'], [TemplateEngine::class, 'deserializeTemplate'], [TemplateEngine::class, 'serializeTemplate']);
+		$this->runtimeCache = RuntimeCacheProvider::create([$compileCache, 'fetch']);
+	}
 
-    public function fetch($templateName, array $args) {
-        $path = sprintf('%ssrc/templates/%s', __ROOT__, $templateName);
-        $template = $this->runtimeCache->fetch($path);
+	public function fetch($templateName, array $args) {
+		$path = sprintf('%ssrc/templates/%s', __ROOT__, $templateName);
+		$template = $this->runtimeCache->fetch($path);
 
-        return $this->prepareOutput($template, $args);
-    }
+		return $this->prepareOutput($template, $args);
+	}
 
-    public function simpleFetch($absoluteFile, array $args = array()) {
-        return $this->prepareOutput($this->compiler->compile($absoluteFile), $args, false);
-    }
+	public function simpleFetch($absoluteFile, array $args = []) {
+		return $this->prepareOutput($this->compiler->compile($absoluteFile), $args, false);
+	}
 
-    private function prepareOutput($template, array $args, $allowMinify = __ENV__ != 'dev') {
-        $state = new CompilerState();
-        $state->allowMinify = $allowMinify;
-        foreach($args as $key => $value)
-            $state->vars->{$key} = new PrimitiveElement($value);
-        $state->performCalls = true;
-        $template = $template->optimize($state);
+	private function prepareOutput($template, array $args, $allowMinify = __ENV__ != 'dev') {
+		$state = new CompilerState();
+		$state->allowMinify = $allowMinify;
+		foreach ($args as $key => $value)
+			$state->vars->{$key} = new PrimitiveElement($value);
+		$state->performCalls = true;
+		$template = $template->optimize($state);
 
-        // Gather output and return
-        ob_start();
-        $template->output($state);
-        return ob_get_clean();
-    }
+		// Gather output and return
+		ob_start();
+		$template->output($state);
+		return ob_get_clean();
+	}
 
-    public static function deserializeTemplate($fileName) {
-        return unserialize(gzinflate(file_get_contents($fileName)));
-    }
+	public static function deserializeTemplate($fileName) {
+		return unserialize(gzinflate(file_get_contents($fileName)));
+	}
 
-    public static function serializeTemplate($fileName, $data) {
-        file_put_contents($fileName, gzdeflate(serialize($data)));
-    }
+	public static function serializeTemplate($fileName, $data) {
+		file_put_contents($fileName, gzdeflate(serialize($data)));
+	}
 
 }

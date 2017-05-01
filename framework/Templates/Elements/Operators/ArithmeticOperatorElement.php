@@ -22,71 +22,71 @@ use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
 use SmoothPHP\Framework\Templates\TemplateCompiler;
 
 abstract class ArithmeticOperatorElement extends Element {
-    /**
-     * @var Element
-     */
-    protected $left, $right;
+	/**
+	 * @var Element
+	 */
+	protected $left, $right;
 
-    protected function __construct(Element $left = null, Element $right = null) {
-        $this->left = $left;
-        $this->right = $right;
-    }
+	protected function __construct(Element $left = null, Element $right = null) {
+		$this->left = $left;
+		$this->right = $right;
+	}
 
-    protected abstract function getPriority();
+	protected abstract function getPriority();
 
-    public static function handle(TemplateCompiler $compiler, TemplateLexer $command, TemplateLexer $lexer, Chain $chain) {
-        switch ($command->next()) {
-            case '+':
-                $op = new AdditionOperatorElement();
-                break;
-            case '-':
-                $command->skipWhitespace();
-                if ($command->peek('>')) {
-                    $chain->addElement(new DereferenceOperatorElement($chain->pop()));
-                    return;
-                } else
-                    $op = new SubstractionOperatorElement();
-                break;
-            case '*':
-                $op = new MultiplicationOperatorElement();
-                break;
-            case '/':
-                $op = new DivisionOperatorElement();
-        }
-        $command->skipWhitespace();
+	public static function handle(TemplateCompiler $compiler, TemplateLexer $command, TemplateLexer $lexer, Chain $chain) {
+		switch ($command->next()) {
+			case '+':
+				$op = new AdditionOperatorElement();
+				break;
+			case '-':
+				$command->skipWhitespace();
+				if ($command->peek('>')) {
+					$chain->addElement(new DereferenceOperatorElement($chain->pop()));
+					return;
+				} else
+					$op = new SubstractionOperatorElement();
+				break;
+			case '*':
+				$op = new MultiplicationOperatorElement();
+				break;
+			case '/':
+				$op = new DivisionOperatorElement();
+		}
+		$command->skipWhitespace();
 
-        $right = new Chain();
-        $compiler->handleCommand($command, $lexer, $right, ')');
-        $chain->addElement(ArithmeticOperatorElement::determineOrder($chain->pop(), TemplateCompiler::flatten($right), $op));
-    }
+		$right = new Chain();
+		$compiler->handleCommand($command, $lexer, $right, ')');
+		$chain->addElement(ArithmeticOperatorElement::determineOrder($chain->pop(), TemplateCompiler::flatten($right), $op));
+	}
 
-    public static function determineOrder(Element $previous, Element $next, ArithmeticOperatorElement $op) {
-        if ($previous instanceof ArithmeticOperatorElement && $previous->getPriority() <= $op->getPriority()) {
-            $left = $previous->left;
-            $previous->left = $op;
-            $op->left = $left;
-            $op->right = $next;
-            return $previous;
-        } else if ($next instanceof ArithmeticOperatorElement && $next->getPriority() < $op->getPriority()) {
-            $left = $next->left;
-            $next->left = $op;
-            $op->left = $previous;
-            $op->right = $left;
-            return $next;
-        } else {
-            $op->left = $previous;
-            $op->right = $next;
-            return $op;
-        }
-    }
+	public static function determineOrder(Element $previous, Element $next, ArithmeticOperatorElement $op) {
+		if ($previous instanceof ArithmeticOperatorElement && $previous->getPriority() <= $op->getPriority()) {
+			$left = $previous->left;
+			$previous->left = $op;
+			$op->left = $left;
+			$op->right = $next;
+			return $previous;
+		} else if ($next instanceof ArithmeticOperatorElement && $next->getPriority() < $op->getPriority()) {
+			$left = $next->left;
+			$next->left = $op;
+			$op->left = $previous;
+			$op->right = $left;
+			return $next;
+		} else {
+			$op->left = $previous;
+			$op->right = $next;
+			return $op;
+		}
+	}
 
-    public function output(CompilerState $tpl) {
-        $result = $this->optimize($tpl);
+	public function output(CompilerState $tpl) {
+		$result = $this->optimize($tpl);
 
-        if (!($result instanceof PrimitiveElement))
-            throw new TemplateCompileException("Could not arithmetic values at runtime.");
+		if (!($result instanceof PrimitiveElement))
+			throw new TemplateCompileException("Could not arithmetic values at runtime.");
 
-        $result->output($tpl);
-    }
+		$result->output($tpl);
+	}
 
 }

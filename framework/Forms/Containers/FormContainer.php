@@ -17,48 +17,48 @@ use SmoothPHP\Framework\Flow\Requests\Request;
 use SmoothPHP\Framework\Forms\Constraint;
 
 class FormContainer extends Constraint {
-    private $backing;
+	private $backing;
 
-    public function __construct(array $backing) {
-        $this->backing = $backing;
-    }
+	public function __construct(array $backing) {
+		$this->backing = $backing;
+	}
 
-    public function __isset($name) {
-        return isset($this->backing[$name]);
-    }
+	public function __isset($name) {
+		return isset($this->backing[$name]);
+	}
 
-    public function __get($name) {
-        return $this->backing[$name];
-    }
+	public function __get($name) {
+		return $this->backing[$name];
+	}
 
-    public function __iterate() {
-        return $this->backing;
-    }
+	public function __iterate() {
+		return $this->backing;
+	}
 
-    public function __call($method, $args) {
-        foreach($this->backing as $sub)
-            if (method_exists($sub, $method))
-                return call_user_func_array(array($sub, $method), $args);
+	public function __call($method, $args) {
+		foreach ($this->backing as $sub)
+			if (method_exists($sub, $method))
+				return call_user_func_array([$sub, $method], $args);
 
-        throw new \RuntimeException(sprintf('The method %s::%s does not exist.', __CLASS__, $method));
-    }
+		throw new \RuntimeException(sprintf('The method %s::%s does not exist.', __CLASS__, $method));
+	}
 
-    public function __toString() {
-        $result = '';
-        foreach($this->backing as $element)
-            $result .= $element;
-        return $result;
-    }
+	public function __toString() {
+		$result = '';
+		foreach ($this->backing as $element)
+			$result .= $element;
+		return $result;
+	}
 
-    public function checkConstraint(Request $request, $name, $label, $value, array &$failReasons) {
-        foreach($this->backing as $element)
-            if ($element instanceof Constraint) {
-                if ($element instanceof Type) {
-                    $value = $request->post->get($element->getFieldName());
-                    $element->checkConstraint($request, $element->getFieldName(), null, $value, $failReasons);
-                } else
-                    $element->checkConstraint($request, null, null, $value, $failReasons);
-            }
-    }
+	public function checkConstraint(Request $request, $name, $label, $value, array &$failReasons) {
+		foreach ($this->backing as $element)
+			if ($element instanceof Constraint) {
+				if ($element instanceof Type) {
+					$value = $request->post->get($element->getFieldName());
+					$element->checkConstraint($request, $element->getFieldName(), null, $value, $failReasons);
+				} else
+					$element->checkConstraint($request, null, null, $value, $failReasons);
+			}
+	}
 
 }

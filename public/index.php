@@ -16,8 +16,8 @@ define('__ENV__', 'dev'); // Options: dev, debug, prod
 use SmoothPHP\Framework\Flow\Requests\Request;
 
 {
-    $loader = require_once '../framework/Bootstrap.php';
-    $loader(new Website());
+	$loader = require_once '../framework/Bootstrap.php';
+	$loader(new Website());
 }
 
 $request = Request::createFromGlobals();

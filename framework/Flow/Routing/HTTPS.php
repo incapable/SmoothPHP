@@ -14,7 +14,7 @@
 namespace SmoothPHP\Framework\Flow\Routing;
 
 class HTTPS {
-    const IGNORE = 0;
-    const ENFORCE_INACTIVE = 1;
-    const ENFORCE_ACTIVE = 2;
+	const IGNORE = 0;
+	const ENFORCE_INACTIVE = 1;
+	const ENFORCE_ACTIVE = 2;
 }

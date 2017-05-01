@@ -20,8 +20,8 @@ use SmoothPHP\Framework\Templates\TemplateCompiler;
 
 class IgnoreElement {
 
-    public static function handle(TemplateCompiler $compiler, TemplateLexer $command, TemplateLexer $lexer, Chain $chain, $stackEnd = null) {
-        $chain->addElement(new PrimitiveElement($lexer->readRaw(TemplateCompiler::DELIMITER_START . '/ignore' . TemplateCompiler::DELIMITER_END)));
-    }
+	public static function handle(TemplateCompiler $compiler, TemplateLexer $command, TemplateLexer $lexer, Chain $chain, $stackEnd = null) {
+		$chain->addElement(new PrimitiveElement($lexer->readRaw(TemplateCompiler::DELIMITER_START . '/ignore' . TemplateCompiler::DELIMITER_END)));
+	}
 
 }

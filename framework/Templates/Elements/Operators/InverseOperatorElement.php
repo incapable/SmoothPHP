@@ -19,28 +19,28 @@ use SmoothPHP\Framework\Templates\Elements\Element;
 use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
 
 class InverseOperatorElement extends Element {
-    private $body;
+	private $body;
 
-    public function __construct(Element $body) {
-        $this->body = $body;
-    }
+	public function __construct(Element $body) {
+		$this->body = $body;
+	}
 
-    public function optimize(CompilerState $tpl) {
-        $body = $this->body->optimize($tpl);
+	public function optimize(CompilerState $tpl) {
+		$body = $this->body->optimize($tpl);
 
-        if ($body instanceof PrimitiveElement)
-            return new PrimitiveElement(!$body->getValue());
+		if ($body instanceof PrimitiveElement)
+			return new PrimitiveElement(!$body->getValue());
 
-        return new self($body);
-    }
+		return new self($body);
+	}
 
-    public function output(CompilerState $tpl) {
-        $result = $this->optimize($tpl);
+	public function output(CompilerState $tpl) {
+		$result = $this->optimize($tpl);
 
-        if (!($result instanceof PrimitiveElement))
-            throw new TemplateCompileException("Could not determine inverse value at runtime.");
+		if (!($result instanceof PrimitiveElement))
+			throw new TemplateCompileException("Could not determine inverse value at runtime.");
 
-        $result->output($tpl);
-    }
+		$result->output($tpl);
+	}
 
 }

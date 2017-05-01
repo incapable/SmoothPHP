@@ -15,8 +15,8 @@ namespace SmoothPHP\Framework\Authentication\UserTypes;
 
 class AnonymousUser implements AbstractUser {
 
-    public function isLoggedIn() {
-        return false;
-    }
+	public function isLoggedIn() {
+		return false;
+	}
 
 }

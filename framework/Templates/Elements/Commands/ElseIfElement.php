@@ -21,15 +21,15 @@ use SmoothPHP\Framework\Templates\TemplateCompiler;
 
 class ElseIfElement extends Element {
 
-    public static function handle(TemplateCompiler $compiler, TemplateLexer $command, TemplateLexer $lexer, Chain $chain, $stackEnd = null) {
-        $chain->addElement(new self());
-        IfElement::handle($compiler, $command, $lexer, $chain, $stackEnd);
-    }
+	public static function handle(TemplateCompiler $compiler, TemplateLexer $command, TemplateLexer $lexer, Chain $chain, $stackEnd = null) {
+		$chain->addElement(new self());
+		IfElement::handle($compiler, $command, $lexer, $chain, $stackEnd);
+	}
 
-    public function optimize(CompilerState $tpl) {
-        return $this;
-    }
+	public function optimize(CompilerState $tpl) {
+		return $this;
+	}
 
-    public function output(CompilerState $tpl) {
-    }
+	public function output(CompilerState $tpl) {
+	}
 }

@@ -28,154 +28,154 @@ use SmoothPHP\Framework\Localization\LanguageRepository;
 use SmoothPHP\Framework\Templates\TemplateEngine;
 
 class Kernel {
-    // Site data
-    private $config;
-    private $routeDatabase;
+	// Site data
+	private $config;
+	private $routeDatabase;
 
-    // Runtime
-    private $errorHandler;
-    private $templateEngine;
-    private $assetsRegister;
-    private $mysql;
-    private $authentication;
-    private $languagerepo;
+	// Runtime
+	private $errorHandler;
+	private $templateEngine;
+	private $assetsRegister;
+	private $mysql;
+	private $authentication;
+	private $languagerepo;
 
-    public function __construct() {
-        $this->config = new Config();
-        $this->authentication = new AuthenticationManager();
-        $this->errorHandler = array($this, 'handleError');
-    }
+	public function __construct() {
+		$this->config = new Config();
+		$this->authentication = new AuthenticationManager();
+		$this->errorHandler = [$this, 'handleError'];
+	}
 
-    public function registerCron(CronManager $mgr) {
-        if ($this->config->authentication_enabled) {
-            $mgr->newJob('authentication_clean_sessions', '@hourly', function(Kernel $kernel) {
-                $kernel->getMySQL()->execute('DELETE FROM `loginsessions` WHERE `lastUpdate` < UNIX_TIMESTAMP((NOW() - INTERVAL 1 HOUR))');
-            });
-        }
-    }
+	public function registerCron(CronManager $mgr) {
+		if ($this->config->authentication_enabled) {
+			$mgr->newJob('authentication_clean_sessions', '@hourly', function (Kernel $kernel) {
+				$kernel->getMySQL()->execute('DELETE FROM `loginsessions` WHERE `lastUpdate` < UNIX_TIMESTAMP((NOW() - INTERVAL 1 HOUR))');
+			});
+		}
+	}
 
-    public function loadPrototype(WebPrototype $prototype) {
-        $this->__wakeup();
+	public function loadPrototype(WebPrototype $prototype) {
+		$this->__wakeup();
 
-        $this->routeDatabase = new RouteDatabase();
-        $this->assetsRegister = new AssetsRegister();
-        $this->languagerepo = new LanguageRepository($this);
-        $this->languagerepo->addSource(new FileDataSource(__ROOT__ . 'framework/meta/assets/strings/'));
-        $this->templateEngine = new TemplateEngine();
-        $this->assetsRegister->initialize($this);
-        $prototype->initialize($this);
-        if ($this->config->authentication_enabled)
-            $this->authentication->initialize($this);
-        else
-            $this->authentication = null;
-        $this->languagerepo->addSource(new FileDataSource(__ROOT__ . 'src/assets/strings/'));
-        if ($this->config->enable_robots)
-            Robots::registerRoute($this->routeDatabase);
-        $prototype->registerRoutes($this->routeDatabase);
-        $this->routeDatabase->initializeControllers($this);
-    }
+		$this->routeDatabase = new RouteDatabase();
+		$this->assetsRegister = new AssetsRegister();
+		$this->languagerepo = new LanguageRepository($this);
+		$this->languagerepo->addSource(new FileDataSource(__ROOT__ . 'framework/meta/assets/strings/'));
+		$this->templateEngine = new TemplateEngine();
+		$this->assetsRegister->initialize($this);
+		$prototype->initialize($this);
+		if ($this->config->authentication_enabled)
+			$this->authentication->initialize($this);
+		else
+			$this->authentication = null;
+		$this->languagerepo->addSource(new FileDataSource(__ROOT__ . 'src/assets/strings/'));
+		if ($this->config->enable_robots)
+			Robots::registerRoute($this->routeDatabase);
+		$prototype->registerRoutes($this->routeDatabase);
+		$this->routeDatabase->initializeControllers($this);
+	}
 
-    public function __wakeup() {
-        session_name('sm_sid');
-        session_start();
+	public function __wakeup() {
+		session_name('sm_sid');
+		session_start();
 
-        if (__ENV__ != 'dev') {
-            global $classLoader;
-            $classLoader->addPrefix('tubalmartin\\CSSmin', __ROOT__ . 'framework/meta/vendor/CSSmin/');
-            $classLoader->addPrefix('JShrink', __ROOT__ . 'framework/meta/vendor/JShrink/');
-        }
-    }
+		if (__ENV__ != 'dev') {
+			global $classLoader;
+			$classLoader->addPrefix('tubalmartin\\CSSmin', __ROOT__ . 'framework/meta/vendor/CSSmin/');
+			$classLoader->addPrefix('JShrink', __ROOT__ . 'framework/meta/vendor/JShrink/');
+		}
+	}
 
-    public function error($message) {
-        global $request;
-        if (isset($request->meta->route)) {
-            $type = new $request->meta->route['content-type'](null);
-            if ($type instanceof AlternateErrorResponse) {
-                $type->buildErrorResponse($message);
-                return $type;
-            }
-        }
+	public function error($message) {
+		global $request;
+		if (isset($request->meta->route)) {
+			$type = new $request->meta->route['content-type'](null);
+			if ($type instanceof AlternateErrorResponse) {
+				$type->buildErrorResponse($message);
+				return $type;
+			}
+		}
 
-        return call_user_func($this->errorHandler, $message);
-    }
+		return call_user_func($this->errorHandler, $message);
+	}
 
-    public function setErrorHandler($errorHandler) {
-        if (!is_callable($errorHandler))
-            throw new \InvalidArgumentException('$errorHandler is not callable');
+	public function setErrorHandler($errorHandler) {
+		if (!is_callable($errorHandler))
+			throw new \InvalidArgumentException('$errorHandler is not callable');
 
-        $this->errorHandler = $errorHandler;
-    }
+		$this->errorHandler = $errorHandler;
+	}
 
-    private function handleError($message) {
-        return new PlainTextResponse($message);
-    }
+	private function handleError($message) {
+		return new PlainTextResponse($message);
+	}
 
-    /**
-     * @return Config
-     */
-    public function getConfig() {
-        return $this->config;
-    }
+	/**
+	 * @return Config
+	 */
+	public function getConfig() {
+		return $this->config;
+	}
 
-    /**
-     * @return RouteDatabase
-     */
-    public function getRouteDatabase() {
-        return $this->routeDatabase;
-    }
+	/**
+	 * @return RouteDatabase
+	 */
+	public function getRouteDatabase() {
+		return $this->routeDatabase;
+	}
 
-    /**
-     * @return TemplateEngine
-     */
-    public function getTemplateEngine() {
-        return $this->templateEngine;
-    }
+	/**
+	 * @return TemplateEngine
+	 */
+	public function getTemplateEngine() {
+		return $this->templateEngine;
+	}
 
-    /**
-     * @return AssetsRegister
-     */
-    public function getAssetsRegister() {
-        return $this->assetsRegister;
-    }
+	/**
+	 * @return AssetsRegister
+	 */
+	public function getAssetsRegister() {
+		return $this->assetsRegister;
+	}
 
-    /**
-     * @return MySQL
-     */
-    public function getMySQL() {
-        if (!$this->config->mysql_enabled)
-            throw new \RuntimeException("MySQL is not enabled");
-        if (!isset($this->mysql))
-            $this->mysql = new MySQL($this->config);
-        return $this->mysql;
-    }
+	/**
+	 * @return MySQL
+	 */
+	public function getMySQL() {
+		if (!$this->config->mysql_enabled)
+			throw new \RuntimeException("MySQL is not enabled");
+		if (!isset($this->mysql))
+			$this->mysql = new MySQL($this->config);
+		return $this->mysql;
+	}
 
-    /**
-     * @return AuthenticationManager
-     */
-    public function getAuthenticationManager() {
-        if (!$this->config->authentication_enabled)
-            throw new \RuntimeException("Authentication is not enabled");
-        return $this->authentication;
-    }
+	/**
+	 * @return AuthenticationManager
+	 */
+	public function getAuthenticationManager() {
+		if (!$this->config->authentication_enabled)
+			throw new \RuntimeException("Authentication is not enabled");
+		return $this->authentication;
+	}
 
-    /**
-     * @return LanguageRepository
-     */
-    public function getLanguageRepository() {
-        return $this->languagerepo;
-    }
+	/**
+	 * @return LanguageRepository
+	 */
+	public function getLanguageRepository() {
+		return $this->languagerepo;
+	}
 
-    /**
-     * @param Request $request The request that determines how the response is made, and how it is given.
-     * @return \SmoothPHP\Framework\Flow\Responses\Response|boolean
-     */
-    public function getResponse(Request $request) {
-        $resolvedRoute = $this->routeDatabase->resolve($request);
-        if (!$resolvedRoute) {
-            http_response_code(404);
-            return $this->error($this->languagerepo->getEntry('smooth_error_404'));
-        }
-        return $resolvedRoute->buildResponse($this, $request);
-    }
+	/**
+	 * @param Request $request The request that determines how the response is made, and how it is given.
+	 * @return \SmoothPHP\Framework\Flow\Responses\Response|boolean
+	 */
+	public function getResponse(Request $request) {
+		$resolvedRoute = $this->routeDatabase->resolve($request);
+		if (!$resolvedRoute) {
+			http_response_code(404);
+			return $this->error($this->languagerepo->getEntry('smooth_error_404'));
+		}
+		return $resolvedRoute->buildResponse($this, $request);
+	}
 
 }

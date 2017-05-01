@@ -22,40 +22,40 @@ use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
 use SmoothPHP\Framework\Templates\TemplateCompiler;
 
 class InEqualsOperatorElement extends Element {
-    private $left, $right;
+	private $left, $right;
 
-    public static function handle(TemplateCompiler $compiler, TemplateLexer $command, TemplateLexer $lexer, Chain $chain, $stackEnd) {
-        $command->next();
-        $isEqualsOperator = $command->peek('=');
-        $right = new Chain();
-        $compiler->handleCommand($command, $lexer, $right, $stackEnd);
-        if ($isEqualsOperator)
-            $chain->addElement(new self($chain->pop(), TemplateCompiler::flatten($right)));
-        else
-            $chain->addElement(new InverseOperatorElement(TemplateCompiler::flatten($right)));
-    }
+	public static function handle(TemplateCompiler $compiler, TemplateLexer $command, TemplateLexer $lexer, Chain $chain, $stackEnd) {
+		$command->next();
+		$isEqualsOperator = $command->peek('=');
+		$right = new Chain();
+		$compiler->handleCommand($command, $lexer, $right, $stackEnd);
+		if ($isEqualsOperator)
+			$chain->addElement(new self($chain->pop(), TemplateCompiler::flatten($right)));
+		else
+			$chain->addElement(new InverseOperatorElement(TemplateCompiler::flatten($right)));
+	}
 
-    public function __construct(Element $left, Element $right) {
-        $this->left = $left;
-        $this->right = $right;
-    }
+	public function __construct(Element $left, Element $right) {
+		$this->left = $left;
+		$this->right = $right;
+	}
 
-    public function optimize(CompilerState $tpl) {
-        $left = $this->left->optimize($tpl);
-        $right = $this->right->optimize($tpl);
+	public function optimize(CompilerState $tpl) {
+		$left = $this->left->optimize($tpl);
+		$right = $this->right->optimize($tpl);
 
-        if ($left instanceof PrimitiveElement && $right instanceof PrimitiveElement)
-            return new PrimitiveElement($left->getValue() != $right->getValue());
-        else
-            return new self($left, $right);
-    }
+		if ($left instanceof PrimitiveElement && $right instanceof PrimitiveElement)
+			return new PrimitiveElement($left->getValue() != $right->getValue());
+		else
+			return new self($left, $right);
+	}
 
-    public function output(CompilerState $tpl) {
-        $result = $this->optimize($tpl);
+	public function output(CompilerState $tpl) {
+		$result = $this->optimize($tpl);
 
-        if (!($result instanceof PrimitiveElement))
-            throw new TemplateCompileException("Could not arithmetic values at runtime.");
+		if (!($result instanceof PrimitiveElement))
+			throw new TemplateCompileException("Could not arithmetic values at runtime.");
 
-        $result->output($tpl);
-    }
+		$result->output($tpl);
+	}
 }

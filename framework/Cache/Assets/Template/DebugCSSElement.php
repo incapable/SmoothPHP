@@ -21,19 +21,19 @@ use SmoothPHP\Framework\Templates\TemplateCompiler;
 
 class DebugCSSElement extends Element {
 
-    public function optimize(CompilerState $tpl) {
-        return $this;
-    }
+	public function optimize(CompilerState $tpl) {
+		return $this;
+	}
 
-    public function output(CompilerState $tpl) {
-        global $kernel;
-        /* @var $assetsRegister \SmoothPHP\Framework\Cache\Assets\AssetsRegister */
-        $assetsRegister = $tpl->vars->assets->getValue();
-        foreach (array_unique($assetsRegister->getCSSFiles()) as $css) {
-            if (strtolower(substr($css, 0, 4)) != 'http')
-                $css = $kernel->getRouteDatabase()->buildPath('assets_css', $css);
-            echo sprintf(CSSElement::FORMAT, $css);
-        }
-    }
+	public function output(CompilerState $tpl) {
+		global $kernel;
+		/* @var $assetsRegister \SmoothPHP\Framework\Cache\Assets\AssetsRegister */
+		$assetsRegister = $tpl->vars->assets->getValue();
+		foreach (array_unique($assetsRegister->getCSSFiles()) as $css) {
+			if (strtolower(substr($css, 0, 4)) != 'http')
+				$css = $kernel->getRouteDatabase()->buildPath('assets_css', $css);
+			echo sprintf(CSSElement::FORMAT, $css);
+		}
+	}
 
 }

@@ -22,86 +22,86 @@ use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
 use SmoothPHP\Framework\Templates\TemplateCompiler;
 
 class FunctionOperatorElement extends Element {
-    private static $cacheableFunctions;
+	private static $cacheableFunctions;
 
-    private $functionName;
-    private $args;
+	private $functionName;
+	private $args;
 
-    public static function handle(TemplateCompiler $compiler, TemplateLexer $command, TemplateLexer $lexer, Chain $chain) {
-        $command->next();
-        $args = new Chain();
-        $args->addElement($chain->pop());
-        $chain->addElement(new self($command->readAlphaNumeric(), $args));
-    }
+	public static function handle(TemplateCompiler $compiler, TemplateLexer $command, TemplateLexer $lexer, Chain $chain) {
+		$command->next();
+		$args = new Chain();
+		$args->addElement($chain->pop());
+		$chain->addElement(new self($command->readAlphaNumeric(), $args));
+	}
 
-    public function __construct($functionName, Chain $args) {
-        if (!isset(self::$cacheableFunctions))
-            self::fillCacheableFunctions();
+	public function __construct($functionName, Chain $args) {
+		if (!isset(self::$cacheableFunctions))
+			self::fillCacheableFunctions();
 
-        $this->functionName = $functionName;
-        $this->args = $args;
-    }
+		$this->functionName = $functionName;
+		$this->args = $args;
+	}
 
-    public function __wakeup() {
-        if (!isset(self::$cacheableFunctions))
-            self::fillCacheableFunctions();
-    }
+	public function __wakeup() {
+		if (!isset(self::$cacheableFunctions))
+			self::fillCacheableFunctions();
+	}
 
-    public function getFunctionName() {
-        return $this->functionName;
-    }
+	public function getFunctionName() {
+		return $this->functionName;
+	}
 
-    public function getPrimitiveArgs(CompilerState $tpl) {
-        $args = array();
+	public function getPrimitiveArgs(CompilerState $tpl) {
+		$args = [];
 
-        foreach ($this->args->getAll() as $arg) {
-            $arg = $arg->optimize($tpl);
+		foreach ($this->args->getAll() as $arg) {
+			$arg = $arg->optimize($tpl);
 
-            if (!($arg instanceof PrimitiveElement))
-                throw new TemplateCompileException("Could not deduce function argument at runtime.");
+			if (!($arg instanceof PrimitiveElement))
+				throw new TemplateCompileException("Could not deduce function argument at runtime.");
 
-            $args[] = $arg->getValue();
-        }
+			$args[] = $arg->getValue();
+		}
 
-        return $args;
-    }
+		return $args;
+	}
 
-    public function optimize(CompilerState $tpl) {
-        $simpleArgs = true;
-        $args = $this->args->getAll();
-        $optimizedChain = new Chain();
-        $resolvedArgs = array();
+	public function optimize(CompilerState $tpl) {
+		$simpleArgs = true;
+		$args = $this->args->getAll();
+		$optimizedChain = new Chain();
+		$resolvedArgs = [];
 
-        for ($i = 0; $i < count($args); $i++) {
-            $args[$i] = $args[$i]->optimize($tpl);
-            $optimizedChain->addElement($args[$i]);
+		for ($i = 0; $i < count($args); $i++) {
+			$args[$i] = $args[$i]->optimize($tpl);
+			$optimizedChain->addElement($args[$i]);
 
-            if (!($args[$i] instanceof PrimitiveElement))
-                $simpleArgs = false;
-            else
-                $resolvedArgs[] = $args[$i]->getValue();
-        }
+			if (!($args[$i] instanceof PrimitiveElement))
+				$simpleArgs = false;
+			else
+				$resolvedArgs[] = $args[$i]->getValue();
+		}
 
-        if (($tpl->performCalls || in_array($this->functionName, self::$cacheableFunctions)) && $simpleArgs) {
-            return new PrimitiveElement(call_user_func_array($this->functionName, $resolvedArgs));
-        } else
-            return new self($this->functionName, $optimizedChain);
-    }
+		if (($tpl->performCalls || in_array($this->functionName, self::$cacheableFunctions)) && $simpleArgs) {
+			return new PrimitiveElement(call_user_func_array($this->functionName, $resolvedArgs));
+		} else
+			return new self($this->functionName, $optimizedChain);
+	}
 
-    public function output(CompilerState $tpl) {
-        echo call_user_func_array($this->functionName, $this->getPrimitiveArgs($tpl));
-    }
+	public function output(CompilerState $tpl) {
+		echo call_user_func_array($this->functionName, $this->getPrimitiveArgs($tpl));
+	}
 
-    private static function fillCacheableFunctions() {
-        self::$cacheableFunctions = array(
-            /* Math functions */
-            'abs', 'acos', 'acosh', 'asin', 'asinh', 'atan2', 'atan', 'atanh', 'base_convert', 'ceil', 'cos', 'cosh', 'dechex', 'decoct', 'deg2rad', 'exp', 'expm1', 'floor', 'fmod', 'getrandmax', 'hexdec', 'hypot', 'intdiv', 'is_finite', 'is_infinite', 'is_nan', 'lcg_value', 'log10', 'log1p', 'log', 'max', 'min', 'mt_getrandmax', 'octdec', 'pi', 'pow', 'rad2deg', 'round', 'sin', 'sinh', 'sqrt', 'tan', 'tanh',
-            /* String functions */
-            'addcslashes', 'addslashes', 'chop', 'chr', 'chunk_split', 'convert_cyr_string', 'convert_uudecode', 'convert_uuencode', 'count_chars', 'crc32', 'explode', 'hebrev', 'hebrevc', 'html_entity_decode', 'htmlentities', 'htmlspecialchars_decode', 'htmlspecialchars', 'implode', 'join', 'lcfirst', 'levenshtein', 'localeconv', 'ltrim', 'md5', 'metaphone', 'money_format', 'nl2br', 'number_format', 'ord', 'parse_str', 'print', 'printf', 'quoted_printable_decode', 'quoted_printable_encode', 'quotemeta', 'rtrim', 'sha1', 'similar_text', 'soundex', 'sprintf', 'sscanf', 'str_getcsv', 'str_ireplacce', 'str_pad', 'str_repeat', 'str_replace', 'str_rot13', 'str_shuffle', 'str_word_count', 'strcasecmp', 'strchr', 'strcmp', 'strcoll', 'strcspn', 'strip_tags', 'stripcslashes', 'stripos', 'stripslashes', 'stristr', 'strlen', 'strnatcasecmp', 'strnatcmp', 'strncasecmp', 'strncmp', 'strpbrk', 'strpos', 'strrchr', 'strrev', 'strripos', 'strrpos', 'strspn', 'strstr', 'strtok', 'strtolower', 'strtoupper', 'strtr', 'substr_compare', 'substr_count', 'subtr_replace', 'substr', 'trim', 'ucfirst', 'ucwords', 'vsprintf', 'wordwrap',
-            /* Variable functions */
-            'boolval', 'doubleval', 'empty', 'floatval', 'gettype', 'intval', 'is_array', 'is_bool', 'is_callable', 'is_double', 'is_float', 'is_int', 'is_integer', 'is_long', 'is_null', 'is_numeric', 'is_object', 'is_real', 'is_resource', 'is_scalar', 'is_string', 'isset', 'print_r', 'strval', 'var_dump',
-            /* Uncategorized functions */
-            'urlencode'
-        );
-    }
+	private static function fillCacheableFunctions() {
+		self::$cacheableFunctions = [
+			/* Math functions */
+			'abs', 'acos', 'acosh', 'asin', 'asinh', 'atan2', 'atan', 'atanh', 'base_convert', 'ceil', 'cos', 'cosh', 'dechex', 'decoct', 'deg2rad', 'exp', 'expm1', 'floor', 'fmod', 'getrandmax', 'hexdec', 'hypot', 'intdiv', 'is_finite', 'is_infinite', 'is_nan', 'lcg_value', 'log10', 'log1p', 'log', 'max', 'min', 'mt_getrandmax', 'octdec', 'pi', 'pow', 'rad2deg', 'round', 'sin', 'sinh', 'sqrt', 'tan', 'tanh',
+			/* String functions */
+			'addcslashes', 'addslashes', 'chop', 'chr', 'chunk_split', 'convert_cyr_string', 'convert_uudecode', 'convert_uuencode', 'count_chars', 'crc32', 'explode', 'hebrev', 'hebrevc', 'html_entity_decode', 'htmlentities', 'htmlspecialchars_decode', 'htmlspecialchars', 'implode', 'join', 'lcfirst', 'levenshtein', 'localeconv', 'ltrim', 'md5', 'metaphone', 'money_format', 'nl2br', 'number_format', 'ord', 'parse_str', 'print', 'printf', 'quoted_printable_decode', 'quoted_printable_encode', 'quotemeta', 'rtrim', 'sha1', 'similar_text', 'soundex', 'sprintf', 'sscanf', 'str_getcsv', 'str_ireplacce', 'str_pad', 'str_repeat', 'str_replace', 'str_rot13', 'str_shuffle', 'str_word_count', 'strcasecmp', 'strchr', 'strcmp', 'strcoll', 'strcspn', 'strip_tags', 'stripcslashes', 'stripos', 'stripslashes', 'stristr', 'strlen', 'strnatcasecmp', 'strnatcmp', 'strncasecmp', 'strncmp', 'strpbrk', 'strpos', 'strrchr', 'strrev', 'strripos', 'strrpos', 'strspn', 'strstr', 'strtok', 'strtolower', 'strtoupper', 'strtr', 'substr_compare', 'substr_count', 'subtr_replace', 'substr', 'trim', 'ucfirst', 'ucwords', 'vsprintf', 'wordwrap',
+			/* Variable functions */
+			'boolval', 'doubleval', 'empty', 'floatval', 'gettype', 'intval', 'is_array', 'is_bool', 'is_callable', 'is_double', 'is_float', 'is_int', 'is_integer', 'is_long', 'is_null', 'is_numeric', 'is_object', 'is_real', 'is_resource', 'is_scalar', 'is_string', 'isset', 'print_r', 'strval', 'var_dump',
+			/* Uncategorized functions */
+			'urlencode'
+		];
+	}
 }

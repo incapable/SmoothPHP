@@ -11,30 +11,29 @@
  * Type for html's input[type="hidden"]
  */
 
-
 namespace SmoothPHP\Framework\Forms\Types;
 
 use SmoothPHP\Framework\Forms\Containers\Type;
 
 class HiddenType extends Type {
 
-    public function __construct($field) {
-        parent::__construct($field);
-        $this->attributes = array_replace_recursive($this->attributes, array(
-            'attr' => array(
-                'type' => 'hidden',
-            )
-        ));
-    }
+	public function __construct($field) {
+		parent::__construct($field);
+		$this->attributes = array_replace_recursive($this->attributes, [
+			'attr' => [
+				'type' => 'hidden',
+			]
+		]);
+	}
 
-    public function getContainer() {
-        return array(
-            'rowstart' => '',
-            'label' => '',
-            'rowseparator' => '',
-            'input' => $this,
-            'rowend' => ''
-        );
-    }
+	public function getContainer() {
+		return [
+			'rowstart'     => '',
+			'label'        => '',
+			'rowseparator' => '',
+			'input'        => $this,
+			'rowend'       => ''
+		];
+	}
 
 }

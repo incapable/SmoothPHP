@@ -15,6 +15,6 @@ namespace SmoothPHP\Framework\Authentication\UserTypes;
 
 interface AbstractUser {
 
-    public function isLoggedIn();
+	public function isLoggedIn();
 
 }

@@ -17,13 +17,13 @@ use SmoothPHP\Framework\Core\Kernel;
 
 class Reinstall extends Command {
 
-    public function getDescription() {
-        return 'Executes both uninstall and install.';
-    }
+	public function getDescription() {
+		return 'Executes both uninstall and install.';
+	}
 
-    public function handle(Kernel $kernel, array $argv) {
-        (new Uninstall())->handle($kernel, $argv);
-        (new Install())->handle($kernel, $argv);
-    }
+	public function handle(Kernel $kernel, array $argv) {
+		(new Uninstall())->handle($kernel, $argv);
+		(new Install())->handle($kernel, $argv);
+	}
 
 }

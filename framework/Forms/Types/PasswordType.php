@@ -17,22 +17,22 @@ use SmoothPHP\Framework\Flow\Requests\Request;
 
 class PasswordType extends StringType {
 
-    public function __construct($field) {
-        parent::__construct($field);
+	public function __construct($field) {
+		parent::__construct($field);
 
-        global $kernel;
-        $this->attributes = array_replace_recursive($this->attributes, array(
-            'attr' => array(
-                'type' => 'password',
-                'placeholder' => $kernel->getLanguageRepository()->getEntry('smooth_form_password')
-            )
-        ));
-    }
+		global $kernel;
+		$this->attributes = array_replace_recursive($this->attributes, [
+			'attr' => [
+				'type'        => 'password',
+				'placeholder' => $kernel->getLanguageRepository()->getEntry('smooth_form_password')
+			]
+		]);
+	}
 
-    public function checkConstraint(Request $request, $name, $label, $value, array &$failReasons) {
-        parent::checkConstraint($request, $name, $label, $value, $failReasons);
-        // Make sure we never send back the password
-        unset($this->attributes['attr']['value']);
-    }
+	public function checkConstraint(Request $request, $name, $label, $value, array &$failReasons) {
+		parent::checkConstraint($request, $name, $label, $value, $failReasons);
+		// Make sure we never send back the password
+		unset($this->attributes['attr']['value']);
+	}
 
 }

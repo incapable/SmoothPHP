@@ -18,54 +18,54 @@ use SmoothPHP\Framework\Forms\Containers\Type;
 use SmoothPHP\Framework\Forms\Types as Types;
 
 class FormBuilder {
-    private $action = null;
+	private $action = null;
 
-    private $header = array();
-    private $properties;
+	private $header = [];
+	private $properties;
 
-    /**
-     * @param string $field of the field
-     * @param string $type Type name of the field
-     * @param array $attributes Properties to be used, such as Label
-     * @return $this
-     */
-    public function add($field, $type = null, array $attributes = array()) {
-        if (isset($this->properties[$field]))
-            throw new \RuntimeException("Form field has already been declared.");
+	/**
+	 * @param string $field of the field
+	 * @param string $type Type name of the field
+	 * @param array $attributes Properties to be used, such as Label
+	 * @return $this
+	 */
+	public function add($field, $type = null, array $attributes = []) {
+		if (isset($this->properties[$field]))
+			throw new \RuntimeException("Form field has already been declared.");
 
-        $this->properties[$field] = array_merge_recursive(array(
-            'field' => $field,
-            'type' => $type ?: Types\StringType::class,
-            'attr' => array()
-        ), $attributes);
+		$this->properties[$field] = array_merge_recursive([
+			'field' => $field,
+			'type'  => $type ?: Types\StringType::class,
+			'attr'  => []
+		], $attributes);
 
-        return $this;
-    }
+		return $this;
+	}
 
-    public function setAction() {
-        global $kernel;
-        $action = func_get_arg(0);
+	public function setAction() {
+		global $kernel;
+		$action = func_get_arg(0);
 
-        if ($kernel->getRouteDatabase()->getRoute($action))
-            $this->action = call_user_func_array(array($kernel->getRouteDatabase(), 'buildPath'), func_get_args());
-        else
-            $this->action = $action;
-    }
+		if ($kernel->getRouteDatabase()->getRoute($action))
+			$this->action = call_user_func_array([$kernel->getRouteDatabase(), 'buildPath'], func_get_args());
+		else
+			$this->action = $action;
+	}
 
-    public function setTokenRequired($required) {
-        $this->header['token'] = $required;
-    }
+	public function setTokenRequired($required) {
+		$this->header['token'] = $required;
+	}
 
-    public function getForm() {
-        $elements = array();
+	public function getForm() {
+		$elements = [];
 
-        foreach ($this->properties as $key => $value) {
-            /* @var $element Type */
-            $element = new $value['type']($key);
-            $element->initialize($value);
-            $elements[$key] = new FormContainer($element->getContainer());
-        }
+		foreach ($this->properties as $key => $value) {
+			/* @var $element Type */
+			$element = new $value['type']($key);
+			$element->initialize($value);
+			$elements[$key] = new FormContainer($element->getContainer());
+		}
 
-        return new Form($this->action, $this->header, $elements);
-    }
+		return new Form($this->action, $this->header, $elements);
+	}
 }

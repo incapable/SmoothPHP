@@ -17,22 +17,22 @@ use SmoothPHP\Framework\Core\Kernel;
 
 class Help extends Command {
 
-    public function getDescription() {
-        return 'Shows this list of commands.';
-    }
+	public function getDescription() {
+		return 'Shows this list of commands.';
+	}
 
-    public function handle(Kernel $kernel, array $argv) {
-        $dir = opendir(__DIR__);
-        while(($file = readdir($dir)) !== false) {
-            if (is_dir($file) || $file == 'Command.php')
-                continue;
+	public function handle(Kernel $kernel, array $argv) {
+		$dir = opendir(__DIR__);
+		while (($file = readdir($dir)) !== false) {
+			if (is_dir($file) || $file == 'Command.php')
+				continue;
 
-            $fileName = explode('.', $file)[0];
-            $className = __NAMESPACE__ . '\\' . $fileName;
-            /* @var $cmd Command */
-            $cmd = new $className();
-            printf('smoothphp %s - %s%s', strtolower($fileName), $cmd->getDescription(), PHP_EOL);
-        }
-    }
+			$fileName = explode('.', $file)[0];
+			$className = __NAMESPACE__ . '\\' . $fileName;
+			/* @var $cmd Command */
+			$cmd = new $className();
+			printf('smoothphp %s - %s%s', strtolower($fileName), $cmd->getDescription(), PHP_EOL);
+		}
+	}
 
 }

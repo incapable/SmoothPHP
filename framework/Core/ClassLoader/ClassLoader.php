@@ -15,8 +15,8 @@ namespace SmoothPHP\Framework\Core\ClassLoader;
 
 interface ClassLoader {
 
-    public function addPrefix($namespace, $path);
+	public function addPrefix($namespace, $path);
 
-    public function register();
+	public function register();
 
 }

@@ -18,8 +18,8 @@
  * @see end()
  */
 function last($array) {
-    $real = (array) $array;
-    return end($real);
+	$real = (array)$array;
+	return end($real);
 }
 
 /**
@@ -29,35 +29,35 @@ function last($array) {
  * @note The results and file existence are cached, consecutive calls to this function will return even if the file no longer exists.
  */
 function cached_md5_file($filename) {
-    static $md5Cache = array();
-    $filename = realpath($filename);
+	static $md5Cache = [];
+	$filename = realpath($filename);
 
-    if (!file_exists($filename))
-        return null;
+	if (!file_exists($filename))
+		return null;
 
-    if (!isset($md5Cache[$filename]))
-        $md5Cache[$filename] = $result = md5_file($filename);
-    else
-        $result = $md5Cache[$filename];
+	if (!isset($md5Cache[$filename]))
+		$md5Cache[$filename] = $result = md5_file($filename);
+	else
+		$result = $md5Cache[$filename];
 
-    return $result;
+	return $result;
 }
 
 function cookie_domain() {
-    global $request;
-    $domain = explode('.', $request->server->SERVER_NAME);
-    if (count($domain) < 2)
-        $cookieDomain = $request->server->SERVER_NAME;
-    else
-        $cookieDomain = sprintf('.%s.%s', $domain[count($domain) - 2], $domain[count($domain) - 1]);
-    return $cookieDomain;
+	global $request;
+	$domain = explode('.', $request->server->SERVER_NAME);
+	if (count($domain) < 2)
+		$cookieDomain = $request->server->SERVER_NAME;
+	else
+		$cookieDomain = sprintf('.%s.%s', $domain[count($domain) - 2], $domain[count($domain) - 1]);
+	return $cookieDomain;
 }
 
 /*
  * If we don't have PHP7's random_bytes, fall back to openssl_random_pseudo_bytes
  */
 if (!function_exists('random_bytes')) {
-    function random_bytes($length) {
-        return openssl_random_pseudo_bytes($length);
-    }
+	function random_bytes($length) {
+		return openssl_random_pseudo_bytes($length);
+	}
 }

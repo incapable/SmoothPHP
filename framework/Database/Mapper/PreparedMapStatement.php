@@ -14,12 +14,12 @@
 namespace SmoothPHP\Framework\Database\Mapper;
 
 class PreparedMapStatement {
-    public $params, $references;
-    /* @var $statement \SmoothPHP\Framework\Database\Statements\MySQLStatement */
-    public $statement;
+	public $params, $references;
+	/* @var $statement \SmoothPHP\Framework\Database\Statements\MySQLStatement */
+	public $statement;
 
-    public function __construct() {
-        $this->params = array();
-        $this->references = array();
-    }
+	public function __construct() {
+		$this->params = [];
+		$this->references = [];
+	}
 }

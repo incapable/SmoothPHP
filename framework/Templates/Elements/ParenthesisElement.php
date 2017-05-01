@@ -16,17 +16,17 @@ namespace SmoothPHP\Framework\Templates\Elements;
 use SmoothPHP\Framework\Templates\Compiler\CompilerState;
 
 class ParenthesisElement extends Element {
-    private $element;
+	private $element;
 
-    public function __construct(Element $element) {
-        $this->element = $element;
-    }
+	public function __construct(Element $element) {
+		$this->element = $element;
+	}
 
-    public function optimize(CompilerState $tpl) {
-        return $this->element->optimize($tpl);
-    }
+	public function optimize(CompilerState $tpl) {
+		return $this->element->optimize($tpl);
+	}
 
-    public function output(CompilerState $tpl) {
-        $this->element->output($tpl);
-    }
+	public function output(CompilerState $tpl) {
+		$this->element->output($tpl);
+	}
 }

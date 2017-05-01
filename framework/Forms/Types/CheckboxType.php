@@ -17,29 +17,29 @@ use SmoothPHP\Framework\Forms\Containers\Type;
 
 class CheckboxType extends Type {
 
-    public function __construct($field) {
-        parent::__construct($field);
-        $this->attributes = array_replace_recursive($this->attributes, array(
-            'attr' => array(
-                'type' => 'checkbox'
-            ),
-            'required' => false,
-            'mergelabel' => true
-        ));
-    }
+	public function __construct($field) {
+		parent::__construct($field);
+		$this->attributes = array_replace_recursive($this->attributes, [
+			'attr'       => [
+				'type' => 'checkbox'
+			],
+			'required'   => false,
+			'mergelabel' => true
+		]);
+	}
 
-    public function generateLabel() {
-        if (last($this->attributes['mergelabel']))
-            return '';
-        else
-            return parent::generateLabel();
-    }
+	public function generateLabel() {
+		if (last($this->attributes['mergelabel']))
+			return '';
+		else
+			return parent::generateLabel();
+	}
 
-    public function __toString() {
-        if (last($this->attributes['mergelabel']))
-            return sprintf('<label>%s %s</label>', parent::__toString(), last($this->attributes['label']));
-        else
-            return parent::__toString();
-    }
+	public function __toString() {
+		if (last($this->attributes['mergelabel']))
+			return sprintf('<label>%s %s</label>', parent::__toString(), last($this->attributes['label']));
+		else
+			return parent::__toString();
+	}
 
 }

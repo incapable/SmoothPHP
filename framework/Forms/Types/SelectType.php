@@ -18,60 +18,60 @@ use SmoothPHP\Framework\Forms\Containers\Type;
 
 class SelectType extends Type {
 
-    const KEY_SELECTOR = 0x1;
-    const VALUE_SELECTOR = 0x2;
+	const KEY_SELECTOR = 0x1;
+	const VALUE_SELECTOR = 0x2;
 
-    const KEY_ONLY = (self::KEY_SELECTOR << 4) | self::KEY_SELECTOR;
-    const VALUE_ONLY = (self::VALUE_SELECTOR << 4) | self::VALUE_SELECTOR;
-    const KEY_VALUE_PAIR = (self::KEY_SELECTOR << 4) | self::VALUE_SELECTOR;
-    const KEY_VALUE_INVERSE = (self::VALUE_SELECTOR << 4) | self::KEY_SELECTOR;
+	const KEY_ONLY = (self::KEY_SELECTOR << 4) | self::KEY_SELECTOR;
+	const VALUE_ONLY = (self::VALUE_SELECTOR << 4) | self::VALUE_SELECTOR;
+	const KEY_VALUE_PAIR = (self::KEY_SELECTOR << 4) | self::VALUE_SELECTOR;
+	const KEY_VALUE_INVERSE = (self::VALUE_SELECTOR << 4) | self::KEY_SELECTOR;
 
-    public function __construct($field) {
-        parent::__construct($field);
-        $this->attributes = array_replace_recursive($this->attributes, array(
-            'options_mode' => self::KEY_VALUE_INVERSE,
-            'strict' => true,
-            'options' => array(),
-            'options_attr' => array(),
-            'selected' => null,
-            'required' => false
-        ));
-    }
+	public function __construct($field) {
+		parent::__construct($field);
+		$this->attributes = array_replace_recursive($this->attributes, [
+			'options_mode' => self::KEY_VALUE_INVERSE,
+			'strict'       => true,
+			'options'      => [],
+			'options_attr' => [],
+			'selected'     => null,
+			'required'     => false
+		]);
+	}
 
-    public function checkConstraint(Request $request, $name, $label, $value, array &$failReasons) {
-        parent::checkConstraint($request, $name, $label, $value, $failReasons);
+	public function checkConstraint(Request $request, $name, $label, $value, array &$failReasons) {
+		parent::checkConstraint($request, $name, $label, $value, $failReasons);
 
-        if ($this->attributes['strict']) {
-            $mode = last($this->attributes['options_mode']);
-            $method = (((($mode >> 4) & self::KEY_SELECTOR) == self::KEY_SELECTOR) ? 'array_keys' : 'array_values');
-            $options = call_user_func($method, $this->attributes['options']);
+		if ($this->attributes['strict']) {
+			$mode = last($this->attributes['options_mode']);
+			$method = (((($mode >> 4) & self::KEY_SELECTOR) == self::KEY_SELECTOR) ? 'array_keys' : 'array_values');
+			$options = call_user_func($method, $this->attributes['options']);
 
-            if (!in_array($value, $options)) {
-                global $kernel;
-                $failReasons[] = sprintf($kernel->getLanguageRepository()->getEntry('smooth_form_selectvalue'), $value, $label);
-            }
-        }
-    }
+			if (!in_array($value, $options)) {
+				global $kernel;
+				$failReasons[] = sprintf($kernel->getLanguageRepository()->getEntry('smooth_form_selectvalue'), $value, $label);
+			}
+		}
+	}
 
-    public function __toString() {
-        $attributes = $this->attributes['attr'];
+	public function __toString() {
+		$attributes = $this->attributes['attr'];
 
-        $attributes['id'] = $this->field;
-        $attributes['name'] = $this->field;
+		$attributes['id'] = $this->field;
+		$attributes['name'] = $this->field;
 
-        $mode = last($this->attributes['options_mode']);
-        $options = array();
-        $optionsAttr = $this->transformAttributes($this->attributes['options_attr']);
+		$mode = last($this->attributes['options_mode']);
+		$options = [];
+		$optionsAttr = $this->transformAttributes($this->attributes['options_attr']);
 
-        foreach ($this->attributes['options'] as $key => $value) {
-            $optionValue = ((($mode >> 4) & self::KEY_SELECTOR) == self::KEY_SELECTOR) ? $key : $value;
-            $labelValue = (($mode & self::KEY_SELECTOR) == self::KEY_SELECTOR) ? $key : $value;
-            $selected = last($this->attributes['selected']);
-            $selected = $selected != null && ( $key == $selected || $value == $selected ) ? ' selected' : '';
-            $options[] = sprintf('<option value="%s"%s%s>%s</option>', $optionValue, strlen($optionsAttr) ? ' ' . $optionsAttr : '', $selected, $labelValue);
-        }
+		foreach ($this->attributes['options'] as $key => $value) {
+			$optionValue = ((($mode >> 4) & self::KEY_SELECTOR) == self::KEY_SELECTOR) ? $key : $value;
+			$labelValue = (($mode & self::KEY_SELECTOR) == self::KEY_SELECTOR) ? $key : $value;
+			$selected = last($this->attributes['selected']);
+			$selected = $selected != null && ($key == $selected || $value == $selected) ? ' selected' : '';
+			$options[] = sprintf('<option value="%s"%s%s>%s</option>', $optionValue, strlen($optionsAttr) ? ' ' . $optionsAttr : '', $selected, $labelValue);
+		}
 
-        return sprintf('<select %s>%s</select>', $this->transformAttributes($attributes), implode(' ', $options));
-    }
+		return sprintf('<select %s>%s</select>', $this->transformAttributes($attributes), implode(' ', $options));
+	}
 
 }

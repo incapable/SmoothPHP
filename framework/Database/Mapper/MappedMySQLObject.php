@@ -14,13 +14,13 @@
 namespace SmoothPHP\Framework\Database\Mapper;
 
 class MappedMySQLObject {
-    protected $id = 0;
+	protected $id = 0;
 
-    public function getTableName() {
-        return strtolower((new \ReflectionClass($this))->getShortName());
-    }
+	public function getTableName() {
+		return strtolower((new \ReflectionClass($this))->getShortName());
+	}
 
-    public function getId() {
-        return $this->id;
-    }
+	public function getId() {
+		return $this->id;
+	}
 }

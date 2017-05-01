@@ -17,14 +17,14 @@ use SmoothPHP\Framework\Forms\Containers\Type;
 
 class StringType extends Type {
 
-    public function __construct($field) {
-        parent::__construct($field);
-        $this->attributes = array_replace_recursive($this->attributes, array(
-            'attr' => array(
-                'type' => 'text',
-                'placeholder' => '...'
-            )
-        ));
-    }
+	public function __construct($field) {
+		parent::__construct($field);
+		$this->attributes = array_replace_recursive($this->attributes, [
+			'attr' => [
+				'type'        => 'text',
+				'placeholder' => '...'
+			]
+		]);
+	}
 
 }

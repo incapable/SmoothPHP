@@ -18,45 +18,45 @@ use SmoothPHP\Framework\Forms\Containers\Type;
 
 class RecaptchaType extends Type {
 
-    public function __construct($field) {
-        parent::__construct($field);
-        global $kernel;
-        $this->attributes = array_replace_recursive($this->attributes, array(
-            'attr' => array(
-                'class' => 'g-recaptcha',
-                'data-sitekey' => $kernel->getConfig()->recaptcha_site_key
-            )
-        ));
-    }
+	public function __construct($field) {
+		parent::__construct($field);
+		global $kernel;
+		$this->attributes = array_replace_recursive($this->attributes, [
+			'attr' => [
+				'class'        => 'g-recaptcha',
+				'data-sitekey' => $kernel->getConfig()->recaptcha_site_key
+			]
+		]);
+	}
 
-    public function initialize(array $attributes) {
-        $this->attributes = array_merge_recursive($this->attributes, $attributes);
+	public function initialize(array $attributes) {
+		$this->attributes = array_merge_recursive($this->attributes, $attributes);
 
-        global $kernel;
-        $kernel->getAssetsRegister()->addJS('https://www.google.com/recaptcha/api.js');
-    }
+		global $kernel;
+		$kernel->getAssetsRegister()->addJS('https://www.google.com/recaptcha/api.js');
+	}
 
-    public function checkConstraint(Request $request, $name, $label, $value, array &$failReasons) {
-        global $kernel;
-        $context = stream_context_create(array(
-            'http' => array(
-                'header' => "Content-type: application/x-www-form-urlencoded\r\n",
-                'method' => 'POST',
-                'content' => http_build_query(array(
-                    'secret' => $kernel->getConfig()->recaptcha_site_secret,
-                    'response' => $request->post->get('g-recaptcha-response'),
-                    'remoteip' => $request->server->REMOTE_ADDR
-                ))
-            )
-        ));
-        $response = json_decode(file_get_contents('https://www.google.com/recaptcha/api/siteverify', false, $context));
+	public function checkConstraint(Request $request, $name, $label, $value, array &$failReasons) {
+		global $kernel;
+		$context = stream_context_create([
+			'http' => [
+				'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+				'method'  => 'POST',
+				'content' => http_build_query([
+					'secret'   => $kernel->getConfig()->recaptcha_site_secret,
+					'response' => $request->post->get('g-recaptcha-response'),
+					'remoteip' => $request->server->REMOTE_ADDR
+				])
+			]
+		]);
+		$response = json_decode(file_get_contents('https://www.google.com/recaptcha/api/siteverify', false, $context));
 
-        if (!$response->success)
-            $failReasons[] = sprintf($kernel->getLanguageRepository()->getEntry('smooth_form_captcha'), $this->attributes['label']);
-    }
+		if (!$response->success)
+			$failReasons[] = sprintf($kernel->getLanguageRepository()->getEntry('smooth_form_captcha'), $this->attributes['label']);
+	}
 
-    public function __toString() {
-        return sprintf('<div %s></div>', $this->transformAttributes($this->attributes['attr']));
-    }
+	public function __toString() {
+		return sprintf('<div %s></div>', $this->transformAttributes($this->attributes['attr']));
+	}
 
 }

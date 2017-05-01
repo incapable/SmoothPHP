@@ -17,29 +17,29 @@ use SmoothPHP\Framework\Core\Kernel;
 use SmoothPHP\Framework\Flow\Requests\Request;
 
 class RedirectResponse extends Response {
-    private $args;
-    private $header;
+	private $args;
+	private $header;
 
-    public function __construct($controllerResponse, array $args = array()) {
-        parent::__construct($controllerResponse);
-        $this->args = $args;
-    }
+	public function __construct($controllerResponse, array $args = []) {
+		parent::__construct($controllerResponse);
+		$this->args = $args;
+	}
 
-    public function build(Kernel $kernel, Request $request) {
-        $routes = $kernel->getRouteDatabase();
+	public function build(Kernel $kernel, Request $request) {
+		$routes = $kernel->getRouteDatabase();
 
-        if ($routes->getRoute($this->controllerResponse)) {
-            $this->header = call_user_func_array(array($routes, 'buildPath'), array_merge(array($this->controllerResponse), $this->args));
-        } else
-            $this->header = $this->controllerResponse;
-    }
+		if ($routes->getRoute($this->controllerResponse)) {
+			$this->header = call_user_func_array([$routes, 'buildPath'], array_merge([$this->controllerResponse], $this->args));
+		} else
+			$this->header = $this->controllerResponse;
+	}
 
-    protected function sendHeaders() {
-        parent::sendHeaders();
-        header('Location: ' . $this->header);
-    }
+	protected function sendHeaders() {
+		parent::sendHeaders();
+		header('Location: ' . $this->header);
+	}
 
-    protected function sendBody() {
-    }
+	protected function sendBody() {
+	}
 
 }

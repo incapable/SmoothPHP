@@ -20,152 +20,152 @@ use SmoothPHP\Framework\Flow\Requests\Robots;
 use tubalmartin\CSSmin\CSSmin;
 
 class AssetsRegister {
-    /* @var $jsCache FileCacheProvider */
-    private $jsCache;
-    /* @var $cssCache FileCacheProvider */
-    private $cssCache;
-    /* @var $imageCache ImageCache */
-    private $imageCache;
-    private $js, $css;
+	/* @var $jsCache FileCacheProvider */
+	private $jsCache;
+	/* @var $cssCache FileCacheProvider */
+	private $cssCache;
+	/* @var $imageCache ImageCache */
+	private $imageCache;
+	private $js, $css;
 
-    public function initialize(Kernel $kernel) {
-        $this->js = array();
-        $this->css = array();
+	public function initialize(Kernel $kernel) {
+		$this->js = [];
+		$this->css = [];
 
-        if (__ENV__ == 'dev') {
-            $this->jsCache = new FileCacheProvider('js', null, array(AssetsRegister::class, 'simpleLoad'));
-            $this->cssCache = new FileCacheProvider('css', null, array(AssetsRegister::class, 'simpleLoad'));
-        } else {
-            $this->jsCache = new FileCacheProvider('js', 'final.js', array(AssetsRegister::class, 'minifyJS'));
-            $this->cssCache = new FileCacheProvider('css', 'final.css', array(AssetsRegister::class, 'minifyCSS'));
-        }
-        $this->imageCache = new ImageCache('images');
+		if (__ENV__ == 'dev') {
+			$this->jsCache = new FileCacheProvider('js', null, [AssetsRegister::class, 'simpleLoad']);
+			$this->cssCache = new FileCacheProvider('css', null, [AssetsRegister::class, 'simpleLoad']);
+		} else {
+			$this->jsCache = new FileCacheProvider('js', 'final.js', [AssetsRegister::class, 'minifyJS']);
+			$this->cssCache = new FileCacheProvider('css', 'final.css', [AssetsRegister::class, 'minifyCSS']);
+		}
+		$this->imageCache = new ImageCache('images');
 
-        $route = $kernel->getRouteDatabase();
-        if ($route) {
-            $route->register(array(
-                'name' => 'assets_images',
-                'path' => '/images/...',
-                'controller' => AssetsController::class,
-                'call' => 'getImage',
-                'robots' => Robots::HIDE
-            ));
+		$route = $kernel->getRouteDatabase();
+		if ($route) {
+			$route->register([
+				'name'       => 'assets_images',
+				'path'       => '/images/...',
+				'controller' => AssetsController::class,
+				'call'       => 'getImage',
+				'robots'     => Robots::HIDE
+			]);
 
-            if (__ENV__ != 'dev') {
-                $route->register(array(
-                    'name' => 'assets_css_compiled',
-                    'path' => '/css/%/compiled.css',
-                    'controller' => AssetsController::class,
-                    'call' => 'getCompiledCSS',
-                    'robots' => Robots::HIDE
-                ));
-                $route->register(array(
-                    'name' => 'assets_js_compiled',
-                    'path' => '/js/%/compiled.js',
-                    'controller' => AssetsController::class,
-                    'call' => 'getCompiledJS',
-                    'robots' => Robots::HIDE
-                ));
-            } else {
-                $route->register(array(
-                    'name' => 'assets_js',
-                    'path' => '/js/...',
-                    'controller' => AssetsController::class,
-                    'call' => 'getJS',
-                    'robots' => Robots::HIDE
-                ));
-                $route->register(array(
-                    'name' => 'assets_css',
-                    'path' => '/css/...',
-                    'controller' => AssetsController::class,
-                    'call' => 'getCSS',
-                    'robots' => Robots::HIDE
-                ));
-            }
-        }
-    }
+			if (__ENV__ != 'dev') {
+				$route->register([
+					'name'       => 'assets_css_compiled',
+					'path'       => '/css/%/compiled.css',
+					'controller' => AssetsController::class,
+					'call'       => 'getCompiledCSS',
+					'robots'     => Robots::HIDE
+				]);
+				$route->register([
+					'name'       => 'assets_js_compiled',
+					'path'       => '/js/%/compiled.js',
+					'controller' => AssetsController::class,
+					'call'       => 'getCompiledJS',
+					'robots'     => Robots::HIDE
+				]);
+			} else {
+				$route->register([
+					'name'       => 'assets_js',
+					'path'       => '/js/...',
+					'controller' => AssetsController::class,
+					'call'       => 'getJS',
+					'robots'     => Robots::HIDE
+				]);
+				$route->register([
+					'name'       => 'assets_css',
+					'path'       => '/css/...',
+					'controller' => AssetsController::class,
+					'call'       => 'getCSS',
+					'robots'     => Robots::HIDE
+				]);
+			}
+		}
+	}
 
-    public static function getSourcePath($type, $file) {
-        $path = sprintf('%ssrc/assets/%s/%s', __ROOT__, $type, $file);
-        if (!file_exists($path))
-            throw new \RuntimeException($type . " file '" . $file . "' does not exist.");
-        return $path;
-    }
+	public static function getSourcePath($type, $file) {
+		$path = sprintf('%ssrc/assets/%s/%s', __ROOT__, $type, $file);
+		if (!file_exists($path))
+			throw new \RuntimeException($type . " file '" . $file . "' does not exist.");
+		return $path;
+	}
 
-    public function addJS($file) {
-        $this->js[] = $file;
-        if (strtolower(substr($file, 0, 4)) != 'http') {
-            $path = self::getSourcePath('js', $file);
-            $this->jsCache->fetch($path);
-        }
-    }
+	public function addJS($file) {
+		$this->js[] = $file;
+		if (strtolower(substr($file, 0, 4)) != 'http') {
+			$path = self::getSourcePath('js', $file);
+			$this->jsCache->fetch($path);
+		}
+	}
 
-    public function getJSFiles() {
-        return $this->js;
-    }
+	public function getJSFiles() {
+		return $this->js;
+	}
 
-    public function getJSPath($file) {
-        return $this->jsCache->getCachePath(self::getSourcePath('js', $file));
-    }
+	public function getJSPath($file) {
+		return $this->jsCache->getCachePath(self::getSourcePath('js', $file));
+	}
 
-    public function addCSS($file) {
-        $this->css[] = $file;
-        if (strtolower(substr($file, 0, 4)) != 'http') {
-            $path = self::getSourcePath('css', $file);
-            $this->cssCache->fetch($path);
-        }
-    }
+	public function addCSS($file) {
+		$this->css[] = $file;
+		if (strtolower(substr($file, 0, 4)) != 'http') {
+			$path = self::getSourcePath('css', $file);
+			$this->cssCache->fetch($path);
+		}
+	}
 
-    public function getCSSPath($file) {
-        return $this->cssCache->getCachePath(self::getSourcePath('css', $file));
-    }
+	public function getCSSPath($file) {
+		return $this->cssCache->getCachePath(self::getSourcePath('css', $file));
+	}
 
-    public function getCSSFiles() {
-        return $this->css;
-    }
+	public function getCSSFiles() {
+		return $this->css;
+	}
 
-    public function getImage($file, $width = null, $height = null) {
-        $cachePath = $this->imageCache->ensureCache(self::getSourcePath('images', $file), $width, $height);
-        $fileInfo = pathinfo($file);
+	public function getImage($file, $width = null, $height = null) {
+		$cachePath = $this->imageCache->ensureCache(self::getSourcePath('images', $file), $width, $height);
+		$fileInfo = pathinfo($file);
 
-        $mimes = array(
-            'jpg' => 'image/jpeg',
-            'jpeg' => 'image/jpeg',
-            'gif' => 'image/gif',
-            'png' => 'image/png'
-        );
+		$mimes = [
+			'jpg'  => 'image/jpeg',
+			'jpeg' => 'image/jpeg',
+			'gif'  => 'image/gif',
+			'png'  => 'image/png'
+		];
 
-        global $kernel;
-        if (__ENV__ != 'dev' && isset($mimes[$fileInfo['extension']]) && filesize($cachePath) <= $kernel->getConfig()->image_inline_threshold) {
-            return sprintf('data:%s;base64,%s', $mimes[$fileInfo['extension']], base64_encode(file_get_contents($cachePath)));
-        } else {
-            global $kernel;
-            $virtualImageName = sprintf('%s%s.%dx%d.%s',
-                $fileInfo['dirname'] == '.' ? '' : ($fileInfo['dirname'] . '/'),
-                $fileInfo['filename'],
-                $width,
-                $height,
-                $fileInfo['extension']);
-            $virtualPath = $kernel->getRouteDatabase()->buildPath('assets_images', $virtualImageName);
+		global $kernel;
+		if (__ENV__ != 'dev' && isset($mimes[$fileInfo['extension']]) && filesize($cachePath) <= $kernel->getConfig()->image_inline_threshold) {
+			return sprintf('data:%s;base64,%s', $mimes[$fileInfo['extension']], base64_encode(file_get_contents($cachePath)));
+		} else {
+			global $kernel;
+			$virtualImageName = sprintf('%s%s.%dx%d.%s',
+				$fileInfo['dirname'] == '.' ? '' : ($fileInfo['dirname'] . '/'),
+				$fileInfo['filename'],
+				$width,
+				$height,
+				$fileInfo['extension']);
+			$virtualPath = $kernel->getRouteDatabase()->buildPath('assets_images', $virtualImageName);
 
-            return $virtualPath;
-        }
-    }
+			return $virtualPath;
+		}
+	}
 
-    public static function simpleLoad($filePath) {
-        global $kernel;
-        return $kernel->getTemplateEngine()->simpleFetch($filePath, array(
-            'assets' => $kernel->getAssetsRegister(),
-            'route' => $kernel->getRouteDatabase()
-        ));
-    }
+	public static function simpleLoad($filePath) {
+		global $kernel;
+		return $kernel->getTemplateEngine()->simpleFetch($filePath, [
+			'assets' => $kernel->getAssetsRegister(),
+			'route'  => $kernel->getRouteDatabase()
+		]);
+	}
 
-    public static function minifyCSS($filePath) {
-        return (new CSSmin())->run(self::simpleLoad($filePath));
-    }
+	public static function minifyCSS($filePath) {
+		return (new CSSmin())->run(self::simpleLoad($filePath));
+	}
 
-    public static function minifyJS($filePath) {
-        return Minifier::minify(self::simpleLoad($filePath));
-    }
+	public static function minifyJS($filePath) {
+		return Minifier::minify(self::simpleLoad($filePath));
+	}
 
 }
