@@ -53,7 +53,7 @@ class LanguageRepository {
 				return $entry;
 		}
 
-		return false;
+		return '#!lang:' . $key;
 	}
 
 	public function __get($name) {
