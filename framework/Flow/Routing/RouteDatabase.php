@@ -192,7 +192,7 @@ class RouteDatabase {
 
 	public function buildFullPath() {
 		list($route, $args) = $this->validateRoute(func_get_args());
-		return $this->assemblePath($route, $args);
+		return $this->assembleFullPath($route, $args);
 	}
 
 	private function validateRoute(array $args) {
