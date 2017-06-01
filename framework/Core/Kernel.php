@@ -52,7 +52,7 @@ class Kernel {
 				$kernel->getMySQL()->execute('DELETE FROM `loginsessions` WHERE `lastUpdate` < UNIX_TIMESTAMP((NOW() - INTERVAL 1 HOUR))');
 			});
 			$mgr->newJob('authentication_clean_sessions', '@hourly', function (Kernel $kernel) {
-				$kernel->getMySQL()->execute('DELETE FROM `sessions` WHERE `lastActive` < UNIX_TIMESTAMP((NOW() - INTERVAL 12 HOUR))');
+				$kernel->getMySQL()->execute('DELETE FROM `sessions` WHERE `lastActive` < (NOW() - INTERVAL 12 HOUR)');
 			});
 		}
 	}
