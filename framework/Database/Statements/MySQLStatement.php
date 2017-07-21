@@ -14,6 +14,7 @@
 namespace SmoothPHP\Framework\Database\Statements;
 
 use SmoothPHP\Framework\Database\MySQL;
+use SmoothPHP\Framework\Database\MySQLException;
 use SmoothPHP\Framework\Database\MySQLResult;
 
 abstract class MySQLStatement {
@@ -31,9 +32,17 @@ abstract class MySQLStatement {
 		$this->params = [''];
 		$this->args = [];
 
-		$this->query = preg_replace_callback('/%(d|f|s)/', function (array $matches) {
-			$this->params[0] .= $matches[1];
-			$this->args[] = null;
+		$previousMatch = null;
+		$this->query = preg_replace_callback('/%(d|f|s|r)/', function (array $matches) use (&$previousMatch) {
+			if ($matches[1] != 'r') {
+				$this->params[0] .= $matches[1];
+				$this->args[] = null;
+				$previousMatch = $matches[1];
+			} else {
+				if ($previousMatch == null)
+					throw new MySQLException('Trying to use %r (repeat) in a query with no previous variables.');
+				$this->params[0] .= $previousMatch;
+			}
 			$this->params[] = &$this->args[count($this->args) - 1];
 			return '?';
 		}, $query);
