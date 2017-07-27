@@ -21,6 +21,7 @@ use SmoothPHP\Framework\Flow\Routing\RouteDatabase;
 abstract class WebPrototype {
 
 	public function prepareClassloader(ClassLoader $loader) {
+		$loader->loadFromComposer();
 	}
 
 	public abstract function initialize(Kernel $kernel);

@@ -20,8 +20,8 @@ class BasicClassLoader implements ClassLoader {
 
 	public function __construct() {
 		$this->prefixes = [];
-		$this->prefixes['SmoothPHP\Framework'] = __ROOT__ . 'framework/';
-		$this->prefixes[''] = __ROOT__ . 'src/';
+		$this->prefixes['SmoothPHP\Framework'] = [__ROOT__ . 'framework/'];
+		$this->prefixes[''] = [__ROOT__ . 'src/'];
 	}
 
 	public function addPrefix($namespace, $path) {
@@ -30,7 +30,22 @@ class BasicClassLoader implements ClassLoader {
 
 		if (substr($namespace, 0, 1) == '\\')
 			$namespace = substr($namespace, 1);
-		$this->prefixes[$namespace] = $path;
+		if (!isset($this->prefixes[$namespace]))
+			$this->prefixes[$namespace] = [];
+		$this->prefixes[$namespace][] = $path;
+	}
+
+	public function loadFromComposer() {
+		$file = __ROOT__ . 'src/vendor/composer/autoload_psr4.php';
+		if (file_exists($file)) {
+			$composerLibs = require $file;
+
+			foreach ($composerLibs as $namespace => $dirs) {
+				$namespace = substr($namespace, 0, strlen($namespace) - 1);
+				foreach ($dirs as $dir)
+					$this->addPrefix($namespace, $dir . '/');
+			}
+		}
 	}
 
 	public function register() {
@@ -58,19 +73,22 @@ class BasicClassLoader implements ClassLoader {
 
 		$classPath .= str_replace('_', '/', $className) . '.php';
 
-		foreach ($this->prefixes as $prefix => $dir) {
+		foreach ($this->prefixes as $prefix => $dirs) {
 			if (empty($prefix) || strpos($class, $prefix) === 0) {
 				if (!empty($prefix))
 					$prefix = $prefix . '\\';
 				$prefix = str_replace('\\', '/', $prefix);
-				$ldPath = preg_replace('#' . $prefix . '#', $dir, $classPath, 1);
-				if (($realpath = realpath($ldPath)) === false) {
-					clearstatcache(true, $ldPath);
-					$realpath = realpath($ldPath);
-				}
 
-				if (file_exists($realpath))
-					return $realpath;
+				foreach ($dirs as $dir) {
+					$ldPath = preg_replace('#' . $prefix . '#', $dir, $classPath, 1);
+					if (($realpath = realpath($ldPath)) === false) {
+						clearstatcache(true, $ldPath);
+						$realpath = realpath($ldPath);
+					}
+
+					if (file_exists($realpath))
+						return $realpath;
+				}
 			}
 		}
 
