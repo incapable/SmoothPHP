@@ -71,6 +71,9 @@ class JSElement extends Element {
 		}
 
 		global $kernel;
-		echo sprintf(self::FORMAT, $kernel->getRouteDatabase()->buildPath('assets_js_compiled', $hash));
+		$path = $kernel->getRouteDatabase()->buildPath('assets_js_compiled', $hash);
+
+		header('Link: <' . $path . '>; rel=preload; as=script', false);
+		echo sprintf(self::FORMAT, $path);
 	}
 }

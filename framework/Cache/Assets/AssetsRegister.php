@@ -148,6 +148,7 @@ class AssetsRegister {
 				$fileInfo['extension']);
 			$virtualPath = $kernel->getRouteDatabase()->buildPath('assets_images', $virtualImageName);
 
+			header('Link: <' . $virtualPath . '>; rel=preload; as=image', false);
 			return $virtualPath;
 		}
 	}
