@@ -36,14 +36,23 @@ class BasicClassLoader implements ClassLoader {
 	}
 
 	public function loadFromComposer() {
-		$file = __ROOT__ . 'src/vendor/composer/autoload_psr4.php';
-		if (file_exists($file)) {
-			$composerLibs = require $file;
+		$composerNamespaces = __ROOT__ . 'src/vendor/composer/autoload_psr4.php';
+		if (file_exists($composerNamespaces)) {
+			$composerLibs = require $composerNamespaces;
 
 			foreach ($composerLibs as $namespace => $dirs) {
 				$namespace = substr($namespace, 0, strlen($namespace) - 1);
 				foreach ($dirs as $dir)
 					$this->addPrefix($namespace, $dir . '/');
+			}
+		}
+
+		$composerFiles = __ROOT__ . 'src/vendor/composer/autoload_files.php';
+		if (file_exists($composerFiles)) {
+			$files = require $composerFiles;
+
+			foreach ($files as $file) {
+				require_once $file;
 			}
 		}
 	}
