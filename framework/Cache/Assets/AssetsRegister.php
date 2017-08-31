@@ -37,7 +37,7 @@ class AssetsRegister {
 			$this->jsCache = new FileCacheProvider('js', 'final.js', [AssetsRegister::class, 'minifyJS']);
 			$this->cssCache = new FileCacheProvider('css', 'final.css', [AssetsRegister::class, 'minifyCSS']);
 		}
-		$this->rawCache = new FileCacheProvider('raw', null, [AssetsRegister::class, 'simpleLoad']);
+		$this->rawCache = new FileCacheProvider('raw', null, 'file_get_contents');
 		$this->imageCache = new ImageCache('images');
 
 		$route = $kernel->getRouteDatabase();
