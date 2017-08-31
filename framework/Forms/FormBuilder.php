@@ -20,7 +20,7 @@ use SmoothPHP\Framework\Forms\Types as Types;
 class FormBuilder {
 	private $action = null;
 
-	private $header = [];
+	private $header = ['attr' => []];
 	private $properties;
 
 	/**
@@ -54,6 +54,10 @@ class FormBuilder {
 
 	public function setTokenRequired($required) {
 		$this->header['token'] = $required;
+	}
+
+	public function setHeaderAttribute($name, $value) {
+		$this->header['attr'][$name] = $value;
 	}
 
 	public function getForm() {

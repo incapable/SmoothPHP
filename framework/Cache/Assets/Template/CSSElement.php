@@ -73,7 +73,10 @@ class CSSElement extends Element {
 		}
 
 		global $kernel;
-		echo sprintf(self::FORMAT, $kernel->getRouteDatabase()->buildPath('assets_css_compiled', $hash));
+		$path = $kernel->getRouteDatabase()->buildPath('assets_css_compiled', $hash);
+
+		header('Link: <' . $path . '>; rel=preload; as=style', false);
+		echo sprintf(self::FORMAT, $path);
 	}
 
 }

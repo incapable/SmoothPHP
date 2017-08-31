@@ -17,6 +17,8 @@ interface ClassLoader {
 
 	public function addPrefix($namespace, $path);
 
+	public function loadFromComposer();
+
 	public function register();
 
 }
