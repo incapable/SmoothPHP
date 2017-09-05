@@ -14,6 +14,7 @@
 namespace SmoothPHP\Framework\Templates\Elements\Commands;
 
 use SmoothPHP\Framework\Templates\Compiler\CompilerState;
+use SmoothPHP\Framework\Templates\Compiler\TemplateCompileException;
 use SmoothPHP\Framework\Templates\Elements\Element;
 
 class VariableElement extends Element {
@@ -39,6 +40,9 @@ class VariableElement extends Element {
 	}
 
 	public function output(CompilerState $tpl) {
+	    if (!isset($tpl->vars->{$this->varName}))
+	        throw new TemplateCompileException("Variable '" . $this->varName . "' not set.");
+
 		$tpl->vars->{$this->varName}->output($tpl);
 	}
 }

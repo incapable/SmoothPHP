@@ -35,7 +35,7 @@ class EqualsOperatorElement extends Element {
 		} else {
 			$assignTo = $chain->pop();
 			if (!($assignTo instanceof VariableElement))
-				throw new TemplateCompileException("Attempting to assign a value to a non-variable.");
+				throw new TemplateCompileException("Attempting to assign a value to a non-variable around " . $command->getDebugSurroundings('') . ".");
 
 			$right = new Chain();
 			$compiler->handleCommand($command, $lexer, $right, $stackEnd);

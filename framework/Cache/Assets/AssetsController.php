@@ -90,4 +90,14 @@ class AssetsController extends Controller {
 		]);
 	}
 
+	public function getRaw(AssetsRegister $register, array $path) {
+	    $file = $register->getRawPath(implode('/', $path));
+
+        return new FileStream([
+            'cache'    => true,
+            'filename' => end($path),
+            'url'      => $file
+        ]);
+    }
+
 }

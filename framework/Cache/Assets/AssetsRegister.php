@@ -20,10 +20,8 @@ use SmoothPHP\Framework\Flow\Requests\Robots;
 use tubalmartin\CSSmin\CSSmin;
 
 class AssetsRegister {
-	/* @var $jsCache FileCacheProvider */
-	private $jsCache;
-	/* @var $cssCache FileCacheProvider */
-	private $cssCache;
+	/* @var FileCacheProvider */
+	private $jsCache, $cssCache, $rawCache;
 	/* @var $imageCache ImageCache */
 	private $imageCache;
 	private $js, $css;
@@ -39,6 +37,7 @@ class AssetsRegister {
 			$this->jsCache = new FileCacheProvider('js', 'final.js', [AssetsRegister::class, 'minifyJS']);
 			$this->cssCache = new FileCacheProvider('css', 'final.css', [AssetsRegister::class, 'minifyCSS']);
 		}
+		$this->rawCache = new FileCacheProvider('raw', null, 'file_get_contents');
 		$this->imageCache = new ImageCache('images');
 
 		$route = $kernel->getRouteDatabase();
@@ -50,6 +49,13 @@ class AssetsRegister {
 				'call'       => 'getImage',
 				'robots'     => Robots::HIDE
 			]);
+            $route->register([
+                'name'       => 'assets_raw',
+                'path'       => '/raw/...',
+                'controller' => AssetsController::class,
+                'call'       => 'getRaw',
+                'robots'     => Robots::HIDE
+            ]);
 
 			if (__ENV__ != 'dev') {
 				$route->register([
@@ -152,6 +158,18 @@ class AssetsRegister {
 			return $virtualPath;
 		}
 	}
+
+	public function getRaw($file) {
+        $path = self::getSourcePath('raw', $file);
+        $this->rawCache->fetch($path);
+
+        global $kernel;
+        return $kernel->getRouteDatabase()->buildPath('assets_raw', $file);
+    }
+
+    public function getRawPath($file) {
+	    return $this->rawCache->getCachePath(self::getSourcePath('raw', $file));
+    }
 
 	public static function simpleLoad($filePath) {
 		global $kernel;
