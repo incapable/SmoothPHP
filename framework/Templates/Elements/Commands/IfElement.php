@@ -65,13 +65,11 @@ class IfElement extends Element {
 		$condition = $this->condition->optimize($tpl);
 
 		if ($condition instanceof PrimitiveElement) {
-			if ($condition->getValue()) {
-				$body = $this->trueBody->optimize($tpl);
-				return $body;
-			} else if (isset($this->falseBody)) {
-				$body = $this->falseBody->optimize($tpl);
-				return $body;
-			} else
+			if ($condition->getValue())
+				return $this->trueBody->optimize($tpl);
+			else if (isset($this->falseBody))
+				return $this->falseBody->optimize($tpl);
+			else
 				return new PrimitiveElement();
 		} else
 			return new self($condition, $this->trueBody ? $this->trueBody->optimize($tpl) : null, $this->falseBody ? $this->falseBody->optimize($tpl) : null);
@@ -82,8 +80,6 @@ class IfElement extends Element {
 
 		if ($result instanceof PrimitiveElement)
 			$primitiveResult = $result->getValue();
-		else if ($result instanceof VariableElement)
-			$primitiveResult = isset($tpl->vars->{$result->getVarName()});
 		else
 			throw new TemplateCompileException("Could not deduce if condition at runtime.");
 

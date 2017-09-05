@@ -17,6 +17,8 @@ use SmoothPHP\Framework\Templates\Compiler\CompilerState;
 use SmoothPHP\Framework\Templates\Compiler\TemplateCompileException;
 use SmoothPHP\Framework\Templates\Compiler\TemplateLexer;
 use SmoothPHP\Framework\Templates\Elements\Chain;
+use SmoothPHP\Framework\Templates\Elements\Commands\AssignElement;
+use SmoothPHP\Framework\Templates\Elements\Commands\VariableElement;
 use SmoothPHP\Framework\Templates\Elements\Element;
 use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
 use SmoothPHP\Framework\Templates\TemplateCompiler;
@@ -52,11 +54,26 @@ abstract class ArithmeticOperatorElement extends Element {
 				break;
 			case '/':
 				$op = new DivisionOperatorElement();
+				break;
 			case '&':
 				if ($command->peek('&'))
 					$op = new AndOperatorElement();
 				else
 					$op = new BinaryAndOperatorElement();
+				break;
+            case '=':
+                if ($command->peek('='))
+                    $op = new EqualsOperatorElement();
+                else {
+                    $assignTo = $chain->pop();
+                    if (!($assignTo instanceof VariableElement))
+                        throw new TemplateCompileException("Attempting to assign a value to a non-variable around " . $command->getDebugSurroundings('') . ".");
+
+                    $right = new Chain();
+                    $compiler->handleCommand($command, $lexer, $right);
+                    $chain->addElement(new AssignElement($assignTo->getVarName(), TemplateCompiler::flatten($right)));
+                    return;
+                }
 		}
 		$command->skipWhitespace();
 

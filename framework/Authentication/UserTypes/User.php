@@ -7,7 +7,7 @@
  * Copyright (C) 2017 Rens Rikkerink
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * * * *
- * User.php
+ * GUser.php
  * Default user implementation
  */
 

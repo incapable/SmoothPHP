@@ -103,6 +103,9 @@ class AuthenticationManager {
 		if (!$session)
 			$session = $this->assignLoginSession($request);
 
+		global $kernel;
+        if ($kernel->getConfig()->authentication_loginroute != null)
+            $this->defaultForm->setAction($kernel->getConfig()->authentication_loginroute);
 		$this->defaultForm->setValue('_logintoken', $session->getToken());
 
 		return $this->defaultForm;

@@ -8,11 +8,15 @@ use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
 class AndOperatorElement extends ArithmeticOperatorElement {
 
 	public function getPriority() {
-		return 5;
+		return 4;
 	}
 
 	public function optimize(CompilerState $tpl) {
 		$left = $this->left->optimize($tpl);
+
+		if ($left instanceof PrimitiveElement && !$left->getValue())
+		    return new PrimitiveElement(false); // Cancel out early before we start calling $right
+
 		$right = $this->right->optimize($tpl);
 
 		if ($left instanceof PrimitiveElement && $right instanceof PrimitiveElement)

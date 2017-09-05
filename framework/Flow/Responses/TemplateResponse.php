@@ -35,6 +35,7 @@ class TemplateResponse extends Response {
 			$this->args['auth'] = $auth;
 			$this->args['user'] = $auth->getActiveUser();
 		}
+		$this->args['request'] = $request;
 		$this->built = $kernel->getTemplateEngine()->fetch($this->controllerResponse, $this->args);
 	}
 

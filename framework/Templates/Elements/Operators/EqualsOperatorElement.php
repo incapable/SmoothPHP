@@ -23,30 +23,11 @@ use SmoothPHP\Framework\Templates\Elements\Element;
 use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
 use SmoothPHP\Framework\Templates\TemplateCompiler;
 
-class EqualsOperatorElement extends Element {
-	private $left, $right;
+class EqualsOperatorElement extends ArithmeticOperatorElement {
 
-	public static function handle(TemplateCompiler $compiler, TemplateLexer $command, TemplateLexer $lexer, Chain $chain, $stackEnd) {
-		$command->next();
-		if ($command->peek('=')) {
-			$right = new Chain();
-			$compiler->handleCommand($command, $lexer, $right, $stackEnd);
-			$chain->addElement(new self($chain->pop(), TemplateCompiler::flatten($right)));
-		} else {
-			$assignTo = $chain->pop();
-			if (!($assignTo instanceof VariableElement))
-				throw new TemplateCompileException("Attempting to assign a value to a non-variable around " . $command->getDebugSurroundings('') . ".");
-
-			$right = new Chain();
-			$compiler->handleCommand($command, $lexer, $right, $stackEnd);
-			$chain->addElement(new AssignElement($assignTo->getVarName(), TemplateCompiler::flatten($right)));
-		}
-	}
-
-	public function __construct(Element $left, Element $right) {
-		$this->left = $left;
-		$this->right = $right;
-	}
+    public function getPriority() {
+        return 5;
+    }
 
 	public function optimize(CompilerState $tpl) {
 		$left = $this->left->optimize($tpl);
