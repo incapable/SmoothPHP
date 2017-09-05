@@ -52,6 +52,11 @@ abstract class ArithmeticOperatorElement extends Element {
 				break;
 			case '/':
 				$op = new DivisionOperatorElement();
+			case '&':
+				if ($command->peek('&'))
+					$op = new AndOperatorElement();
+				else
+					$op = new BinaryAndOperatorElement();
 		}
 		$command->skipWhitespace();
 

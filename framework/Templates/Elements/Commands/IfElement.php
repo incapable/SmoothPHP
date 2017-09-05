@@ -80,10 +80,14 @@ class IfElement extends Element {
 	public function output(CompilerState $tpl) {
 		$result = $this->condition->optimize($tpl);
 
-		if (!($result instanceof PrimitiveElement))
+		if ($result instanceof PrimitiveElement)
+			$primitiveResult = $result->getValue();
+		else if ($result instanceof VariableElement)
+			$primitiveResult = isset($tpl->vars->{$result->getVarName()});
+		else
 			throw new TemplateCompileException("Could not deduce if condition at runtime.");
 
-		if ($result->getValue())
+		if ($primitiveResult)
 			$this->trueBody->output($tpl);
 		else if (isset($this->falseBody))
 			$this->falseBody->output($tpl);

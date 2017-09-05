@@ -36,7 +36,10 @@ class DereferenceOperatorElement extends Element {
 		$right = $this->right;
 
 		if ($tpl->performCalls && $left instanceof PrimitiveElement && $right instanceof PrimitiveElement)
-			return new PrimitiveElement($left->getValue()->{$right->getValue()});
+			if (is_array($left->getValue()))
+				return new PrimitiveElement($left->getValue()[$right->getValue()]);
+			else
+				return new PrimitiveElement($left->getValue()->{$right->getValue()});
 
 		if ($right instanceof FunctionOperatorElement && $tpl->performCalls) {
 			if ($left instanceof VariableElement) {
@@ -57,7 +60,10 @@ class DereferenceOperatorElement extends Element {
 			throw new TemplateCompileException("Could not determine left-hand of '->' at runtime.");
 		else {
 			if ($optimized->right instanceof PrimitiveElement)
-				echo $optimized->left->getValue()->{$optimized->right->getValue()};
+				if (is_array($optimized->left->getValue()))
+					echo $optimized->left->getValue()[$optimized->right->getValue()];
+				else
+					echo $optimized->left->getValue()->{$optimized->right->getValue()};
 			else if ($optimized->right instanceof FunctionOperatorElement)
 				echo call_user_func_array([$optimized->left->getValue(), $optimized->right->getFunctionName()], $optimized->right->getPrimitiveArgs($tpl));
 			else

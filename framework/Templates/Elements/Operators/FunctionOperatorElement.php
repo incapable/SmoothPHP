@@ -17,6 +17,7 @@ use SmoothPHP\Framework\Templates\Compiler\CompilerState;
 use SmoothPHP\Framework\Templates\Compiler\TemplateCompileException;
 use SmoothPHP\Framework\Templates\Compiler\TemplateLexer;
 use SmoothPHP\Framework\Templates\Elements\Chain;
+use SmoothPHP\Framework\Templates\Elements\Commands\VariableElement;
 use SmoothPHP\Framework\Templates\Elements\Element;
 use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
 use SmoothPHP\Framework\Templates\TemplateCompiler;
@@ -24,7 +25,7 @@ use SmoothPHP\Framework\Templates\TemplateCompiler;
 class FunctionOperatorElement extends Element {
 	private static $cacheableFunctions;
 
-	private $functionName;
+	private $function;
 	private $args;
 
 	public static function handle(TemplateCompiler $compiler, TemplateLexer $command, TemplateLexer $lexer, Chain $chain) {
@@ -38,7 +39,7 @@ class FunctionOperatorElement extends Element {
 		if (!isset(self::$cacheableFunctions))
 			self::fillCacheableFunctions();
 
-		$this->functionName = $functionName;
+		$this->function = $functionName;
 		$this->args = $args;
 	}
 
@@ -48,7 +49,7 @@ class FunctionOperatorElement extends Element {
 	}
 
 	public function getFunctionName() {
-		return $this->functionName;
+		return $this->function;
 	}
 
 	public function getPrimitiveArgs(CompilerState $tpl) {
@@ -82,14 +83,14 @@ class FunctionOperatorElement extends Element {
 				$resolvedArgs[] = $args[$i]->getValue();
 		}
 
-		if (($tpl->performCalls || in_array($this->functionName, self::$cacheableFunctions)) && $simpleArgs) {
-			return new PrimitiveElement(call_user_func_array($this->functionName, $resolvedArgs));
+		if (($tpl->performCalls || in_array($this->function, self::$cacheableFunctions)) && $simpleArgs) {
+			return new PrimitiveElement(call_user_func_array($this->function, $resolvedArgs));
 		} else
-			return new self($this->functionName, $optimizedChain);
+			return new self($this->function, $optimizedChain);
 	}
 
 	public function output(CompilerState $tpl) {
-		echo call_user_func_array($this->functionName, $this->getPrimitiveArgs($tpl));
+		echo call_user_func_array($this->function, $this->getPrimitiveArgs($tpl));
 	}
 
 	private static function fillCacheableFunctions() {

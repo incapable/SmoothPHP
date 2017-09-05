@@ -20,6 +20,7 @@ use SmoothPHP\Framework\Templates\Elements\Chain;
 use SmoothPHP\Framework\Templates\Elements\Commands\BlockElement;
 use SmoothPHP\Framework\Templates\Elements\Element;
 use SmoothPHP\Framework\Templates\Elements\Operators\ArithmeticOperatorElement;
+use SmoothPHP\Framework\Templates\Elements\Operators\BinaryAndOperatorElement;
 use SmoothPHP\Framework\Templates\Elements\Operators\DereferenceOperatorElement;
 
 class TemplateCompiler {
@@ -55,7 +56,8 @@ class TemplateCompiler {
 			'"'  => Elements\PrimitiveElement::class,
 			'='  => Elements\Operators\EqualsOperatorElement::class,
 			'!'  => Elements\Operators\InEqualsOperatorElement::class,
-			'|'  => Elements\Operators\FunctionOperatorElement::class
+			'|'  => Elements\Operators\FunctionOperatorElement::class,
+			'&'  => Elements\Operators\BinaryAndOperatorElement::class
 		];
 	}
 

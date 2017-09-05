@@ -24,14 +24,12 @@ class Scope {
 
 	public function __set($name, $value) {
 		if (!$this->setIfDeclared($name, $value)) {
-			// var_dump('set', $name, $value);
 			$this->variables[$name] = $value;
 		}
 	}
 
 	private function setIfDeclared($name, $value) {
 		if (isset($this->variables[$name])) {
-			// var_dump('overwrite', $name, $value);
 			$this->variables[$name] = $value;
 			return true;
 		} else {
