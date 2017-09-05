@@ -100,4 +100,8 @@ class AssetsController extends Controller {
         ]);
     }
 
+    public function favicon(Kernel $kernel, LanguageRepository $language) {
+	    return $this->getImage($kernel, $language, ['favicon.ico']);
+    }
+
 }

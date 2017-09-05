@@ -42,6 +42,13 @@ class AssetsRegister {
 
 		$route = $kernel->getRouteDatabase();
 		if ($route) {
+		    $route->register([
+		        'name' => 'favicon',
+                'path' => 'favicon.ico',
+                'controller' => AssetsController::class,
+                'call' => 'favicon',
+                'robots' => Robots::HIDE
+            ]);
 			$route->register([
 				'name'       => 'assets_images',
 				'path'       => '/images/...',
