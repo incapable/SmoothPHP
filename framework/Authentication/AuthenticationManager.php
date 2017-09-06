@@ -231,7 +231,7 @@ class AuthenticationManager {
 		return $this->verifyAccess(null, $route, array_splice($args, 1));
 	}
 
-	public function verifyAccess(Request $request, array $routeOpts, array $parameters) {
+	public function verifyAccess($request, array $routeOpts, array $parameters) {
 		if (isset($routeOpts['authentication']) && $routeOpts['authentication'] !== false) {
 			$user = $this->getActiveUser();
 
