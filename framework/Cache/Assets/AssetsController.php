@@ -91,17 +91,17 @@ class AssetsController extends Controller {
 	}
 
 	public function getRaw(AssetsRegister $register, array $path) {
-	    $file = $register->getRawPath(implode('/', $path));
+		$file = $register->getRawPath(implode('/', $path));
 
-        return new FileStream([
-            'cache'    => true,
-            'filename' => end($path),
-            'url'      => $file
-        ]);
-    }
+		return new FileStream([
+			'cache'    => true,
+			'filename' => end($path),
+			'url'      => $file
+		]);
+	}
 
-    public function favicon(Kernel $kernel, LanguageRepository $language) {
-	    return $this->getImage($kernel, $language, ['favicon.ico']);
-    }
+	public function favicon(Kernel $kernel, LanguageRepository $language) {
+		return $this->getImage($kernel, $language, ['favicon.ico']);
+	}
 
 }

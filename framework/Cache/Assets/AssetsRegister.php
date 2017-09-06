@@ -42,13 +42,13 @@ class AssetsRegister {
 
 		$route = $kernel->getRouteDatabase();
 		if ($route) {
-		    $route->register([
-		        'name' => 'favicon',
-                'path' => 'favicon.ico',
-                'controller' => AssetsController::class,
-                'call' => 'favicon',
-                'robots' => Robots::HIDE
-            ]);
+			$route->register([
+				'name'       => 'favicon',
+				'path'       => 'favicon.ico',
+				'controller' => AssetsController::class,
+				'call'       => 'favicon',
+				'robots'     => Robots::HIDE
+			]);
 			$route->register([
 				'name'       => 'assets_images',
 				'path'       => '/images/...',
@@ -56,13 +56,13 @@ class AssetsRegister {
 				'call'       => 'getImage',
 				'robots'     => Robots::HIDE
 			]);
-            $route->register([
-                'name'       => 'assets_raw',
-                'path'       => '/raw/...',
-                'controller' => AssetsController::class,
-                'call'       => 'getRaw',
-                'robots'     => Robots::HIDE
-            ]);
+			$route->register([
+				'name'       => 'assets_raw',
+				'path'       => '/raw/...',
+				'controller' => AssetsController::class,
+				'call'       => 'getRaw',
+				'robots'     => Robots::HIDE
+			]);
 
 			if (__ENV__ != 'dev') {
 				$route->register([
@@ -167,16 +167,16 @@ class AssetsRegister {
 	}
 
 	public function getRaw($file) {
-        $path = self::getSourcePath('raw', $file);
-        $this->rawCache->fetch($path);
+		$path = self::getSourcePath('raw', $file);
+		$this->rawCache->fetch($path);
 
-        global $kernel;
-        return $kernel->getRouteDatabase()->buildPath('assets_raw', $file);
-    }
+		global $kernel;
+		return $kernel->getRouteDatabase()->buildPath('assets_raw', $file);
+	}
 
-    public function getRawPath($file) {
-	    return $this->rawCache->getCachePath(self::getSourcePath('raw', $file));
-    }
+	public function getRawPath($file) {
+		return $this->rawCache->getCachePath(self::getSourcePath('raw', $file));
+	}
 
 	public static function simpleLoad($filePath) {
 		global $kernel;

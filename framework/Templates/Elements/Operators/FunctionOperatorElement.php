@@ -32,25 +32,25 @@ class FunctionOperatorElement extends Element {
 		$command->next();
 		$args = new Chain();
 		$args->addElement($chain->pop());
-        $chain->addElement(new self($command->readAlphaNumeric(), $args));
+		$chain->addElement(new self($command->readAlphaNumeric(), $args));
 	}
 
 	public function __construct($function, Chain $args) {
 		if (!isset(self::$cacheableFunctions))
 			self::fillCacheableFunctions();
 
-        if ($function == 'isset') {
-            $arrArgs = $args->getAll();
-            if (count($arrArgs) != 1 || !($arrArgs[0] instanceof VariableElement))
-                throw new TemplateCompileException('isset() only accepts 1 variable as argument');
-            else {
-                $args->pop();
-                $args->addElement(new PrimitiveElement($arrArgs[0]->getVarName()));
-                $this->function = [FunctionOperatorElement::class, '__builtin_isset'];
-                $this->args = $args;
-                return;
-            }
-        } // else
+		if ($function == 'isset') {
+			$arrArgs = $args->getAll();
+			if (count($arrArgs) != 1 || !($arrArgs[0] instanceof VariableElement))
+				throw new TemplateCompileException('isset() only accepts 1 variable as argument');
+			else {
+				$args->pop();
+				$args->addElement(new PrimitiveElement($arrArgs[0]->getVarName()));
+				$this->function = [FunctionOperatorElement::class, '__builtin_isset'];
+				$this->args = $args;
+				return;
+			}
+		} // else
 
 		$this->function = $function;
 		$this->args = $args;
@@ -72,7 +72,7 @@ class FunctionOperatorElement extends Element {
 			$arg = $arg->optimize($tpl);
 
 			if (!($arg instanceof PrimitiveElement))
-                throw new TemplateCompileException("Could not deduce function argument at runtime.");
+				throw new TemplateCompileException("Could not deduce function argument at runtime.");
 
 			$args[] = $arg->getValue();
 		}
@@ -97,11 +97,11 @@ class FunctionOperatorElement extends Element {
 		}
 
 		if (($tpl->performCalls || in_array($this->function, self::$cacheableFunctions)) && $simpleArgs) {
-		    if (is_array($this->function)) {
-		        if ($tpl->isUncertain())
-		            return new self($this->function, $optimizedChain);
-                array_unshift($resolvedArgs, $tpl); // If we're dealing with a builtin function, push compilerstate
-            }
+			if (is_array($this->function)) {
+				if ($tpl->isUncertain())
+					return new self($this->function, $optimizedChain);
+				array_unshift($resolvedArgs, $tpl); // If we're dealing with a builtin function, push compilerstate
+			}
 			return new PrimitiveElement(call_user_func_array($this->function, $resolvedArgs));
 		} else
 			return new self($this->function, $optimizedChain);
@@ -125,7 +125,7 @@ class FunctionOperatorElement extends Element {
 	}
 
 	private static function __builtin_isset(CompilerState $tpl, $varName) {
-        return isset($tpl->vars->{$varName});
-    }
+		return isset($tpl->vars->{$varName});
+	}
 
 }

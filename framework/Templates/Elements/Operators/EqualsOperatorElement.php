@@ -25,9 +25,9 @@ use SmoothPHP\Framework\Templates\TemplateCompiler;
 
 class EqualsOperatorElement extends ArithmeticOperatorElement {
 
-    public function getPriority() {
-        return 5;
-    }
+	public function getPriority() {
+		return 5;
+	}
 
 	public function optimize(CompilerState $tpl) {
 		$left = $this->left->optimize($tpl);

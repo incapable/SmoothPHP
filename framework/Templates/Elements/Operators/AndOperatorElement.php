@@ -15,7 +15,7 @@ class AndOperatorElement extends ArithmeticOperatorElement {
 		$left = $this->left->optimize($tpl);
 
 		if ($left instanceof PrimitiveElement && !$left->getValue())
-		    return new PrimitiveElement(false); // Cancel out early before we start calling $right
+			return new PrimitiveElement(false); // Cancel out early before we start calling $right
 
 		$right = $this->right->optimize($tpl);
 

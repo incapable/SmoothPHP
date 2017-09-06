@@ -38,9 +38,9 @@ class PrimitiveElement extends Element {
 					case "false":
 						$value = false;
 						break;
-                    case "null":
-                        $value = null;
-                        break;
+					case "null":
+						$value = null;
+						break;
 				}
 			}
 		}

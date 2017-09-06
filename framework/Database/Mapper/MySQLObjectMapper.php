@@ -150,12 +150,12 @@ class MySQLObjectMapper {
 
 				$conditions = [];
 				array_walk($where, function (&$value, $key) use (&$conditions) {
-				    $comparator = '=';
-				    if (strtolower(substr($key, 0, 5)) == 'like ') {
-                        $comparator = 'LIKE';
-                        $key = substr($key, 5);
-                    }
-				    $valueType = is_int($value) || ctype_digit($value) ? '%d' : '%s';
+					$comparator = '=';
+					if (strtolower(substr($key, 0, 5)) == 'like ') {
+						$comparator = 'LIKE';
+						$key = substr($key, 5);
+					}
+					$valueType = is_int($value) || ctype_digit($value) ? '%d' : '%s';
 					$conditions[] = sprintf('`%s` %s %s', $key, $comparator, $valueType);
 				});
 				$query .= implode(' ' . $whereSeparator . ' ', $conditions);
