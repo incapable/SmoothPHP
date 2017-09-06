@@ -62,9 +62,10 @@ abstract class ArithmeticOperatorElement extends Element {
 					$op = new BinaryAndOperatorElement();
 				break;
 			case '=':
-				if ($command->peek('='))
+				if ($command->peek('=')) {
 					$op = new EqualsOperatorElement();
-				else {
+					break;
+				} else {
 					$assignTo = $chain->pop();
 					if (!($assignTo instanceof VariableElement))
 						throw new TemplateCompileException("Attempting to assign a value to a non-variable around " . $command->getDebugSurroundings('') . ".");
@@ -72,6 +73,16 @@ abstract class ArithmeticOperatorElement extends Element {
 					$right = new Chain();
 					$compiler->handleCommand($command, $lexer, $right);
 					$chain->addElement(new AssignElement($assignTo->getVarName(), TemplateCompiler::flatten($right)));
+					return;
+				}
+			case '!':
+				if ($command->peek('=')) {
+					$op = new InEqualsOperatorElement();
+					break;
+				} else {
+					$right = new Chain();
+					$compiler->handleCommand($command, $lexer, $right);
+					$chain->addElement(new InverseOperatorElement(TemplateCompiler::flatten($right)));
 					return;
 				}
 		}

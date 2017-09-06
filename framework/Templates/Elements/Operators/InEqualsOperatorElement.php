@@ -21,23 +21,10 @@ use SmoothPHP\Framework\Templates\Elements\Element;
 use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
 use SmoothPHP\Framework\Templates\TemplateCompiler;
 
-class InEqualsOperatorElement extends Element {
-	private $left, $right;
+class InEqualsOperatorElement extends ArithmeticOperatorElement {
 
-	public static function handle(TemplateCompiler $compiler, TemplateLexer $command, TemplateLexer $lexer, Chain $chain, $stackEnd) {
-		$command->next();
-		$isEqualsOperator = $command->peek('=');
-		$right = new Chain();
-		$compiler->handleCommand($command, $lexer, $right, $stackEnd);
-		if ($isEqualsOperator)
-			$chain->addElement(new self($chain->pop(), TemplateCompiler::flatten($right)));
-		else
-			$chain->addElement(new InverseOperatorElement(TemplateCompiler::flatten($right)));
-	}
-
-	public function __construct(Element $left, Element $right) {
-		$this->left = $left;
-		$this->right = $right;
+	protected function getPriority() {
+		return 5;
 	}
 
 	public function optimize(CompilerState $tpl) {
@@ -58,4 +45,5 @@ class InEqualsOperatorElement extends Element {
 
 		$result->output($tpl);
 	}
+
 }
