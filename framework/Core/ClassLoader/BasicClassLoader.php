@@ -55,6 +55,15 @@ class BasicClassLoader implements ClassLoader {
 				require_once $file;
 			}
 		}
+
+		$composerUnspacedFiles = __ROOT__ . 'src/vendor/composer/autoload_namespaces.php';
+		if (file_exists($composerUnspacedFiles)) {
+			$namespaces = require $composerUnspacedFiles;
+
+			foreach ($namespaces as $dirs)
+				foreach ($dirs as $dir)
+					$this->addPrefix('', $dir . '/');
+		}
 	}
 
 	public function register() {
