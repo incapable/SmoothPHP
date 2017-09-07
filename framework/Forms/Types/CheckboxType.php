@@ -36,6 +36,11 @@ class CheckboxType extends Type {
 	}
 
 	public function __toString() {
+		if (isset($this->attributes['attr']['value']) && last($this->attributes['attr']['value'])) {
+			$this->attributes['attr']['checked'] = 'checked';
+			unset($this->attributes['attr']['value']);
+		}
+
 		if (last($this->attributes['mergelabel']))
 			return sprintf('<label>%s %s</label>', parent::__toString(), last($this->attributes['label']));
 		else

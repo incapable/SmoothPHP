@@ -36,4 +36,9 @@ class HiddenType extends Type {
 		];
 	}
 
+	public function __toString() {
+		unset($this->attributes['attr']['required']);
+		return parent::__toString();
+	}
+
 }

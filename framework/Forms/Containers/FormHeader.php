@@ -64,9 +64,10 @@ class FormHeader extends Constraint {
 	public function checkConstraint(Request $request, $name, $label, $value, array &$failReasons) {
 		if ($this->attributes['token']) {
 			$tokens = isset($_SESSION[self::SESSION_KEY]) ? $_SESSION[self::SESSION_KEY] : [];
+
 			$key = array_search($request->post->_token, $tokens, true);
 			if ($key === false) {
-				$failReasons[] = 'Form security token mismatch.';
+				$failReasons[] = 'Form security token mismatch. Please try again.';
 				return;
 			}
 			unset($_SESSION[self::SESSION_KEY][$key]);
