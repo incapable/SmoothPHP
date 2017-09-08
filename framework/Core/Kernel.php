@@ -104,7 +104,7 @@ class Kernel {
 
 	/**
 	 * Overwrites the default plain text error handler.
-	 * @param $errorHandler \Closure The callable function that accepts 1 argument for the message.
+	 * @param $errorHandler string|array The callable function that accepts 1 argument for the message. Do not pass closures here.
 	 * @param bool $ignoreContentType
 	 */
 	public function setErrorHandler($errorHandler, $ignoreContentType = false) {
