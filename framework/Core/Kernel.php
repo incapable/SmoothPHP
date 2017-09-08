@@ -33,7 +33,7 @@ class Kernel {
 	private $routeDatabase;
 
 	// Runtime
-	private $errorHandler;
+	private $errorHandler, $ignoreRouteContentType;
 	private $templateEngine;
 	private $assetsRegister;
 	private $mysql;
@@ -91,7 +91,7 @@ class Kernel {
 
 	public function error($message) {
 		global $request;
-		if (isset($request->meta->route)) {
+		if (!$this->ignoreRouteContentType && isset($request->meta->route)) {
 			$type = new $request->meta->route['content-type'](null);
 			if ($type instanceof AlternateErrorResponse) {
 				$type->buildErrorResponse($message);
@@ -102,11 +102,17 @@ class Kernel {
 		return call_user_func($this->errorHandler, $message);
 	}
 
-	public function setErrorHandler($errorHandler) {
+	/**
+	 * Overwrites the default plain text error handler.
+	 * @param $errorHandler \Closure The callable function that accepts 1 argument for the message.
+	 * @param bool $ignoreContentType
+	 */
+	public function setErrorHandler($errorHandler, $ignoreContentType = false) {
 		if (!is_callable($errorHandler))
 			throw new \InvalidArgumentException('$errorHandler is not callable');
 
 		$this->errorHandler = $errorHandler;
+		$this->ignoreRouteContentType = $ignoreContentType;
 	}
 
 	private function handleError($message) {
