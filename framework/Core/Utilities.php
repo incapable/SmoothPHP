@@ -28,19 +28,16 @@ function last($array) {
  * @return string|null md5 checksum or null if the file doesn't exist
  * @note The results and file existence are cached, consecutive calls to this function will return even if the file no longer exists.
  */
-function cached_md5_file($filename) {
-	static $md5Cache = [];
+function file_hash($filename) {
 	$filename = realpath($filename);
 
 	if (!file_exists($filename))
 		return null;
 
-	if (!isset($md5Cache[$filename]))
-		$md5Cache[$filename] = $result = md5_file($filename);
+	if (__ENV__ == 'prod')
+		return md5(filemtime($filename));
 	else
-		$result = $md5Cache[$filename];
-
-	return $result;
+		return md5_file($filename);
 }
 
 function cookie_domain() {

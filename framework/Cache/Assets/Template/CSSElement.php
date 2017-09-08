@@ -13,7 +13,6 @@
 
 namespace SmoothPHP\Framework\Cache\Assets\Template;
 
-use SmoothPHP\Framework\Cache\Assets\AssetsRegister;
 use SmoothPHP\Framework\Core\Lock;
 use SmoothPHP\Framework\Templates\Compiler\CompilerState;
 use SmoothPHP\Framework\Templates\Compiler\TemplateLexer;
@@ -55,7 +54,9 @@ class CSSElement extends Element {
 		if (count($files) == 0)
 			return;
 
-		$hash = md5(implode(',', $files));
+		$hash = md5(array_reduce($files, function ($carry, $file) {
+			return $carry . ',' . $file . filemtime($file);
+		}));
 
 		if (!file_exists(sprintf(self::COMPILED_PATH, $hash))) {
 			$lock = new Lock('compiled.css.' . $hash);
@@ -68,7 +69,10 @@ class CSSElement extends Element {
 
 				$cssmin = new CSSmin();
 				$optimized = $cssmin->run($contents);
-				file_put_contents(sprintf(self::COMPILED_PATH, $hash), $optimized);
+
+				$path = sprintf(self::COMPILED_PATH, $hash);
+				file_put_contents($path, $optimized);
+				file_put_contents($path . '.gz', gzencode($optimized, 9));
 			}
 		}
 

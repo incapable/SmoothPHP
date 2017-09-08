@@ -45,11 +45,11 @@ class IncludeElement extends Element {
 
 	public function __construct($file) {
 		$this->file = $file;
-		$this->md5 = cached_md5_file($file);
+		$this->md5 = file_hash($file);
 	}
 
 	public function __wakeup() {
-		if (cached_md5_file($this->file) != $this->md5)
+		if (file_hash($this->file) != $this->md5)
 			throw new CacheExpiredException();
 	}
 

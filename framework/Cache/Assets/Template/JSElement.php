@@ -54,7 +54,9 @@ class JSElement extends Element {
 		if (count($files) == 0)
 			return;
 
-		$hash = md5(implode(',', $files));
+		$hash = md5(array_reduce($files, function ($carry, $file) {
+			return $carry . ',' . $file . filemtime($file);
+		}));
 
 		if (!file_exists(sprintf(self::COMPILED_PATH, $hash))) {
 			$lock = new Lock('compiled.js.' . $hash);
@@ -66,7 +68,10 @@ class JSElement extends Element {
 				});
 
 				$optimized = Minifier::minify($contents);
-				file_put_contents(sprintf(self::COMPILED_PATH, $hash), $optimized);
+
+				$path = sprintf(self::COMPILED_PATH, $hash);
+				file_put_contents($path, $optimized);
+				file_put_contents($path . '.gz', gzencode($optimized, 9));
 			}
 		}
 

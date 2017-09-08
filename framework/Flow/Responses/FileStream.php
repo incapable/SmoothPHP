@@ -49,7 +49,7 @@ class FileStream extends Response {
 			header('Access-Control-Allow-Origin: *');
 
 		if ($this->options['cache']) {
-			$eTag = cached_md5_file($this->options['url']);
+			$eTag = file_hash($this->options['url']);
 			$lastModified = filemtime($this->options['url']);
 
 			if (__ENV__ != 'dev') {
@@ -61,7 +61,7 @@ class FileStream extends Response {
 				header('Expires: ' . gmdate(self::CACHE_DATE, 0));
 			}
 			header('Last-Modified: ' . gmdate(self::CACHE_DATE, $lastModified));
-			header('ETag: ' . $eTag);
+			header('ETag: W/"' . $eTag . '"');
 
 			if ($this->request->server->HTTP_IF_MODIFIED_SINCE && $lastModified > strtotime($this->request->server->HTTP_IF_MODIFIED_SINCE)) {
 				http_response_code(304);

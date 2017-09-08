@@ -65,7 +65,7 @@ class FileCacheProvider extends CacheProvider {
 
 	public function getCachePath($sourceFile, &$fileName = null) {
 		$fileName = str_replace(['/', '\\'], ['_', '_'], str_replace(__ROOT__, '', $sourceFile));
-		$checksum = cached_md5_file($sourceFile);
+		$checksum = file_hash($sourceFile);
 
 		return sprintf($this->cacheFileFormat, $fileName, $checksum);
 	}

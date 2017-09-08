@@ -15,6 +15,7 @@ namespace SmoothPHP\Framework\Cache\Assets;
 
 use SmoothPHP\Framework\Core\Abstracts\Controller;
 use SmoothPHP\Framework\Core\Kernel;
+use SmoothPHP\Framework\Flow\Requests\Request;
 use SmoothPHP\Framework\Flow\Responses\FileStream;
 use SmoothPHP\Framework\Localization\LanguageRepository;
 
@@ -31,8 +32,10 @@ class AssetsController extends Controller {
 		]);
 	}
 
-	public function getCompiledJS($hash) {
+	public function getCompiledJS(Request $request, $hash) {
 		$file = __ROOT__ . 'cache/js/compiled.' . $hash . '.js';
+
+		$this->checkGZip($request, $file);
 
 		return new FileStream([
 			'cache'    => true,
@@ -53,8 +56,10 @@ class AssetsController extends Controller {
 		]);
 	}
 
-	public function getCompiledCSS($hash) {
+	public function getCompiledCSS(Request $request, $hash) {
 		$file = __ROOT__ . 'cache/css/compiled.' . $hash . '.css';
+
+		$this->checkGZip($request, $file);
 
 		return new FileStream([
 			'cache'    => true,
@@ -64,7 +69,7 @@ class AssetsController extends Controller {
 		]);
 	}
 
-	public function getImage(Kernel $kernel, LanguageRepository $language, array $path) {
+	public function getImage(Kernel $kernel, Request $request, LanguageRepository $language, array $path) {
 		preg_match('/^(.+?)(?:\.([0-9]+?)x([0-9]+?))?\.([a-z]+)$/', implode('/', $path), $matches);
 
 		$srcFile = sprintf('src/assets/images/%s.%s', $matches[1], $matches[4]);
@@ -74,8 +79,10 @@ class AssetsController extends Controller {
 			str_replace(['/', '\\'], ['_', '_'], $srcFile),
 			$matches[2],
 			$matches[3],
-			cached_md5_file($srcFileFull),
+			file_hash($srcFileFull),
 			$matches[4]);
+
+		$this->checkGZip($request, $cacheFile);
 
 		if (!file_exists($cacheFile)) {
 			http_response_code(404);
@@ -100,8 +107,17 @@ class AssetsController extends Controller {
 		]);
 	}
 
-	public function favicon(Kernel $kernel, LanguageRepository $language) {
-		return $this->getImage($kernel, $language, ['favicon.ico']);
+	public function favicon(Kernel $kernel, Request $request, LanguageRepository $language) {
+		return $this->getImage($kernel, $request, $language, ['favicon.ico']);
+	}
+
+	private function checkGZip(Request $request, &$file) {
+		if (strpos($request->server->HTTP_ACCEPT_ENCODING, 'gzip') !== false) {
+			$file .= '.gz';
+			header('Content-Encoding: gzip');
+		}
+
+		header('Vary: Accept-Encoding');
 	}
 
 }

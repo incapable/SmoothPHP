@@ -44,7 +44,7 @@ class APCCacheProvider extends RuntimeCacheProvider {
 		$cacheBuilder = $cacheBuilder ?: $this->cacheBuilder;
 		if (file_exists($sourceFile) && !is_dir($sourceFile)) {
 			$realPath = realpath($sourceFile);
-			$checksum = cached_md5_file($realPath);
+			$checksum = file_hash($realPath);
 		} else {
 			$realPath = $sourceFile;
 			$checksum = md5($sourceFile);

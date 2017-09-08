@@ -78,6 +78,9 @@ class ImageCache {
 				imagedestroy($target);
 			}
 
+			// Then create a gzipped version of the image
+			file_put_contents($cacheFile . '.gz', gzencode(file_get_contents($cacheFile)));
+
 			$lock->unlock();
 		}
 
@@ -86,7 +89,7 @@ class ImageCache {
 
 	public function getCachePath($sourceFile, $width, $height, &$fileName = null) {
 		$fileName = str_replace(['/', '\\'], ['_', '_'], str_replace(__ROOT__, '', $sourceFile));
-		$checksum = cached_md5_file($sourceFile);
+		$checksum = file_hash($sourceFile);
 
 		return sprintf($this->cacheFileFormat, $fileName, $width, $height, $checksum, pathinfo($sourceFile, PATHINFO_EXTENSION));
 	}
