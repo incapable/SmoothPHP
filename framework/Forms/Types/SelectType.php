@@ -28,7 +28,7 @@ class SelectType extends Type {
 
 	public function __construct($field) {
 		parent::__construct($field);
-		$this->attributes = array_replace_recursive($this->attributes, [
+		$this->options = array_replace_recursive($this->options, [
 			'options_mode' => self::KEY_VALUE_INVERSE,
 			'strict'       => true,
 			'options'      => [],
@@ -41,10 +41,10 @@ class SelectType extends Type {
 	public function checkConstraint(Request $request, $name, $label, $value, array &$failReasons) {
 		parent::checkConstraint($request, $name, $label, $value, $failReasons);
 
-		if ($this->attributes['strict']) {
-			$mode = last($this->attributes['options_mode']);
+		if ($this->options['strict']) {
+			$mode = last($this->options['options_mode']);
 			$method = (((($mode >> 4) & self::KEY_SELECTOR) == self::KEY_SELECTOR) ? 'array_keys' : 'array_values');
-			$options = call_user_func($method, $this->attributes['options']);
+			$options = call_user_func($method, $this->options['options']);
 
 			if (!in_array($value, $options)) {
 				global $kernel;
@@ -54,19 +54,19 @@ class SelectType extends Type {
 	}
 
 	public function __toString() {
-		$attributes = $this->attributes['attr'];
+		$attributes = $this->options['attr'];
 
 		$attributes['id'] = $this->field;
 		$attributes['name'] = $this->field;
 
-		$mode = last($this->attributes['options_mode']);
+		$mode = last($this->options['options_mode']);
 		$options = [];
-		$optionsAttr = $this->transformAttributes($this->attributes['options_attr']);
+		$optionsAttr = $this->transformAttributes($this->options['options_attr']);
 
-		foreach ($this->attributes['options'] as $key => $value) {
+		foreach ($this->options['options'] as $key => $value) {
 			$optionValue = ((($mode >> 4) & self::KEY_SELECTOR) == self::KEY_SELECTOR) ? $key : $value;
 			$labelValue = (($mode & self::KEY_SELECTOR) == self::KEY_SELECTOR) ? $key : $value;
-			$selected = last($this->attributes['selected']);
+			$selected = last($this->options['selected']);
 			$selected = $selected != null && ($key == $selected || $value == $selected) ? ' selected' : '';
 			$options[] = sprintf('<option value="%s"%s%s>%s</option>', $optionValue, strlen($optionsAttr) ? ' ' . $optionsAttr : '', $selected, $labelValue);
 		}

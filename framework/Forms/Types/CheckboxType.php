@@ -19,7 +19,7 @@ class CheckboxType extends Type {
 
 	public function __construct($field) {
 		parent::__construct($field);
-		$this->attributes = array_replace_recursive($this->attributes, [
+		$this->options = array_replace_recursive($this->options, [
 			'attr'       => [
 				'type' => 'checkbox'
 			],
@@ -29,20 +29,20 @@ class CheckboxType extends Type {
 	}
 
 	public function generateLabel() {
-		if (last($this->attributes['mergelabel']))
+		if (last($this->options['mergelabel']))
 			return '';
 		else
 			return parent::generateLabel();
 	}
 
 	public function __toString() {
-		if (isset($this->attributes['attr']['value']) && last($this->attributes['attr']['value'])) {
-			$this->attributes['attr']['checked'] = 'checked';
-			unset($this->attributes['attr']['value']);
+		if (isset($this->options['attr']['value']) && last($this->options['attr']['value'])) {
+			$this->options['attr']['checked'] = 'checked';
+			unset($this->options['attr']['value']);
 		}
 
-		if (last($this->attributes['mergelabel']))
-			return sprintf('<label>%s %s</label>', parent::__toString(), last($this->attributes['label']));
+		if (last($this->options['mergelabel']))
+			return sprintf('<label>%s %s</label>', parent::__toString(), last($this->options['label']));
 		else
 			return parent::__toString();
 	}

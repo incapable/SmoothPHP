@@ -22,7 +22,7 @@ class EmailType extends Type {
 		parent::__construct($field);
 
 		global $kernel;
-		$this->attributes = array_replace_recursive($this->attributes, [
+		$this->options = array_replace_recursive($this->options, [
 			'attr' => [
 				'type'        => 'email',
 				'placeholder' => $kernel->getLanguageRepository()->getEntry('smooth_form_email')

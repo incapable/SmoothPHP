@@ -23,7 +23,7 @@ class FileSizeConstraint extends Constraint {
 		$this->fileSize = $fileSize;
 	}
 
-	public function setAttributes(array &$attributes) {
+	public function setOptions(array &$options) {
 		// TODO Add javascript file-size checking
 	}
 

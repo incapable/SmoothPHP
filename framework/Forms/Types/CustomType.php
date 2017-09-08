@@ -20,7 +20,7 @@ class CustomType extends Type {
 
 	public function __construct($field) {
 		parent::__construct($field);
-		$this->attributes = array_replace_recursive($this->attributes, [
+		$this->options = array_replace_recursive($this->options, [
 			'required' => false,
 			'content'  => '<i>content</i> parameter not set'
 		]);
@@ -30,7 +30,7 @@ class CustomType extends Type {
 	}
 
 	public function __toString() {
-		return last($this->attributes['content']);
+		return last($this->options['content']);
 	}
 
 }

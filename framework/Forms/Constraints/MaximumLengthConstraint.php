@@ -23,8 +23,8 @@ class MaximumLengthConstraint extends Constraint {
 		$this->maxLength = $maxLength;
 	}
 
-	public function setAttributes(array &$attributes) {
-		$attributes['attr']['maxlength'] = $this->maxLength;
+	public function setOptions(array &$options) {
+		$options['attr']['maxlength'] = $this->maxLength;
 	}
 
 	public function checkConstraint(Request $request, $name, $label, $value, array &$failReasons) {

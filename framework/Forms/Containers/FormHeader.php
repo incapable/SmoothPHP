@@ -22,24 +22,24 @@ class FormHeader extends Constraint {
 	const SESSION_KEY = 'sm_formtokens';
 
 	private $form;
-	private $attributes;
+	private $options;
 
-	public function __construct(Form $form, array $attributes) {
+	public function __construct(Form $form, array $options) {
 		$this->form = $form;
 
-		$this->attributes = array_replace_recursive([
+		$this->options = array_replace_recursive([
 			'token' => true,
 			'attr'  => [
 				'method'  => 'post',
 				'class'   => 'smoothform',
 				'enctype' => 'multipart/form-data'
 			]
-		], $attributes);
+		], $options);
 	}
 
 	public function __toString() {
 		$tokenInput = '';
-		if ($this->attributes['token']) {
+		if ($this->options['token']) {
 			if (!isset($_SESSION[self::SESSION_KEY]))
 				$_SESSION[self::SESSION_KEY] = [];
 
@@ -50,7 +50,7 @@ class FormHeader extends Constraint {
 		}
 
 		$htmlAttributes = [];
-		$attributes = $this->attributes['attr'];
+		$attributes = $this->options['attr'];
 
 		$attributes['action'] = $this->form->getAction();
 
@@ -62,7 +62,7 @@ class FormHeader extends Constraint {
 	}
 
 	public function checkConstraint(Request $request, $name, $label, $value, array &$failReasons) {
-		if ($this->attributes['token']) {
+		if ($this->options['token']) {
 			$tokens = isset($_SESSION[self::SESSION_KEY]) ? $_SESSION[self::SESSION_KEY] : [];
 
 			$key = array_search($request->post->_token, $tokens, true);

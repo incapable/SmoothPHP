@@ -20,7 +20,7 @@ class FileType extends Type {
 
 	public function __construct($field) {
 		parent::__construct($field);
-		$this->attributes = array_replace_recursive($this->attributes, [
+		$this->options = array_replace_recursive($this->options, [
 			'attr'     => [
 				'type' => 'file'
 			],
@@ -33,7 +33,7 @@ class FileType extends Type {
 		$language = $kernel->getLanguageRepository();
 
 		if ((!$request->files->{$name} || $request->files->{$name}->error == UPLOAD_ERR_NO_FILE)) {
-			if (last($this->attributes['required'])) {
+			if (last($this->options['required'])) {
 				$failReasons[] = sprintf($kernel->getLanguageRepository()->getEntry('smooth_form_file_required'), $label);
 			}
 

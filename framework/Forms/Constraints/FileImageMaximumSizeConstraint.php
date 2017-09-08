@@ -24,7 +24,7 @@ class FileImageMaximumSizeConstraint extends Constraint {
 		$this->height = $height;
 	}
 
-	public function setAttributes(array &$attributes) {
+	public function setOptions(array &$options) {
 	}
 
 	public function checkConstraint(Request $request, $name, $label, $value, array &$failReasons) {

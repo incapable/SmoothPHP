@@ -19,7 +19,7 @@ class HiddenType extends Type {
 
 	public function __construct($field) {
 		parent::__construct($field);
-		$this->attributes = array_replace_recursive($this->attributes, [
+		$this->options = array_replace_recursive($this->options, [
 			'attr' => [
 				'type' => 'hidden',
 			]
@@ -37,7 +37,7 @@ class HiddenType extends Type {
 	}
 
 	public function __toString() {
-		unset($this->attributes['attr']['required']);
+		unset($this->options['attr']['required']);
 		return parent::__toString();
 	}
 

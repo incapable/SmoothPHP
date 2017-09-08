@@ -19,20 +19,20 @@ class TextAreaType extends Type {
 
 	public function __construct($field) {
 		parent::__construct($field);
-		$this->attributes = array_replace_recursive($this->attributes, [
+		$this->options = array_replace_recursive($this->options, [
 			'attr' => [
 				'placeholder' => '...'
 			]
 		]);
 	}
 
-	public function initialize(array $attributes) {
-		unset($attributes['attr']['type']);
-		parent::initialize($attributes);
+	public function initialize(array $options) {
+		unset($options['attr']['type']);
+		parent::initialize($options);
 	}
 
 	public function __toString() {
-		$attributes = $this->attributes['attr'];
+		$attributes = $this->options['attr'];
 
 		$attributes['id'] = $this->field;
 		$attributes['name'] = $this->field;

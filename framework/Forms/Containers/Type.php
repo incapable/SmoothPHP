@@ -19,12 +19,12 @@ use SmoothPHP\Framework\Forms\Constraints\RequiredConstraint;
 
 abstract class Type extends Constraint {
 	protected $field;
-	protected $attributes;
+	protected $options;
 	private $constraints;
 
 	public function __construct($field) {
 		$this->field = $field;
-		$this->attributes = [
+		$this->options = [
 			'label'       => self::getLabel($field),
 			'required'    => true,
 			'attr'        => [
@@ -34,24 +34,24 @@ abstract class Type extends Constraint {
 		];
 	}
 
-	public function initialize(array $attributes) {
-		$this->attributes = array_merge_recursive($this->attributes, $attributes);
+	public function initialize(array $options) {
+		$this->options = array_merge_recursive($this->options, $options);
 
 		$this->constraints = [];
-		foreach ($this->attributes['constraints'] as $constraint) {
+		foreach ($this->options['constraints'] as $constraint) {
 			if ($constraint instanceof Constraint)
 				$this->constraints[] = $constraint;
 			else
 				$this->constraints[] = new $constraint();
 		}
 
-		if (last($this->attributes['required']))
+		if (last($this->options['required']))
 			$this->constraints[] = new RequiredConstraint();
 
 		foreach ($this->constraints as $constraint) {
-			$copy = $this->attributes;
+			$copy = $this->options;
 			$constraint->setAttributes($copy);
-			$this->attributes = array_replace_recursive($copy, $this->attributes);
+			$this->options = array_replace_recursive($copy, $this->options);
 		}
 	}
 
@@ -68,8 +68,8 @@ abstract class Type extends Constraint {
 	public function checkConstraint(Request $request, $name, $label, $value, array &$failReasons) {
 		foreach ($this->constraints as $constraint)
 			/* @var $constraint Constraint */
-			$constraint->checkConstraint($request, $name, last($this->attributes['label']), $value, $failReasons);
-		$this->attributes['attr']['value'] = $value;
+			$constraint->checkConstraint($request, $name, last($this->options['label']), $value, $failReasons);
+		$this->options['attr']['value'] = $value;
 	}
 
 	public function getFieldName() {
@@ -77,17 +77,17 @@ abstract class Type extends Constraint {
 	}
 
 	public function setValue($value) {
-		$this->attributes['attr']['value'] = $value;
+		$this->options['attr']['value'] = $value;
 	}
 
 	public function generateLabel() {
 		return sprintf('<label for="%s">%s</label>',
 			$this->field,
-			last($this->attributes['label']));
+			last($this->options['label']));
 	}
 
 	public function __toString() {
-		$attributes = $this->attributes['attr'];
+		$attributes = $this->options['attr'];
 
 		$attributes['id'] = $this->field;
 		$attributes['name'] = $this->field;

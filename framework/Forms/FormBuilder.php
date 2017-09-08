@@ -21,23 +21,23 @@ class FormBuilder {
 	private $action = null;
 
 	private $header = ['attr' => []];
-	private $properties;
+	private $options;
 
 	/**
 	 * @param string $field of the field
 	 * @param string $type Type name of the field
-	 * @param array $attributes Properties to be used, such as Label
+	 * @param array $options Options to be used, such as label
 	 * @return $this
 	 */
-	public function add($field, $type = null, array $attributes = []) {
-		if (isset($this->properties[$field]))
+	public function add($field, $type = null, array $options = []) {
+		if (isset($this->options[$field]))
 			throw new \RuntimeException("Form field has already been declared.");
 
-		$this->properties[$field] = array_merge_recursive([
+		$this->options[$field] = array_merge_recursive([
 			'field' => $field,
 			'type'  => $type ?: Types\StringType::class,
 			'attr'  => []
-		], $attributes);
+		], $options);
 
 		return $this;
 	}
@@ -63,7 +63,7 @@ class FormBuilder {
 	public function getForm() {
 		$elements = [];
 
-		foreach ($this->properties as $key => $value) {
+		foreach ($this->options as $key => $value) {
 			/* @var $element Type */
 			$element = new $value['type']($key);
 			$element->initialize($value);

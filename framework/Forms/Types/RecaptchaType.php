@@ -21,7 +21,7 @@ class RecaptchaType extends Type {
 	public function __construct($field) {
 		parent::__construct($field);
 		global $kernel;
-		$this->attributes = array_replace_recursive($this->attributes, [
+		$this->options = array_replace_recursive($this->options, [
 			'attr' => [
 				'class'        => 'g-recaptcha',
 				'data-sitekey' => $kernel->getConfig()->recaptcha_site_key
@@ -29,8 +29,8 @@ class RecaptchaType extends Type {
 		]);
 	}
 
-	public function initialize(array $attributes) {
-		$this->attributes = array_merge_recursive($this->attributes, $attributes);
+	public function initialize(array $options) {
+		$this->options = array_merge_recursive($this->options, $options);
 
 		global $kernel;
 		$kernel->getAssetsRegister()->addJS('https://www.google.com/recaptcha/api.js');
@@ -52,11 +52,11 @@ class RecaptchaType extends Type {
 		$response = json_decode(file_get_contents('https://www.google.com/recaptcha/api/siteverify', false, $context));
 
 		if (!$response->success)
-			$failReasons[] = sprintf($kernel->getLanguageRepository()->getEntry('smooth_form_captcha'), $this->attributes['label']);
+			$failReasons[] = sprintf($kernel->getLanguageRepository()->getEntry('smooth_form_captcha'), $this->options['label']);
 	}
 
 	public function __toString() {
-		return sprintf('<div %s></div>', $this->transformAttributes($this->attributes['attr']));
+		return sprintf('<div %s></div>', $this->transformAttributes($this->options['attr']));
 	}
 
 }

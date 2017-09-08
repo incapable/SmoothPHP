@@ -23,8 +23,8 @@ class MinimumLengthConstraint extends Constraint {
 		$this->minLength = $minLength;
 	}
 
-	public function setAttributes(array &$attributes) {
-		$attributes['attr']['minlength'] = $this->minLength;
+	public function setOptions(array &$options) {
+		$options['attr']['minlength'] = $this->minLength;
 	}
 
 	public function checkConstraint(Request $request, $name, $label, $value, array &$failReasons) {

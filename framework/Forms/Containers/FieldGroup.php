@@ -22,24 +22,24 @@ class FieldGroup extends Type {
 
 	public function __construct($field) {
 		parent::__construct($field);
-		$this->attributes = array_replace_recursive($this->attributes, [
+		$this->options = array_replace_recursive($this->options, [
 			'children' => []
 		]);
 	}
 
-	public function initialize(array $attributes) {
-		$this->attributes = array_merge_recursive($this->attributes, $attributes);
-		$childAttributes = $this->attributes;
-		unset($childAttributes['children']);
-		unset($childAttributes['required']);
+	public function initialize(array $options) {
+		$this->options = array_merge_recursive($this->options, $options);
+		$childOptions = $this->options;
+		unset($childOptions['children']);
+		unset($childOptions['required']);
 
 		$this->children = [];
 
 		$first = true;
-		foreach ($attributes['children'] as $value) {
+		foreach ($options['children'] as $value) {
 			/* @var $element Type */
 			$element = new $value['type']($value['field']);
-			$element->initialize(array_merge_recursive($childAttributes, $value));
+			$element->initialize(array_merge_recursive($childOptions, $value));
 			$this->children[] = new FormContainer([
 				'groupseparator' => $first ? '' : sprintf('</td></tr><tr class="fieldgroup_%s"><td></td><td>', $this->field),
 				'input'          => $element
@@ -61,9 +61,14 @@ class FieldGroup extends Type {
 	public function checkConstraint(Request $request, $name, $label, $value, array &$failReasons) {
 		foreach ($this->children as $element)
 			if ($element instanceof Constraint) {
-				if ($element instanceof Type)
+				if ($element instanceof Type) {
+					$name = $element->getFieldName();
 					$value = $request->post->get($element->getFieldName());
-				$element->checkConstraint($request, null, $value, $failReasons);
+				} else {
+					$name = null;
+					$value = null; // Because PHP doesn't respect scope
+				}
+				$element->checkConstraint($request, $name, null, $value, $failReasons);
 			}
 	}
 

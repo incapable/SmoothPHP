@@ -21,7 +21,7 @@ class PasswordType extends StringType {
 		parent::__construct($field);
 
 		global $kernel;
-		$this->attributes = array_replace_recursive($this->attributes, [
+		$this->options = array_replace_recursive($this->options, [
 			'attr' => [
 				'type'        => 'password',
 				'placeholder' => $kernel->getLanguageRepository()->getEntry('smooth_form_password')
@@ -32,7 +32,7 @@ class PasswordType extends StringType {
 	public function checkConstraint(Request $request, $name, $label, $value, array &$failReasons) {
 		parent::checkConstraint($request, $name, $label, $value, $failReasons);
 		// Make sure we never send back the password
-		unset($this->attributes['attr']['value']);
+		unset($this->options['attr']['value']);
 	}
 
 }

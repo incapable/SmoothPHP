@@ -17,7 +17,7 @@ use SmoothPHP\Framework\Flow\Requests\Request;
 
 abstract class Constraint {
 
-	public function setAttributes(array &$attributes) {
+	public function setOptions(array &$options) {
 	}
 
 	public abstract function checkConstraint(Request $request, $name, $label, $value, array &$failReasons);

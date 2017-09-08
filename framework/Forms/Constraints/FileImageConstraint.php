@@ -23,8 +23,8 @@ class FileImageConstraint extends Constraint {
 		$this->acceptMime = $acceptMime;
 	}
 
-	public function setAttributes(array &$attributes) {
-		$attributes['attr']['accept'] = $this->acceptMime;
+	public function setOptions(array &$options) {
+		$options['attr']['accept'] = $this->acceptMime;
 	}
 
 	public function checkConstraint(Request $request, $name, $label, $value, array &$failReasons) {
