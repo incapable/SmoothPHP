@@ -150,6 +150,9 @@ class MySQLObjectMapper {
 
 				$conditions = [];
 				array_walk($where, function (&$value, $key) use (&$conditions) {
+					if ($key[0] == '_')
+						return;
+
 					$comparator = '=';
 					if (strtolower(substr($key, 0, 5)) == 'like ') {
 						$comparator = 'LIKE';
@@ -159,6 +162,10 @@ class MySQLObjectMapper {
 					$conditions[] = sprintf('`%s` %s %s', $key, $comparator, $valueType);
 				});
 				$query .= implode(' ' . $whereSeparator . ' ', $conditions);
+
+				if (isset($where['_order'])) {
+					$query .= ' ORDER BY ' . $where['_order'];
+				}
 			} else
 				$query .= $where;
 
