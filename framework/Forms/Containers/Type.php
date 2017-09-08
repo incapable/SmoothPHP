@@ -50,7 +50,7 @@ abstract class Type extends Constraint {
 
 		foreach ($this->constraints as $constraint) {
 			$copy = $this->options;
-			$constraint->setAttributes($copy);
+			$constraint->setOptions($copy);
 			$this->options = array_replace_recursive($copy, $this->options);
 		}
 	}
@@ -76,8 +76,8 @@ abstract class Type extends Constraint {
 		return $this->field;
 	}
 
-	public function setValue($value) {
-		$this->options['attr']['value'] = $value;
+	public function setAttribute($key, $value) {
+		$this->options['attr'][$key] = $value;
 	}
 
 	public function generateLabel() {

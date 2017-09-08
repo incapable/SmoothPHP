@@ -46,7 +46,11 @@ class Form extends FormContainer {
 	}
 
 	public function setValue($key, $value) {
-		$this->inputs->{$key}->input->setValue($value);
+		$this->setAttribute($key, 'value', $value);
+	}
+
+	public function setAttribute($key, $attribute, $value) {
+		$this->inputs->{$key}->input->setAttribute($attribute, $value);
 	}
 
 	public function setAction() {
