@@ -69,7 +69,7 @@ class Form extends FormContainer {
 
 		$this->hasResult = true;
 		$this->failReasons = [];
-		$this->checkConstraint($request, null, null, null, $this->failReasons);
+		$this->checkConstraint($request, null, null, null, $this);
 	}
 
 	public function hasResult() {

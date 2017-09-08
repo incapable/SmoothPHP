@@ -15,6 +15,7 @@ namespace SmoothPHP\Framework\Forms\Types;
 
 use SmoothPHP\Framework\Flow\Requests\Request;
 use SmoothPHP\Framework\Forms\Containers\Type;
+use SmoothPHP\Framework\Forms\Form;
 
 class FileType extends Type {
 
@@ -28,13 +29,13 @@ class FileType extends Type {
 		]);
 	}
 
-	public function checkConstraint(Request $request, $name, $label, $value, array &$failReasons) {
+	public function checkConstraint(Request $request, $name, $label, $value, Form $form) {
 		global $kernel;
 		$language = $kernel->getLanguageRepository();
 
 		if ((!$request->files->{$name} || $request->files->{$name}->error == UPLOAD_ERR_NO_FILE)) {
 			if (last($this->options['required'])) {
-				$failReasons[] = sprintf($kernel->getLanguageRepository()->getEntry('smooth_form_file_required'), $label);
+				$form->addErrorMessage(sprintf($kernel->getLanguageRepository()->getEntry('smooth_form_file_required'), $label));
 			}
 
 			return;
@@ -45,14 +46,14 @@ class FileType extends Type {
 				break;
 			case UPLOAD_ERR_FORM_SIZE:
 			case UPLOAD_ERR_INI_SIZE:
-				$failReasons[] = sprintf($language->getEntry('smooth_form_file_size'), $label);
+				$form->addErrorMessage(sprintf($language->getEntry('smooth_form_file_size'), $label));
 				return;
 			default:
-				$failReasons[] = sprintf($language->getEntry('smooth_form_file_genericerror'), $label);
+				$form->addErrorMessage(sprintf($language->getEntry('smooth_form_file_genericerror'), $label));
 				return;
 		}
 
-		parent::checkConstraint($request, $name, $label, $value, $failReasons);
+		parent::checkConstraint($request, $name, $label, $value, $form);
 	}
 
 }

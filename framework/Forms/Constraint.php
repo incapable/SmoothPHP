@@ -20,6 +20,6 @@ abstract class Constraint {
 	public function setOptions(array &$options) {
 	}
 
-	public abstract function checkConstraint(Request $request, $name, $label, $value, array &$failReasons);
+	public abstract function checkConstraint(Request $request, $name, $label, $value, Form $form);
 
 }

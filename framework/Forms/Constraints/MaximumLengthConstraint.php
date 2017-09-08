@@ -15,6 +15,7 @@ namespace SmoothPHP\Framework\Forms\Constraints;
 
 use SmoothPHP\Framework\Forms\Constraint;
 use SmoothPHP\Framework\Flow\Requests\Request;
+use SmoothPHP\Framework\Forms\Form;
 
 class MaximumLengthConstraint extends Constraint {
 	private $maxLength;
@@ -27,10 +28,10 @@ class MaximumLengthConstraint extends Constraint {
 		$options['attr']['maxlength'] = $this->maxLength;
 	}
 
-	public function checkConstraint(Request $request, $name, $label, $value, array &$failReasons) {
+	public function checkConstraint(Request $request, $name, $label, $value, Form $form) {
 		if (strlen($value) > $this->maxLength) {
 			global $kernel;
-			$failReasons[] = sprintf($kernel->getLanguageRepository()->getEntry('smooth_form_maxlength'), $label, $this->maxLength);
+			$form->addErrorMessage(sprintf($kernel->getLanguageRepository()->getEntry('smooth_form_maxlength'), $label, $this->maxLength));
 		}
 	}
 

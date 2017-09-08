@@ -15,6 +15,7 @@ namespace SmoothPHP\Framework\Forms\Types;
 
 use SmoothPHP\Framework\Flow\Requests\Request;
 use SmoothPHP\Framework\Forms\Containers\Type;
+use SmoothPHP\Framework\Forms\Form;
 
 class SelectType extends Type {
 
@@ -38,8 +39,8 @@ class SelectType extends Type {
 		]);
 	}
 
-	public function checkConstraint(Request $request, $name, $label, $value, array &$failReasons) {
-		parent::checkConstraint($request, $name, $label, $value, $failReasons);
+	public function checkConstraint(Request $request, $name, $label, $value, Form $form) {
+		parent::checkConstraint($request, $name, $label, $value, $form);
 
 		if ($this->options['strict']) {
 			$mode = last($this->options['options_mode']);
@@ -48,7 +49,7 @@ class SelectType extends Type {
 
 			if (!in_array($value, $options)) {
 				global $kernel;
-				$failReasons[] = sprintf($kernel->getLanguageRepository()->getEntry('smooth_form_selectvalue'), $value, $label);
+				$form->addErrorMessage(sprintf($kernel->getLanguageRepository()->getEntry('smooth_form_selectvalue'), $value, $label));
 			}
 		}
 	}

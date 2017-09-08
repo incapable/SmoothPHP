@@ -15,6 +15,7 @@ namespace SmoothPHP\Framework\Forms\Constraints;
 
 use SmoothPHP\Framework\Forms\Constraint;
 use SmoothPHP\Framework\Flow\Requests\Request;
+use SmoothPHP\Framework\Forms\Form;
 
 class FileImageMinimumSizeConstraint extends Constraint {
 	private $width, $height;
@@ -27,18 +28,17 @@ class FileImageMinimumSizeConstraint extends Constraint {
 	public function setOptions(array &$options) {
 	}
 
-	public function checkConstraint(Request $request, $name, $label, $value, array &$failReasons) {
+	public function checkConstraint(Request $request, $name, $label, $value, Form $form) {
 		$imageSize = getimagesize($request->files->{$name}->location);
 		if ($imageSize === false) {
 			global $kernel;
-			$failReasons[] = sprintf($kernel->getLanguageRepository()->getEntry('smooth_form_file_image_invalid'), $label);
+			$form->addErrorMessage(sprintf($kernel->getLanguageRepository()->getEntry('smooth_form_file_image_invalid'), $label));
 			return;
 		}
 
 		if ($imageSize[0] < $this->width || $imageSize[1] < $this->height) {
 			global $kernel;
-			$failReasons[] = sprintf($kernel->getLanguageRepository()->getEntry('smooth_form_file_image_toosmall'), $label, $this->width, $this->height);
-			return;
+			$form->addErrorMessage(sprintf($kernel->getLanguageRepository()->getEntry('smooth_form_file_image_toosmall'), $label, $this->width, $this->height));
 		}
 	}
 

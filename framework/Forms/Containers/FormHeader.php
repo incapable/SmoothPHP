@@ -61,13 +61,13 @@ class FormHeader extends Constraint {
 		return sprintf('<form %s />%s', implode(' ', $htmlAttributes), $tokenInput);
 	}
 
-	public function checkConstraint(Request $request, $name, $label, $value, array &$failReasons) {
+	public function checkConstraint(Request $request, $name, $label, $value, Form $form) {
 		if ($this->options['token']) {
 			$tokens = isset($_SESSION[self::SESSION_KEY]) ? $_SESSION[self::SESSION_KEY] : [];
 
 			$key = array_search($request->post->_token, $tokens, true);
 			if ($key === false) {
-				$failReasons[] = 'Form security token mismatch. Please try again.';
+				$form->addErrorMessage('Form security token mismatch. Please try again.');
 				return;
 			}
 			unset($_SESSION[self::SESSION_KEY][$key]);

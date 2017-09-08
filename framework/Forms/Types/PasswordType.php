@@ -14,6 +14,7 @@
 namespace SmoothPHP\Framework\Forms\Types;
 
 use SmoothPHP\Framework\Flow\Requests\Request;
+use SmoothPHP\Framework\Forms\Form;
 
 class PasswordType extends StringType {
 
@@ -29,8 +30,8 @@ class PasswordType extends StringType {
 		]);
 	}
 
-	public function checkConstraint(Request $request, $name, $label, $value, array &$failReasons) {
-		parent::checkConstraint($request, $name, $label, $value, $failReasons);
+	public function checkConstraint(Request $request, $name, $label, $value, Form $form) {
+		parent::checkConstraint($request, $name, $label, $value, $form);
 		// Make sure we never send back the password
 		unset($this->options['attr']['value']);
 	}

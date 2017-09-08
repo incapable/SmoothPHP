@@ -32,8 +32,13 @@ class AssetsController extends Controller {
 		]);
 	}
 
-	public function getCompiledJS(Request $request, $hash) {
+	public function getCompiledJS(Kernel $kernel, LanguageRepository $language, Request $request, $hash) {
 		$file = __ROOT__ . 'cache/js/compiled.' . $hash . '.js';
+
+		if (!file_exists($file)) {
+			http_response_code(404);
+			return $kernel->error($language->getEntry('smooth_error_404'));
+		}
 
 		$this->checkGZip($request, $file);
 
@@ -56,8 +61,13 @@ class AssetsController extends Controller {
 		]);
 	}
 
-	public function getCompiledCSS(Request $request, $hash) {
+	public function getCompiledCSS(Kernel $kernel, LanguageRepository $language, Request $request, $hash) {
 		$file = __ROOT__ . 'cache/css/compiled.' . $hash . '.css';
+
+		if (!file_exists($file)) {
+			http_response_code(404);
+			return $kernel->error($language->getEntry('smooth_error_404'));
+		}
 
 		$this->checkGZip($request, $file);
 
@@ -82,12 +92,12 @@ class AssetsController extends Controller {
 			file_hash($srcFileFull),
 			$matches[4]);
 
-		$this->checkGZip($request, $cacheFile);
-
 		if (!file_exists($cacheFile)) {
 			http_response_code(404);
 			return $kernel->error($language->getEntry('smooth_error_404'));
 		}
+
+		$this->checkGZip($request, $cacheFile);
 
 		return new FileStream([
 			'cache'    => true,

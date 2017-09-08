@@ -15,6 +15,7 @@ namespace SmoothPHP\Framework\Forms\Types;
 
 use SmoothPHP\Framework\Flow\Requests\Request;
 use SmoothPHP\Framework\Forms\Containers\Type;
+use SmoothPHP\Framework\Forms\Form;
 
 class RecaptchaType extends Type {
 
@@ -36,7 +37,7 @@ class RecaptchaType extends Type {
 		$kernel->getAssetsRegister()->addJS('https://www.google.com/recaptcha/api.js');
 	}
 
-	public function checkConstraint(Request $request, $name, $label, $value, array &$failReasons) {
+	public function checkConstraint(Request $request, $name, $label, $value, Form $form) {
 		global $kernel;
 		$context = stream_context_create([
 			'http' => [
@@ -52,7 +53,7 @@ class RecaptchaType extends Type {
 		$response = json_decode(file_get_contents('https://www.google.com/recaptcha/api/siteverify', false, $context));
 
 		if (!$response->success)
-			$failReasons[] = sprintf($kernel->getLanguageRepository()->getEntry('smooth_form_captcha'), $this->options['label']);
+			$form->addErrorMessage(sprintf($kernel->getLanguageRepository()->getEntry('smooth_form_captcha'), $this->options['label']));
 	}
 
 	public function __toString() {

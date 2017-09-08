@@ -15,6 +15,7 @@ namespace SmoothPHP\Framework\Forms\Types;
 
 use SmoothPHP\Framework\Flow\Requests\Request;
 use SmoothPHP\Framework\Forms\Containers\Type;
+use SmoothPHP\Framework\Forms\Form;
 
 class EmailType extends Type {
 
@@ -30,12 +31,12 @@ class EmailType extends Type {
 		]);
 	}
 
-	public function checkConstraint(Request $request, $name, $label, $value, array &$failReasons) {
-		parent::checkConstraint($request, $name, $label, $value, $failReasons);
+	public function checkConstraint(Request $request, $name, $label, $value, Form $form) {
+		parent::checkConstraint($request, $name, $label, $value, $form);
 
 		if (!$request->post->email->get($this->field)) {
 			global $kernel;
-			$failReasons[] = sprintf($kernel->getLanguageRepository()->getEntry('smooth_form_email_invalid'), $value);
+			$form->addErrorMessage(sprintf($kernel->getLanguageRepository()->getEntry('smooth_form_email_invalid'), $value));
 		}
 	}
 

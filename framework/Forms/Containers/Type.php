@@ -16,6 +16,7 @@ namespace SmoothPHP\Framework\Forms\Containers;
 use SmoothPHP\Framework\Flow\Requests\Request;
 use SmoothPHP\Framework\Forms\Constraint;
 use SmoothPHP\Framework\Forms\Constraints\RequiredConstraint;
+use SmoothPHP\Framework\Forms\Form;
 
 abstract class Type extends Constraint {
 	protected $field;
@@ -65,10 +66,10 @@ abstract class Type extends Constraint {
 		];
 	}
 
-	public function checkConstraint(Request $request, $name, $label, $value, array &$failReasons) {
+	public function checkConstraint(Request $request, $name, $label, $value, Form $form) {
 		foreach ($this->constraints as $constraint)
 			/* @var $constraint Constraint */
-			$constraint->checkConstraint($request, $name, last($this->options['label']), $value, $failReasons);
+			$constraint->checkConstraint($request, $name, last($this->options['label']), $value, $form);
 		$this->options['attr']['value'] = $value;
 	}
 

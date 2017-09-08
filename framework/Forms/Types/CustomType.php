@@ -15,6 +15,7 @@ namespace SmoothPHP\Framework\Forms\Types;
 
 use SmoothPHP\Framework\Flow\Requests\Request;
 use SmoothPHP\Framework\Forms\Containers\Type;
+use SmoothPHP\Framework\Forms\Form;
 
 class CustomType extends Type {
 
@@ -26,7 +27,7 @@ class CustomType extends Type {
 		]);
 	}
 
-	public function checkConstraint(Request $request, $name, $label, $value, array &$failReasons) {
+	public function checkConstraint(Request $request, $name, $label, $value, Form $form) {
 	}
 
 	public function __toString() {

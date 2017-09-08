@@ -15,6 +15,7 @@ namespace SmoothPHP\Framework\Forms\Containers;
 
 use SmoothPHP\Framework\Flow\Requests\Request;
 use SmoothPHP\Framework\Forms\Constraint;
+use SmoothPHP\Framework\Forms\Form;
 
 class FormContainer extends Constraint {
 	private $backing;
@@ -50,14 +51,14 @@ class FormContainer extends Constraint {
 		return $result;
 	}
 
-	public function checkConstraint(Request $request, $name, $label, $value, array &$failReasons) {
+	public function checkConstraint(Request $request, $name, $label, $value, Form $form) {
 		foreach ($this->backing as $element)
 			if ($element instanceof Constraint) {
 				if ($element instanceof Type) {
 					$value = $request->post->get($element->getFieldName());
-					$element->checkConstraint($request, $element->getFieldName(), null, $value, $failReasons);
+					$element->checkConstraint($request, $element->getFieldName(), null, $value, $form);
 				} else
-					$element->checkConstraint($request, null, null, $value, $failReasons);
+					$element->checkConstraint($request, null, null, $value, $form);
 			}
 	}
 

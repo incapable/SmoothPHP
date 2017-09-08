@@ -15,6 +15,7 @@ namespace SmoothPHP\Framework\Forms\Constraints;
 
 use SmoothPHP\Framework\Forms\Constraint;
 use SmoothPHP\Framework\Flow\Requests\Request;
+use SmoothPHP\Framework\Forms\Form;
 
 class RequiredConstraint extends Constraint {
 
@@ -22,10 +23,10 @@ class RequiredConstraint extends Constraint {
 		$options['attr']['required'] = 'required';
 	}
 
-	public function checkConstraint(Request $request, $name, $label, $value, array &$failReasons) {
+	public function checkConstraint(Request $request, $name, $label, $value, Form $form) {
 		if (!isset($value) || strlen($value) == 0) {
 			global $kernel;
-			$failReasons[] = sprintf($kernel->getLanguageRepository()->getEntry('smooth_form_required'), $label);
+			$form->addErrorMessage(sprintf($kernel->getLanguageRepository()->getEntry('smooth_form_required'), $label));
 		}
 	}
 

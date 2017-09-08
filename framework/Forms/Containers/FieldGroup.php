@@ -15,6 +15,7 @@ namespace SmoothPHP\Framework\Forms\Containers;
 
 use SmoothPHP\Framework\Flow\Requests\Request;
 use SmoothPHP\Framework\Forms\Constraint;
+use SmoothPHP\Framework\Forms\Form;
 use SmoothPHP\Framework\Forms\Types\StringType;
 
 class FieldGroup extends Type {
@@ -58,7 +59,7 @@ class FieldGroup extends Type {
 		];
 	}
 
-	public function checkConstraint(Request $request, $name, $label, $value, array &$failReasons) {
+	public function checkConstraint(Request $request, $name, $label, $value, Form $form) {
 		foreach ($this->children as $element)
 			if ($element instanceof Constraint) {
 				if ($element instanceof Type) {
@@ -68,7 +69,7 @@ class FieldGroup extends Type {
 					$name = null;
 					$value = null; // Because PHP doesn't respect scope
 				}
-				$element->checkConstraint($request, $name, null, $value, $failReasons);
+				$element->checkConstraint($request, $name, null, $value, $form);
 			}
 	}
 

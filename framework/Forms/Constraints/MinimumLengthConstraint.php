@@ -15,6 +15,7 @@ namespace SmoothPHP\Framework\Forms\Constraints;
 
 use SmoothPHP\Framework\Forms\Constraint;
 use SmoothPHP\Framework\Flow\Requests\Request;
+use SmoothPHP\Framework\Forms\Form;
 
 class MinimumLengthConstraint extends Constraint {
 	private $minLength;
@@ -27,10 +28,10 @@ class MinimumLengthConstraint extends Constraint {
 		$options['attr']['minlength'] = $this->minLength;
 	}
 
-	public function checkConstraint(Request $request, $name, $label, $value, array &$failReasons) {
+	public function checkConstraint(Request $request, $name, $label, $value, Form $form) {
 		if (strlen($value) < $this->minLength) {
 			global $kernel;
-			$failReasons[] = sprintf($kernel->getLanguageRepository()->getEntry('smooth_form_minlength'), $label, $this->minLength);
+			$form->addErrorMessage(sprintf($kernel->getLanguageRepository()->getEntry('smooth_form_minlength'), $label, $this->minLength));
 		}
 	}
 
