@@ -170,13 +170,15 @@ class Kernel {
 
 	/**
 	 * @param Request $request The request that determines how the response is made, and how it is given.
-	 * @return \SmoothPHP\Framework\Flow\Responses\Response|boolean
+	 * @return \SmoothPHP\Framework\Flow\Responses\Response
 	 */
 	public function getResponse(Request $request) {
 		$resolvedRoute = $this->routeDatabase->resolve($request);
 		if (!$resolvedRoute) {
 			http_response_code(404);
-			return $this->error($this->languagerepo->getEntry('smooth_error_404'));
+			$response = $this->error($this->languagerepo->getEntry('smooth_error_404'));
+			$response->build($this, $request);
+			return $response;
 		}
 		return $resolvedRoute->buildResponse($this, $request);
 	}
