@@ -43,7 +43,10 @@ class FileStream extends Response {
 		parent::sendHeaders();
 
 		header('Content-Type: ' . $this->options['type']);
-		header('Content-Disposition: ' . (strpos($this->options['type'], 'text/') === 0 ? 'inline' : 'attachment') . '; filename="' . $this->options['filename'] . '"');
+		header('Content-Disposition: ' . (
+			strpos($this->options['type'], 'text/') === 0
+			|| strpos($this->options['type'], 'image/') === 0
+				? 'inline' : 'attachment') . '; filename="' . $this->options['filename'] . '"');
 		header('Content-Length: ' . filesize($this->options['url']));
 		if ($this->options['cors'])
 			header('Access-Control-Allow-Origin: *');
