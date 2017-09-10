@@ -20,6 +20,7 @@ class SubmitType extends Type {
 	public function __construct($field) {
 		parent::__construct($field);
 		$this->options = array_replace_recursive($this->options, [
+			'required' => false,
 			'attr' => [
 				'type'  => 'submit',
 				'value' => $this->options['label']

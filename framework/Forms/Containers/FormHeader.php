@@ -58,7 +58,7 @@ class FormHeader extends Constraint {
 			if (isset($attribute) && strlen($attribute) > 0)
 				$htmlAttributes[] = sprintf('%s="%s"', $key, addcslashes($attribute, '"'));
 
-		return sprintf('<form %s />%s', implode(' ', $htmlAttributes), $tokenInput);
+		return sprintf('<form %s>%s', implode(' ', $htmlAttributes), $tokenInput);
 	}
 
 	public function checkConstraint(Request $request, $name, $label, $value, Form $form) {
@@ -67,7 +67,8 @@ class FormHeader extends Constraint {
 
 			$key = array_search($request->post->_token, $tokens, true);
 			if ($key === false) {
-				$form->addErrorMessage('Form security token mismatch. Please try again.');
+				global $kernel;
+				$form->addErrorMessage($kernel->getLanguageRepository()->getEntry('smooth_form_token'));
 				return;
 			}
 			unset($_SESSION[self::SESSION_KEY][$key]);
