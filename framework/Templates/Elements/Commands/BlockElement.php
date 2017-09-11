@@ -25,6 +25,7 @@ class BlockElement extends Element {
 	const USAGE_UNSPECIFIED = 0;
 	const USAGE_PREPEND = 1;
 	const USAGE_APPEND = 2;
+	const USAGE_CLONE = 3;
 
 	private $name;
 	private $usage;
@@ -45,6 +46,10 @@ class BlockElement extends Element {
 					break;
 				case 'append':
 					$usage = self::USAGE_APPEND;
+					break;
+				case 'clone':
+					$chain->addElement(new self($args[0], self::USAGE_CLONE, new PrimitiveElement()));
+					return;
 			}
 		}
 
@@ -81,6 +86,9 @@ class BlockElement extends Element {
 					throw new TemplateCompileException("Attempting to prepend/append to an unknown block '" . $this->name->getValue() . "'.");
 
 				$blockEl = $tpl->blocks[$name];
+
+				if ($this->usage == self::USAGE_CLONE)
+					return $blockEl;
 
 				$chain = new Chain();
 				if ($this->usage == self::USAGE_PREPEND) {
