@@ -78,7 +78,7 @@ abstract class Type extends Constraint {
 	}
 
 	public function getAttribute($key) {
-		return $this->options['attr'][$key];
+		return isset($this->options['attr'][$key]) ? $this->options['attr'][$key] : null;
 	}
 
 	public function setAttribute($key, $value) {
