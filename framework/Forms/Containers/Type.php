@@ -77,6 +77,10 @@ abstract class Type extends Constraint {
 		return $this->field;
 	}
 
+	public function getAttribute($key) {
+		return $this->options['attr'][$key];
+	}
+
 	public function setAttribute($key, $value) {
 		$this->options['attr'][$key] = $value;
 	}
