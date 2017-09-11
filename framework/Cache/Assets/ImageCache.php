@@ -78,9 +78,6 @@ class ImageCache {
 				imagedestroy($target);
 			}
 
-			// Then create a gzipped version of the image
-			file_put_contents($cacheFile . '.gz', gzencode(file_get_contents($cacheFile)));
-
 			$lock->unlock();
 		}
 

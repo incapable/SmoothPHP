@@ -97,8 +97,6 @@ class AssetsController extends Controller {
 			return $kernel->error($language->getEntry('smooth_error_404'));
 		}
 
-		$this->checkGZip($request, $cacheFile);
-
 		return new FileStream([
 			'cache'    => true,
 			'type'     => image_type_to_mime_type(exif_imagetype($srcFileFull)),

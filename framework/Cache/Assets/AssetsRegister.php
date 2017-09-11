@@ -137,7 +137,7 @@ class AssetsRegister {
 		return $this->css;
 	}
 
-	public function getImage($file, $width = null, $height = null) {
+	public function getImage($file, $width = null, $height = null, $h2 = true) {
 		$cachePath = $this->imageCache->ensureCache(self::getSourcePath('images', $file), $width, $height);
 		$fileInfo = pathinfo($file);
 
@@ -161,7 +161,8 @@ class AssetsRegister {
 				$fileInfo['extension']);
 			$virtualPath = $kernel->getRouteDatabase()->buildPath('assets_images', $virtualImageName);
 
-			header('Link: <' . $virtualPath . '>; rel=preload; as=image', false);
+			if ($h2)
+				header('Link: <' . $virtualPath . '>; rel=preload; as=image', false);
 			return $virtualPath;
 		}
 	}

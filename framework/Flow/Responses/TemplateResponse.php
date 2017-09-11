@@ -20,6 +20,7 @@ use SmoothPHP\Framework\Flow\Requests\Request;
 class TemplateResponse extends Response {
 	private $built;
 	private $args;
+	private $gzip;
 
 	public function __construct($controllerResponse, array $args = []) {
 		parent::__construct($controllerResponse);
@@ -37,11 +38,18 @@ class TemplateResponse extends Response {
 		}
 		$this->args['request'] = $request;
 		$this->built = $kernel->getTemplateEngine()->fetch($this->controllerResponse, $this->args);
+
+		$this->gzip = __ENV__ != 'dev' && strpos($request->server->HTTP_ACCEPT_ENCODING, 'gzip') !== false;
+		if ($this->gzip)
+			$this->built = gzencode($this->built, 9);
 	}
 
 	protected function sendHeaders() {
 		parent::sendHeaders();
 		header('Content-Type: text/html; charset=utf-8');
+
+		if ($this->gzip)
+			header('Content-Encoding: gzip');
 	}
 
 	protected function sendBody() {
