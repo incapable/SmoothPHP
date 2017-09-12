@@ -47,15 +47,6 @@ class BasicClassLoader implements ClassLoader {
 			}
 		}
 
-		$composerFiles = __ROOT__ . 'src/vendor/composer/autoload_files.php';
-		if (file_exists($composerFiles)) {
-			$files = require $composerFiles;
-
-			foreach ($files as $file) {
-				require_once $file;
-			}
-		}
-
 		$composerUnspacedFiles = __ROOT__ . 'src/vendor/composer/autoload_namespaces.php';
 		if (file_exists($composerUnspacedFiles)) {
 			$namespaces = require $composerUnspacedFiles;
@@ -63,6 +54,15 @@ class BasicClassLoader implements ClassLoader {
 			foreach ($namespaces as $dirs)
 				foreach ($dirs as $dir)
 					$this->addPrefix('', $dir . '/');
+		}
+
+		$composerFiles = __ROOT__ . 'src/vendor/composer/autoload_files.php';
+		if (file_exists($composerFiles)) {
+			$files = require $composerFiles;
+
+			foreach ($files as $file) {
+				require_once $file;
+			}
 		}
 	}
 
