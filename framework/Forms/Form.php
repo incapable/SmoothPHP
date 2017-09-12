@@ -35,8 +35,8 @@ class Form extends FormContainer {
 		$this->action = $action;
 	}
 
-	public function getAction() {
-		if (!isset($this->action))
+	public function getAction($default = true) {
+		if (!isset($this->action) && $default)
 			return $_SERVER['REQUEST_URI'];
 		return $this->action;
 	}
