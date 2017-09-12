@@ -19,32 +19,17 @@ use SmoothPHP\Framework\Templates\Compiler\CompilerState;
 use SmoothPHP\Framework\Templates\Compiler\TemplateLexer;
 use SmoothPHP\Framework\Templates\Elements\Chain;
 use SmoothPHP\Framework\Templates\Elements\Element;
-use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
 use SmoothPHP\Framework\Templates\TemplateCompiler;
 
 class JSElement extends Element {
-	const FORMAT = '<script type="text/javascript" src="%s"%s></script>';
+	const FORMAT = '<script type="text/javascript" src="%s"></script>';
 	const COMPILED_PATH = __ROOT__ . 'cache/js/compiled.%s.js';
 
-	private $mode;
-
 	public static function handle(TemplateCompiler $compiler, TemplateLexer $command, TemplateLexer $lexer, Chain $chain, $stackEnd) {
-		$args = new Chain();
-		$compiler->handleCommand($command, $lexer, $args);
-		$args = $args->getAll();
-
-		$mode = '';
-		if (count($args) >= 1 && $args[0] instanceof PrimitiveElement)
-			$mode = ' ' . $args[0]->getValue();
-
 		if (__ENV__ == 'dev')
 			$chain->addElement(new DebugJSElement());
 		else
-			$chain->addElement(new self($mode));
-	}
-
-	public function __construct($mode) {
-		$this->mode = $mode;
+			$chain->addElement(new self());
 	}
 
 	public function optimize(CompilerState $tpl) {
@@ -59,7 +44,7 @@ class JSElement extends Element {
 
 		foreach (array_unique($assetsRegister->getJSFiles()) as $js) {
 			if (strtolower(substr($js, 0, 4)) == 'http') {
-				echo sprintf(self::FORMAT, $js, '');
+				echo sprintf(self::FORMAT, $js);
 				continue;
 			}
 
@@ -94,6 +79,6 @@ class JSElement extends Element {
 		$path = $kernel->getRouteDatabase()->buildPath('assets_js_compiled', $hash);
 
 		header('Link: <' . $path . '>; rel=preload; as=script', false);
-		echo sprintf(self::FORMAT, $path, $this->mode);
+		echo sprintf(self::FORMAT, $path);
 	}
 }
