@@ -35,8 +35,8 @@ class BasicClassLoader implements ClassLoader {
 		$this->prefixes[$namespace][] = $path;
 	}
 
-	public function loadFromComposer() {
-		$composerNamespaces = __ROOT__ . 'src/vendor/composer/autoload_psr4.php';
+	public function loadFromComposer($path = __ROOT__ . 'src/') {
+		$composerNamespaces = $path . 'vendor/composer/autoload_psr4.php';
 		if (file_exists($composerNamespaces)) {
 			$composerLibs = require $composerNamespaces;
 
@@ -47,7 +47,7 @@ class BasicClassLoader implements ClassLoader {
 			}
 		}
 
-		$composerUnspacedFiles = __ROOT__ . 'src/vendor/composer/autoload_namespaces.php';
+		$composerUnspacedFiles = $path . 'vendor/composer/autoload_namespaces.php';
 		if (file_exists($composerUnspacedFiles)) {
 			$namespaces = require $composerUnspacedFiles;
 
@@ -56,7 +56,7 @@ class BasicClassLoader implements ClassLoader {
 					$this->addPrefix('', $dir . '/');
 		}
 
-		$composerFiles = __ROOT__ . 'src/vendor/composer/autoload_files.php';
+		$composerFiles = $path . 'vendor/composer/autoload_files.php';
 		if (file_exists($composerFiles)) {
 			$files = require $composerFiles;
 

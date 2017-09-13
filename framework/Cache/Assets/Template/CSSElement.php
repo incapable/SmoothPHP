@@ -19,7 +19,7 @@ use SmoothPHP\Framework\Templates\Compiler\TemplateLexer;
 use SmoothPHP\Framework\Templates\Elements\Chain;
 use SmoothPHP\Framework\Templates\Elements\Element;
 use SmoothPHP\Framework\Templates\TemplateCompiler;
-use tubalmartin\CSSmin\CSSmin;
+use tubalmartin\CssMin\Minifier;
 
 class CSSElement extends Element {
 	const FORMAT = '<link rel="stylesheet" type="text/css" href="%s" />';
@@ -67,7 +67,7 @@ class CSSElement extends Element {
 					$contents .= ' ' . file_get_contents($file);
 				});
 
-				$cssmin = new CSSmin();
+				$cssmin = new Minifier();
 				$optimized = $cssmin->run($contents);
 
 				$path = sprintf(self::COMPILED_PATH, $hash);

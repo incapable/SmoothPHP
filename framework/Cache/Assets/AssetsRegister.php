@@ -13,11 +13,10 @@
 
 namespace SmoothPHP\Framework\Cache\Assets;
 
-use JShrink\Minifier;
 use SmoothPHP\Framework\Cache\Builder\FileCacheProvider;
 use SmoothPHP\Framework\Core\Kernel;
 use SmoothPHP\Framework\Flow\Requests\Robots;
-use tubalmartin\CSSmin\CSSmin;
+use tubalmartin\CssMin\Minifier;
 
 class AssetsRegister {
 	/* @var FileCacheProvider */
@@ -188,11 +187,11 @@ class AssetsRegister {
 	}
 
 	public static function minifyCSS($filePath) {
-		return (new CSSmin())->run(self::simpleLoad($filePath));
+		return (new \tubalmartin\CssMin\Minifier())->run(self::simpleLoad($filePath));
 	}
 
 	public static function minifyJS($filePath) {
-		return Minifier::minify(self::simpleLoad($filePath));
+		return \JShrink\Minifier::minify(self::simpleLoad($filePath));
 	}
 
 }

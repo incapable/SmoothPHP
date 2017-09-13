@@ -84,8 +84,7 @@ class Kernel {
 
 		if (__ENV__ != 'dev') {
 			global $classLoader;
-			$classLoader->addPrefix('tubalmartin\\CSSmin', __ROOT__ . 'framework/meta/vendor/CSSmin/');
-			$classLoader->addPrefix('JShrink', __ROOT__ . 'framework/meta/vendor/JShrink/');
+			$classLoader->loadFromComposer(__ROOT__ . 'framework/meta/');
 		}
 	}
 
