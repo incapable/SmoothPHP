@@ -60,6 +60,9 @@ class Kernel {
 	public function loadPrototype(WebPrototype $prototype) {
 		$this->__wakeup();
 
+		if (!is_dir(__ROOT__ . 'framework/meta/vendor/'))
+			die('SmoothPHP is not yet installed. Run composer install in ' . realpath(__ROOT__ . 'framework/../'));
+
 		$this->routeDatabase = new RouteDatabase();
 		$this->assetsRegister = new AssetsRegister();
 		$this->languagerepo = new LanguageRepository($this);
