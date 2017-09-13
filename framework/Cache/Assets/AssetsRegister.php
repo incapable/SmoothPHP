@@ -46,21 +46,24 @@ class AssetsRegister {
 				'path'       => 'favicon.ico',
 				'controller' => AssetsController::class,
 				'call'       => 'favicon',
-				'robots'     => Robots::HIDE
+				'robots'     => Robots::HIDE,
+				'internal'   => true
 			]);
 			$route->register([
 				'name'       => 'assets_images',
 				'path'       => '/images/...',
 				'controller' => AssetsController::class,
 				'call'       => 'getImage',
-				'robots'     => Robots::HIDE
+				'robots'     => Robots::HIDE,
+				'internal'   => true
 			]);
 			$route->register([
 				'name'       => 'assets_raw',
 				'path'       => '/raw/...',
 				'controller' => AssetsController::class,
 				'call'       => 'getRaw',
-				'robots'     => Robots::HIDE
+				'robots'     => Robots::HIDE,
+				'internal'   => true
 			]);
 
 			if (__ENV__ != 'dev') {
@@ -69,14 +72,16 @@ class AssetsRegister {
 					'path'       => '/css/%/compiled.css',
 					'controller' => AssetsController::class,
 					'call'       => 'getCompiledCSS',
-					'robots'     => Robots::HIDE
+					'robots'     => Robots::HIDE,
+					'internal'   => true
 				]);
 				$route->register([
 					'name'       => 'assets_js_compiled',
 					'path'       => '/js/%/compiled.js',
 					'controller' => AssetsController::class,
 					'call'       => 'getCompiledJS',
-					'robots'     => Robots::HIDE
+					'robots'     => Robots::HIDE,
+					'internal'   => true
 				]);
 			} else {
 				$route->register([
@@ -84,14 +89,16 @@ class AssetsRegister {
 					'path'       => '/js/...',
 					'controller' => AssetsController::class,
 					'call'       => 'getJS',
-					'robots'     => Robots::HIDE
+					'robots'     => Robots::HIDE,
+					'internal'   => true
 				]);
 				$route->register([
 					'name'       => 'assets_css',
 					'path'       => '/css/...',
 					'controller' => AssetsController::class,
 					'call'       => 'getCSS',
-					'robots'     => Robots::HIDE
+					'robots'     => Robots::HIDE,
+					'internal'   => true
 				]);
 			}
 		}

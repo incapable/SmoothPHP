@@ -33,7 +33,8 @@ class Robots extends Controller {
 			'controller'   => self::class,
 			'call'         => 'getRobots',
 			'content-type' => FileStream::class,
-			'robots'       => self::HIDE
+			'robots'       => self::HIDE,
+			'internal'     => true
 		]);
 	}
 

@@ -21,11 +21,10 @@ class PasswordType extends StringType {
 	public function __construct($field) {
 		parent::__construct($field);
 
-		global $kernel;
 		$this->options = array_replace_recursive($this->options, [
 			'attr' => [
 				'type'        => 'password',
-				'placeholder' => $kernel->getLanguageRepository()->getEntry('smooth_form_password')
+				'placeholder' => 'language:smooth_form_password'
 			]
 		]);
 	}

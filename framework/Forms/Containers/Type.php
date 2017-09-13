@@ -107,7 +107,7 @@ abstract class Type extends Constraint {
 			if ($key == 'class')
 				$attribute = implode(' ', array_filter((array)$attribute));
 			else
-				$attribute = last($attribute);
+				$attribute = $this->transformLanguage(last($attribute));
 			if (isset($attribute) && strlen($attribute) > 0)
 				$htmlAttributes[] = sprintf('%s="%s"', $key, addcslashes($attribute, '"'));
 		}
@@ -122,4 +122,16 @@ abstract class Type extends Constraint {
 
 		return implode(' ', $pieces);
 	}
+
+	private function transformLanguage($attribute) {
+		static $languagePrefix = 'language:';
+
+		if (strpos($attribute, $languagePrefix) === 0) {
+			global $kernel;
+			return $kernel->getLanguageRepository()->getEntry(substr($attribute, strlen($languagePrefix)));
+		}
+
+		return $attribute;
+	}
+
 }

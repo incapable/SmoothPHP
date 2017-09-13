@@ -82,9 +82,6 @@ class Kernel {
 	}
 
 	public function __wakeup() {
-		session_name('sm_sid');
-		session_start();
-
 		if (__ENV__ != 'dev') {
 			global $classLoader;
 			$classLoader->loadFromComposer(__ROOT__ . 'framework/meta/');
