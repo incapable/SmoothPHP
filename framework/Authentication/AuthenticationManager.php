@@ -141,11 +141,16 @@ class AuthenticationManager {
 				'email' => $request->post->get('email')
 			]);
 
-			if (!$user || !password_verify($request->post->password, $user->getHashedPassword())) {
+			if (!$user || !password_verify($request->post->password, $user->password)) {
 				$form->addErrorMessage('Email and/or password are incorrect.');
 				$session->increaseFailure();
 				$this->loginSessionMap->insert($session);
 				return false;
+			}
+
+			if (password_needs_rehash($request->post->password, PASSWORD_DEFAULT)) {
+				$user->rehashPassword($request->post->password);
+				$this->userMap->insert($user);
 			}
 
 			$this->loginSessionMap->delete($session);

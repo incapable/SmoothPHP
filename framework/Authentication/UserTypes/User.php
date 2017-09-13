@@ -24,16 +24,16 @@ class User extends MappedMySQLObject implements AbstractUser {
 		return 'users';
 	}
 
-	public function getHashedPassword() {
-		return $this->password;
-	}
-
 	public function isLoggedIn() {
 		return true;
 	}
 
 	public function __get($name) {
 		return $this->{$name};
+	}
+
+	public function rehashPassword($input) {
+		$this->password = password_hash($input, PASSWORD_DEFAULT);
 	}
 
 	public static function getInstance() {
