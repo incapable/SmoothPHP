@@ -32,7 +32,7 @@ class User extends MappedMySQLObject implements AbstractUser {
 		return $this->{$name};
 	}
 
-	public function rehashPassword($input) {
+	public function setPassword($input) {
 		$this->password = password_hash($input, PASSWORD_DEFAULT);
 	}
 
