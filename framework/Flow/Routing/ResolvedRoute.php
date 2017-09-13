@@ -30,7 +30,7 @@ class ResolvedRoute {
 
 	public function buildResponse(Kernel $kernel, Request $request) {
 		// If this is not an internal route (assets etc), start a php session.
-		if (isset($this->route['internal'])) {
+		if (!isset($this->route['internal'])) {
 			session_name('sm_sid');
 			session_start();
 		}
