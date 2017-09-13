@@ -55,6 +55,7 @@ class ResolvedRoute {
 			} catch (\Exception $e) {
 				if (http_response_code() == 200)
 					http_response_code(500);
+				error_log($e);
 				$response = $kernel->error($kernel->getLanguageRepository()->getEntry('smooth_error'));
 			}
 		else
