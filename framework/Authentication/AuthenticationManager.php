@@ -149,7 +149,7 @@ class AuthenticationManager {
 				return false;
 			}
 
-			if (password_needs_rehash($request->post->password, PASSWORD_DEFAULT)) {
+			if (password_needs_rehash($user->password, PASSWORD_DEFAULT)) {
 				$user->setPassword($request->post->password);
 				$this->userMap->insert($user);
 			}
