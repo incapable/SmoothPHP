@@ -40,7 +40,7 @@ class AuthenticationManager {
 	/* @var MySQLObjectMapper */
 	private $loginSessionMap, $activeSessionMap, $longLivedMap, $userMap;
 	/* @var MySQLStatement */
-	private $permissionsQuery;
+	private $permissionsQuery, $sessionLastActiveQuery;
 	/* @var Form */
 	private $defaultForm;
 
@@ -58,7 +58,8 @@ class AuthenticationManager {
             SELECT `permission` FROM `permissions` WHERE `userId` = %d AND NOT ISNULL(`permission`)
             UNION DISTINCT
             SELECT `permission` FROM `permissions` WHERE `group` IN (SELECT `group` FROM `permissions` WHERE `userId` = %d AND NOT ISNULL(`group`)) AND NOT ISNULL(`permission`)
-        ');
+        ', true);
+		$this->sessionLastActiveQuery = $mysql->prepare('UPDATE `sessions` SET `lastActive` = NOW() WHERE `id` = %d', true);
 
 		$formBuilder = new FormBuilder();
 
@@ -200,6 +201,8 @@ class AuthenticationManager {
 
 			if ($this->session == null)
 				return new AnonymousUser();
+			else
+				$this->sessionLastActiveQuery->execute($this->session->getId());
 
 			$this->getPermissions($this->user);
 		}
