@@ -59,7 +59,7 @@ class AuthenticationManager {
             UNION DISTINCT
             SELECT `permission` FROM `permissions` WHERE `group` IN (SELECT `group` FROM `permissions` WHERE `userId` = %d AND NOT ISNULL(`group`)) AND NOT ISNULL(`permission`)
         ', true);
-		$this->sessionLastActiveQuery = $mysql->prepare('UPDATE `sessions` SET `lastActive` = NOW() WHERE `id` = %d', true);
+		$this->sessionLastActiveQuery = $mysql->prepare('UPDATE `sessions` SET `lastActive` = NOW() WHERE `id` = %d', false);
 
 		$formBuilder = new FormBuilder();
 
