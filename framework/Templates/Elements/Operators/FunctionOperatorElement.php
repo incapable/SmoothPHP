@@ -28,13 +28,6 @@ class FunctionOperatorElement extends Element {
 	private $function;
 	private $args;
 
-	public static function handle(TemplateCompiler $compiler, TemplateLexer $command, TemplateLexer $lexer, Chain $chain) {
-		$command->next();
-		$args = new Chain();
-		$args->addElement($chain->pop());
-		$chain->addElement(new self($command->readAlphaNumeric(), $args));
-	}
-
 	public function __construct($function, Chain $args) {
 		if (!isset(self::$cacheableFunctions))
 			self::fillCacheableFunctions();

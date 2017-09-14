@@ -53,10 +53,10 @@ class TemplateCompiler {
 			'*'  => ArithmeticOperatorElement::class,
 			'/'  => ArithmeticOperatorElement::class,
 			'='  => ArithmeticOperatorElement::class,
+			'|'  => ArithmeticOperatorElement::class,
 			'\'' => Elements\PrimitiveElement::class,
 			'"'  => Elements\PrimitiveElement::class,
 			'!'  => Elements\Operators\InEqualsOperatorElement::class,
-			'|'  => Elements\Operators\FunctionOperatorElement::class,
 			'&'  => Elements\Operators\BinaryAndOperatorElement::class
 		];
 	}

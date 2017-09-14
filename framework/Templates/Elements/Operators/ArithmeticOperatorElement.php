@@ -61,7 +61,17 @@ abstract class ArithmeticOperatorElement extends Element {
 				else
 					$op = new BinaryAndOperatorElement();
 				break;
-			case '=':
+			case '|':
+				if ($command->peek('|')) {
+					$op = new OrOperatorElement();
+					break;
+				} else {
+					$args = new Chain();
+					$args->addElement($chain->pop());
+					$chain->addElement(new FunctionOperatorElement($command->readAlphaNumeric(), $args));
+					return;
+				}
+ 			case '=':
 				if ($command->peek('=')) {
 					$op = new EqualsOperatorElement();
 					break;

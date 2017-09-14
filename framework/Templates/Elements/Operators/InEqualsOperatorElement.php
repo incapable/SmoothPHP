@@ -24,7 +24,7 @@ use SmoothPHP\Framework\Templates\TemplateCompiler;
 class InEqualsOperatorElement extends ArithmeticOperatorElement {
 
 	protected function getPriority() {
-		return 5;
+		return 6;
 	}
 
 	public function optimize(CompilerState $tpl) {
