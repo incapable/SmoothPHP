@@ -105,7 +105,18 @@ class FileStream extends Response {
 	}
 
 	protected function sendBody() {
-		readfile($this->options['url']);
+		$fh = null;
+		try {
+			$fh = fopen($this->options['url'], 'rb');
+			while (!feof($fh)) {
+				echo fread($fh, 1024 * 1024);
+				ob_flush();
+				flush();
+			}
+		} finally {
+			if (is_resource($fh))
+				fclose($fh);
+		}
 	}
 
 }
