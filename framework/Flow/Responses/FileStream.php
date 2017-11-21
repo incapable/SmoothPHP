@@ -35,8 +35,35 @@ class FileStream extends Response {
 			'cors'     => true
 		], $options);
 
-		if (!file_exists($this->options['url']))
+		// Check if a local file exists
+		if (!file_exists($this->options['url'])) {
+			// No? Let's check if the file starts with HTTP instead
+			if (strtolower(substr($this->options['url'], 0, 4)) == 'http') {
+				// It does, get the headers to verify if it exists and get some useful headers
+				$headers = get_headers($this->options['url']);
+				$response = (int)substr($headers[0], 9, 3);
+
+				// Success check
+				if ($response >= 200 && $response < 300) {
+					// Okay, the resource exists, get the content length for later usage
+
+					foreach ($headers as $header) {
+						if (strpos(strtoupper($header), 'HTTP/') !== false)
+							continue;
+
+						list($key, $value) = explode(': ', $header);
+						switch (strtolower($key)) {
+							case 'content-length':
+								$this->options['size'] = (int)$value;
+						}
+					}
+
+					// Return without throwing
+					return;
+				}
+			}
 			throw new \RuntimeException("File does not exist!");
+		}
 	}
 
 	protected function sendHeaders() {
@@ -47,7 +74,7 @@ class FileStream extends Response {
 			strpos($this->options['type'], 'text/') === 0
 			|| strpos($this->options['type'], 'image/') === 0
 				? 'inline' : 'attachment') . '; filename="' . $this->options['filename'] . '"');
-		header('Content-Length: ' . filesize($this->options['url']));
+		header('Content-Length: ' . (isset($this->options['size']) ? $this->options['size'] : filesize($this->options['url'])));
 		if ($this->options['cors'])
 			header('Access-Control-Allow-Origin: *');
 
