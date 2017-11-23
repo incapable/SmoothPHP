@@ -22,6 +22,11 @@ class Cache extends Command {
 	}
 
 	public function handle(Kernel $kernel, array $argv) {
+		if (!is_dir(__ROOT__ . 'cache')) {
+			print('Cache folder does not exist, not clearing...' . PHP_EOL);
+			return;
+		}
+		
 		$this->traverse(__ROOT__ . 'cache', function ($file, $isDir) {
 			if ($isDir)
 				rmdir($file);
