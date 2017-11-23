@@ -20,14 +20,13 @@ class FileStream extends Response {
 
 	const CACHE_DATE = 'D, d M Y H:i:s \G\M\T';
 
-	private $options;
 	private $request;
 
 	public function build(Kernel $kernel, Request $request) {
 		$options = is_array($this->controllerResponse) ? $this->controllerResponse : ['url' => $this->controllerResponse];
 		$this->request = $request;
 		$urlParts = explode('/', $options['url']);
-		$this->options = array_merge([
+		$this->controllerResponse = array_merge([
 			'type'     => 'application/octet-stream',
 			'filename' => end($urlParts),
 			'expires'  => 86400,
@@ -36,11 +35,11 @@ class FileStream extends Response {
 		], $options);
 
 		// Check if a local file exists
-		if (!file_exists($this->options['url'])) {
+		if (!file_exists($this->controllerResponse['url'])) {
 			// No? Let's check if the file starts with HTTP instead
-			if (strtolower(substr($this->options['url'], 0, 4)) == 'http') {
+			if (strtolower(substr($this->controllerResponse['url'], 0, 4)) == 'http') {
 				// It does, get the headers to verify if it exists and get some useful headers
-				$headers = get_headers($this->options['url']);
+				$headers = get_headers($this->controllerResponse['url']);
 				$response = (int)substr($headers[0], 9, 3);
 
 				// Success check
@@ -54,7 +53,7 @@ class FileStream extends Response {
 						list($key, $value) = explode(': ', $header);
 						switch (strtolower($key)) {
 							case 'content-length':
-								$this->options['size'] = (int)$value;
+								$this->controllerResponse['size'] = (int)$value;
 						}
 					}
 
@@ -69,22 +68,22 @@ class FileStream extends Response {
 	protected function sendHeaders() {
 		parent::sendHeaders();
 
-		header('Content-Type: ' . $this->options['type']);
+		header('Content-Type: ' . $this->controllerResponse['type']);
 		header('Content-Disposition: ' . (
-			strpos($this->options['type'], 'text/') === 0
-			|| strpos($this->options['type'], 'image/') === 0
-				? 'inline' : 'attachment') . '; filename="' . $this->options['filename'] . '"');
-		header('Content-Length: ' . (isset($this->options['size']) ? $this->options['size'] : filesize($this->options['url'])));
-		if ($this->options['cors'])
+			strpos($this->controllerResponse['type'], 'text/') === 0
+			|| strpos($this->controllerResponse['type'], 'image/') === 0
+				? 'inline' : 'attachment') . '; filename="' . $this->controllerResponse['filename'] . '"');
+		header('Content-Length: ' . (isset($this->controllerResponse['size']) ? $this->controllerResponse['size'] : filesize($this->controllerResponse['url'])));
+		if ($this->controllerResponse['cors'])
 			header('Access-Control-Allow-Origin: *');
 
-		if ($this->options['cache']) {
-			$eTag = file_hash($this->options['url']);
-			$lastModified = filemtime($this->options['url']);
+		if ($this->controllerResponse['cache']) {
+			$eTag = file_hash($this->controllerResponse['url']);
+			$lastModified = filemtime($this->controllerResponse['url']);
 
 			if (__ENV__ != 'dev') {
-				header('Cache-Control: max-age=' . $this->options['expires'] . ', private');
-				header('Expires: ' . gmdate(self::CACHE_DATE, time() + $this->options['expires']));
+				header('Cache-Control: max-age=' . $this->controllerResponse['expires'] . ', private');
+				header('Expires: ' . gmdate(self::CACHE_DATE, time() + $this->controllerResponse['expires']));
 				header('Pragma: private');
 			} else {
 				header('Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0');
@@ -107,7 +106,7 @@ class FileStream extends Response {
 	protected function sendBody() {
 		$fh = null;
 		try {
-			$fh = fopen($this->options['url'], 'rb');
+			$fh = fopen($this->controllerResponse['url'], 'rb');
 			while (!feof($fh)) {
 				echo fread($fh, 1024 * 1024);
 				ob_flush();
