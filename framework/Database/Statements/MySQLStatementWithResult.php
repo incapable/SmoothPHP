@@ -23,8 +23,9 @@ class MySQLStatementWithResult extends MySQLStatement {
 
 		$result = $stmt->get_result();
 
-		while ($data = $result->fetch_assoc())
-			$resultList[] = $data;
+		if ($result->num_rows > 0)
+			while ($data = $result->fetch_assoc())
+				$resultList[] = $data;
 
 		$stmt->free_result();
 		$stmt->reset();
