@@ -36,7 +36,7 @@ class CheckboxType extends Type {
 	}
 
 	public function __toString() {
-		if (isset($this->options['attr']['value']) && last($this->options['attr']['value'])) {
+		if (isset($this->options['attr']['value']) && last($this->options['attr']['value']) === true) {
 			$this->options['attr']['checked'] = 'checked';
 			unset($this->options['attr']['value']);
 		}
