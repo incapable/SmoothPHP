@@ -79,7 +79,7 @@ class AssetsController extends Controller {
 		]);
 	}
 
-	public function getImage(Kernel $kernel, Request $request, LanguageRepository $language, array $path) {
+	public function getImage(Kernel $kernel, LanguageRepository $language, array $path) {
 		preg_match('/^(.+?)(?:\.([0-9]+?)x([0-9]+?))?\.([a-z]+)$/', implode('/', $path), $matches);
 
 		$srcFile = sprintf('src/assets/images/%s.%s', $matches[1], $matches[4]);
