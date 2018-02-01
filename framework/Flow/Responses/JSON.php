@@ -21,7 +21,8 @@ class JSON extends Response implements AlternateErrorResponse {
 
 	public function buildErrorResponse($message) {
 		$this->controllerResponse = [
-			'error' => $message
+			'success' => false,
+			'error'   => $message
 		];
 	}
 
