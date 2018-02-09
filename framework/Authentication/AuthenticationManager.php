@@ -87,7 +87,7 @@ class AuthenticationManager {
 		$classDef = new \ReflectionClass($clazz);
 
 		if (!$classDef->isSubclassOf(User::class))
-			throw new \Exception('Class ' . $clazz . ' does not derive from ' . User::class);
+			throw new \RuntimeException('Class ' . $clazz . ' does not derive from ' . User::class);
 
 		global $kernel;
 		$this->userMap = $kernel->getMySQL()->map($clazz);

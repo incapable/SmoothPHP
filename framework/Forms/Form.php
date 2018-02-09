@@ -84,7 +84,7 @@ class Form extends FormContainer {
 
 	public function addErrorMessage($message) {
 		if (!isset($this->failReasons))
-			throw new \Exception('Form has not yet been validated.');
+			throw new \RuntimeException('Form has not yet been validated.');
 		$this->failReasons[] = $message;
 	}
 
