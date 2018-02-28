@@ -90,7 +90,6 @@ class MySQL {
 	/**
 	 * @param $clazz
 	 * @return MySQLObjectMapper
-	 * @throws MySQLException
 	 */
 	public function map($clazz) {
 		if (__ENV__ == 'cli')

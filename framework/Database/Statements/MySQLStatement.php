@@ -30,7 +30,6 @@ abstract class MySQLStatement {
 	/**
 	 * @param MySQL $mysql
 	 * @param $query
-	 * @throws MySQLException
 	 */
 	public function __construct(MySQL $mysql, $query) {
 		$this->mysql = $mysql;
@@ -59,9 +58,6 @@ abstract class MySQLStatement {
 		return ['mysql', 'query', 'params', 'args'];
 	}
 
-	/**
-	 * @throws MySQLException
-	 */
 	private function verifyStmtAwake() {
 		if (!isset($this->stmt)) {
 			$this->mysql->__wakeup();
@@ -75,9 +71,6 @@ abstract class MySQLStatement {
 		}
 	}
 
-	/**
-	 * @throws MySQLException
-	 */
 	public function getMySQLi_stmt() {
 		$this->verifyStmtAwake();
 		return $this->stmt;
@@ -85,7 +78,6 @@ abstract class MySQLStatement {
 
 	/**
 	 * @return MySQLResult|int
-	 * @throws MySQLException
 	 */
 	public function execute() {
 		$this->verifyStmtAwake();
