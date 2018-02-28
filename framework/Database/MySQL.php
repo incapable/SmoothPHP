@@ -37,7 +37,10 @@ class MySQL {
 		if (!isset($this->connection)) {
 			$prefix = ini_get('mysqli.allow_persistent') ? 'p:' : '';
 			$this->connection = new \mysqli($prefix . $this->config->mysql_host, $this->config->mysql_user, $this->config->mysql_password, $this->config->mysql_database);
-			$this->connection->real_query('SET SESSION sql_mode = \'\';');
+			if (!$this->connection->real_query('SET SESSION sql_mode = \'\';'))
+				throw new MySQLException('Could not reset sql_mode for session: ' . $this->connection->error);
+			if (!$this->connection->set_charset('utf8'))
+				throw new MySQLException('Could not set charset for MySQLi client: ' . $this->connection->error);
 		}
 	}
 
@@ -87,6 +90,7 @@ class MySQL {
 	/**
 	 * @param $clazz
 	 * @return MySQLObjectMapper
+	 * @throws MySQLException
 	 */
 	public function map($clazz) {
 		if (__ENV__ == 'cli')
