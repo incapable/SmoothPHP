@@ -15,6 +15,7 @@ namespace SmoothPHP\Framework\Core\CLI;
 
 use SmoothPHP\Framework\Core\Kernel;
 use SmoothPHP\Framework\Database\MySQL;
+use SmoothPHP\Framework\Database\MySQLException;
 
 class Install extends Command {
 
@@ -55,13 +56,24 @@ class Install extends Command {
 		$queries = explode(';', $sqlFile);
 		$count = 0;
 		$insert_id = 0;
-		foreach ($queries as $query) {
-			if (strlen(preg_replace('( |\n|\r|' . PHP_EOL . ')', '', $query)) == 0)
-				continue;
 
-			$query = str_replace('LAST_INSERT_ID()', $insert_id, $query);
-			$insert_id = $mysql->execute($query);
-			$count++;
+		$mysql->start();
+		try {
+			foreach ($queries as $query) {
+				if (strlen(preg_replace('( |\n|\r|' . PHP_EOL . ')', '', $query)) == 0)
+					continue;
+
+				$query = str_replace('LAST_INSERT_ID()', $insert_id, $query);
+				$mysql->getConnection()->real_query($query);
+				$insert_id = $mysql->getConnection()->insert_id;
+				$count++;
+			}
+
+			$mysql->commit();
+		} catch (\Exception $e) {
+			$mysql->rollback();
+			/** @noinspection PhpUnhandledExceptionInspection */
+			throw $e;
 		}
 
 		printf('%d queries executed.' . PHP_EOL, $count);
