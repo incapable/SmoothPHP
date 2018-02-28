@@ -28,6 +28,8 @@ class JSON extends Response implements AlternateErrorResponse {
 
 	public function build(Kernel $kernel, Request $request) {
 		$this->built = json_encode($this->controllerResponse);
+		if ($this->built === false)
+			throw new \RuntimeException('Could not encode json: ' . json_last_error_msg());
 	}
 
 	protected function sendHeaders() {
