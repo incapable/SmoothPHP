@@ -22,6 +22,11 @@ class Uninstall extends Command {
 	}
 
 	public function handle(Kernel $kernel, array $argv) {
+		if (file_exists(__ROOT__ . '/production.lock')) {
+			printf('Can not run uninstall script because production.lock exists.' . PHP_EOL);
+			return;
+		}
+
 		printf('THIS METHOD WILL EMPTY DATABASE \'%s\', ARE YOU ABSOLUTELY SURE? [y/n]' . PHP_EOL, $kernel->getConfig()->mysql_database);
 		$line = trim(fgets(STDIN));
 

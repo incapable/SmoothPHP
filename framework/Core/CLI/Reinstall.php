@@ -22,6 +22,11 @@ class Reinstall extends Command {
 	}
 
 	public function handle(Kernel $kernel, array $argv) {
+		if (file_exists(__ROOT__ . '/production.lock')) {
+			printf('Can not run reinstall script because production.lock exists.' . PHP_EOL);
+			return;
+		}
+
 		(new Uninstall())->handle($kernel, $argv);
 		(new Install())->handle($kernel, $argv);
 	}
