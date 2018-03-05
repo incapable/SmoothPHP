@@ -20,7 +20,8 @@ class FileStream extends Response {
 
 	const CACHE_DATE = 'D, d M Y H:i:s \G\M\T';
 
-	private $request;
+	/* @var Request */
+	protected $request;
 
 	public function build(Kernel $kernel, Request $request) {
 		$options = is_array($this->controllerResponse) ? $this->controllerResponse : ['url' => $this->controllerResponse];
@@ -78,9 +79,6 @@ class FileStream extends Response {
 			header('Access-Control-Allow-Origin: *');
 
 		if ($this->controllerResponse['cache']) {
-			$eTag = file_hash($this->controllerResponse['url']);
-			$lastModified = filemtime($this->controllerResponse['url']);
-
 			if (__ENV__ != 'dev') {
 				header('Cache-Control: max-age=' . $this->controllerResponse['expires'] . ', private');
 				header('Expires: ' . gmdate(self::CACHE_DATE, time() + $this->controllerResponse['expires']));
@@ -89,16 +87,32 @@ class FileStream extends Response {
 				header('Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0');
 				header('Expires: ' . gmdate(self::CACHE_DATE, 0));
 			}
-			header('Last-Modified: ' . gmdate(self::CACHE_DATE, $lastModified));
-			header('ETag: W/"' . $eTag . '"');
 
-			if ($this->request->server->HTTP_IF_MODIFIED_SINCE && $lastModified > strtotime($this->request->server->HTTP_IF_MODIFIED_SINCE)) {
-				http_response_code(304);
-				exit();
+			if (isset($this->controllerResponse['url'])) {
+				$eTag = file_hash($this->controllerResponse['url']);
+				$lastModified = filemtime($this->controllerResponse['url']);
+
+				header('Last-Modified: ' . gmdate(self::CACHE_DATE, $lastModified));
+				header('ETag: W/"' . $eTag . '"');
+
+				if ($this->request->server->HTTP_IF_MODIFIED_SINCE && $lastModified > strtotime($this->request->server->HTTP_IF_MODIFIED_SINCE)) {
+					http_response_code(304);
+					exit();
+				}
+				if ($this->request->server->HTTP_IF_NONE_MATCH && $this->request->server->HTTP_IF_NONE_MATCH == $eTag) {
+					http_response_code(304);
+					exit();
+				}
 			}
-			if ($this->request->server->HTTP_IF_NONE_MATCH && $this->request->server->HTTP_IF_NONE_MATCH == $eTag) {
-				http_response_code(304);
-				exit();
+
+			if (isset($this->controllerResponse['data'])) {
+				$eTag = md5($this->controllerResponse['data']);
+				header('ETag: "' . $eTag . '"');
+
+				if ($this->request->server->HTTP_IF_NONE_MATCH && $this->request->server->HTTP_IF_NONE_MATCH == $eTag) {
+					http_response_code(304);
+					exit();
+				}
 			}
 		}
 	}
