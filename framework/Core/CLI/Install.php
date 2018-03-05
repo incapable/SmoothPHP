@@ -15,6 +15,7 @@ namespace SmoothPHP\Framework\Core\CLI;
 
 use SmoothPHP\Framework\Core\Kernel;
 use SmoothPHP\Framework\Database\MySQL;
+use SmoothPHP\Framework\Database\MySQLException;
 
 class Install extends Command {
 
@@ -69,6 +70,8 @@ class Install extends Command {
 
 				$query = str_replace('LAST_INSERT_ID()', $insert_id, $query);
 				$mysql->getConnection()->real_query($query);
+				if ($mysql->getConnection()->errno)
+					throw new MySQLException($mysql->getConnection()->error);
 				$insert_id = $mysql->getConnection()->insert_id;
 				$count++;
 			}
