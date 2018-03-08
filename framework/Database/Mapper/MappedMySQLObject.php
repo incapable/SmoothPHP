@@ -14,7 +14,7 @@
 namespace SmoothPHP\Framework\Database\Mapper;
 
 class MappedMySQLObject {
-	protected $id = 0;
+	public $id = 0;
 
 	public function getTableName() {
 		return strtolower((new \ReflectionClass($this))->getShortName());
