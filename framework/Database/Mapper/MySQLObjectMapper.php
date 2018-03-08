@@ -183,10 +183,11 @@ class MySQLObjectMapper {
 			MySQL::checkError($prepared->statement->getMySQLi_stmt());
 		}
 
-		$prepared->statement->getMySQLi_stmt()->store_result();
+		$stmt = $prepared->statement->getMySQLi_stmt();
+		$stmt->store_result();
 
 		$results = [];
-		while ($prepared->statement->getMySQLi_stmt()->fetch()) {
+		while ($stmt->fetch()) {
 			$target = $this->classDef->newInstanceWithoutConstructor();
 			/* @var $field \ReflectionProperty */
 			foreach ($this->fields as $field) {
@@ -195,9 +196,9 @@ class MySQLObjectMapper {
 			$results[] = $target;
 		}
 
-		$prepared->statement->getMySQLi_stmt()->free_result();
-		$prepared->statement->getMySQLi_stmt()->reset();
-		MySQL::checkError($prepared->statement->getMySQLi_stmt());
+		$stmt->free_result();
+		$stmt->reset();
+		MySQL::checkError($stmt);
 
 		if ($limit == 1) {
 			if (count($results) == 0)
