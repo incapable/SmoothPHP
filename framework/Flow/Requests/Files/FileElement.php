@@ -13,6 +13,13 @@
 
 namespace SmoothPHP\Framework\Flow\Requests\Files;
 
+/**
+ * @property string name
+ * @property string tmp_name
+ * @property string location
+ * @property int error
+ * @property int size
+ */
 class FileElement {
 	private $file;
 
@@ -22,15 +29,19 @@ class FileElement {
 
 	public function __get($name) {
 		switch ($name) {
+			/** @noinspection PhpMissingBreakStatementInspection */
 			case 'location':
 				$name = 'tmp_name';
-			// fallthrough
 			case 'name':
 			case 'tmp_name':
 			case 'error':
 			case 'size':
 				return $this->file[$name];
 		}
+	}
+
+	public function isUploaded() {
+		return $this->file['error'] != UPLOAD_ERR_NO_FILE;
 	}
 
 	public function saveAs($path) {

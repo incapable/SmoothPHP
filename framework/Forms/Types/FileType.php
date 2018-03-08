@@ -33,7 +33,7 @@ class FileType extends Type {
 		global $kernel;
 		$language = $kernel->getLanguageRepository();
 
-		if ((!$request->files->{$name} || $request->files->{$name}->error == UPLOAD_ERR_NO_FILE)) {
+		if ((!$request->files->{$name} || $request->files->{$name}->isUploaded())) {
 			if (last($this->options['required'])) {
 				$form->addErrorMessage(sprintf($kernel->getLanguageRepository()->getEntry('smooth_form_file_required'), $label));
 			}

@@ -23,6 +23,10 @@ class FileSource {
 			$this->source[$name] = new FileElement($element);
 	}
 
+	/**
+	 * @param $name
+	 * @return FileElement|bool
+	 */
 	public function __get($name) {
 		if (!isset($this->source[$name]))
 			return false;
