@@ -23,7 +23,7 @@ class SubmitType extends Type {
 			'required' => false,
 			'attr' => [
 				'type'  => 'submit',
-				'value' => $this->options['label']
+				'value' => &$this->options['label']
 			]
 		]);
 	}

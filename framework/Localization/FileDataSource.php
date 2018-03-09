@@ -16,6 +16,7 @@ namespace SmoothPHP\Framework\Localization;
 use SmoothPHP\Framework\Cache\Builder\RuntimeCacheProvider;
 
 class FileDataSource implements DataSource {
+	/* @var RuntimeCacheProvider */
 	private static $cache;
 	private $folder;
 

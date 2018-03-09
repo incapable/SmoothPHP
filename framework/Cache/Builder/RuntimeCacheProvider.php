@@ -17,6 +17,9 @@ abstract class RuntimeCacheProvider extends CacheProvider {
 	private static $useAPC;
 	protected $cacheBuilder;
 
+	/**
+	 * @return RuntimeCacheProvider
+	 */
 	public static function create(callable $cacheBuilder) {
 		if (!isset(self::$useAPC)) {
 			if (__ENV__ != 'dev')

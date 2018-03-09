@@ -50,6 +50,9 @@ class Install extends Command {
 	}
 
 	private function import(MySQL $mysql, $file, $debug) {
+		if (!strpos($file, '.sql'))
+			return; // Skip non-sql file
+
 		if (!$debug && strpos($file, '.debug.sql')) {
 			printf('Skipping %s...' . PHP_EOL, $file);
 			return;

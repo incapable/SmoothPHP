@@ -17,8 +17,8 @@ use SmoothPHP\Framework\Database\Mapper\MappedMySQLObject;
 
 class User extends MappedMySQLObject implements AbstractUser {
 
-	protected $email;
-	protected $password;
+	public $email;
+	public $password;
 
 	public function getTableName() {
 		return 'users';
@@ -26,10 +26,6 @@ class User extends MappedMySQLObject implements AbstractUser {
 
 	public function isLoggedIn() {
 		return true;
-	}
-
-	public function __get($name) {
-		return $this->{$name};
 	}
 
 	public function setPassword($input) {

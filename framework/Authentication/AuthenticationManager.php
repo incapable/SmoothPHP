@@ -62,21 +62,27 @@ class AuthenticationManager {
 		$this->sessionLastActiveQuery = $mysql->prepare('UPDATE `sessions` SET `lastActive` = NOW() WHERE `id` = %d', false);
 
 		$formBuilder = new FormBuilder();
+		$language = $kernel->getLanguageRepository();
 
 		$formBuilder->add('_logintoken', Types\HiddenType::class);
-		$formBuilder->add('email', Types\EmailType::class);
+		$formBuilder->add('email', Types\EmailType::class, [
+			'label' => $language->smooth_form_email_label
+		]);
 		$formBuilder->add('password', Types\PasswordType::class, [
+			'label'       => $language->smooth_form_password,
 			'constraints' => [
 				new MaximumLengthConstraint(72) // For hashing we use BCRYPT, which is limited to 72 characters
 			]
 		]);
 		if ($kernel->getConfig()->authentication_rememberme) {
 			$formBuilder->add('rememberme', Types\CheckboxType::class, [
-				'label'      => 'Remember me',
+				'label'      => $language->smooth_form_rememberme,
 				'mergelabel' => false
 			]);
 		}
-		$formBuilder->add('submit', Types\SubmitType::class);
+		$formBuilder->add('submit', Types\SubmitType::class, [
+			'label' => $language->smooth_form_submit
+		]);
 
 		$this->defaultForm = $formBuilder->getForm();
 
