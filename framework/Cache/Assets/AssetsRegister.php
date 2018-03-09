@@ -1,14 +1,13 @@
 <?php
 
-/* !
+/**
  * SmoothPHP
  * This file is part of the SmoothPHP project.
- * * * *
- * Copyright (C) 2017 Rens Rikkerink
+ * **********
+ * Copyright © 2015-2018
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
- * * * *
+ * **********
  * AssetsRegister.php
- * Register for all assets, used to add more assets to the template without direct access to said template.
  */
 
 namespace SmoothPHP\Framework\Cache\Assets;

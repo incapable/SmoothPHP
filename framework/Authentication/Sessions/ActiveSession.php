@@ -1,14 +1,13 @@
 <?php
 
-/* !
+/**
  * SmoothPHP
  * This file is part of the SmoothPHP project.
- * * * *
- * Copyright (C) 2017 Rens Rikkerink
+ * **********
+ * Copyright © 2015-2018
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
- * * * *
+ * **********
  * ActiveSession.php
- * An active session (post-login) which keeps track of an user that is logged in.
  */
 
 namespace SmoothPHP\Framework\Authentication\Sessions;

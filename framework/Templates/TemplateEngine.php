@@ -1,14 +1,13 @@
 <?php
 
-/*!
+/**
  * SmoothPHP
  * This file is part of the SmoothPHP project.
- * * * *
- * Copyright (C) 2017 Rens Rikkerink
+ * **********
+ * Copyright © 2015-2018
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
- * * * *
+ * **********
  * TemplateEngine.php
- * Template engine, responsible for invoking the compiler, caching and returning the output page
  */
 
 namespace SmoothPHP\Framework\Templates;

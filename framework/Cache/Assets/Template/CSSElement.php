@@ -1,14 +1,13 @@
 <?php
 
-/* !
+/**
  * SmoothPHP
  * This file is part of the SmoothPHP project.
- * * * *
- * Copyright (C) 2017 Rens Rikkerink
+ * **********
+ * Copyright © 2015-2018
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
- * * * *
+ * **********
  * CSSElement.php
- * A template block that is later replaced by all used CSS files.
  */
 
 namespace SmoothPHP\Framework\Cache\Assets\Template;

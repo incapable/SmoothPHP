@@ -1,14 +1,13 @@
 <?php
 
-/* !
+/**
  * SmoothPHP
  * This file is part of the SmoothPHP project.
- * * * *
- * Copyright (C) 2017 Rens Rikkerink
+ * **********
+ * Copyright © 2015-2018
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
- * * * *
+ * **********
  * TemplateLexer.php
- * Lexer class that is capable of iterating through the provided source and lookaheads.
  */
 
 namespace SmoothPHP\Framework\Templates\Compiler;

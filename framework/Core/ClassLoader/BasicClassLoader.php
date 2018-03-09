@@ -1,14 +1,13 @@
 <?php
 
-/*!
+/**
  * SmoothPHP
  * This file is part of the SmoothPHP project.
- * * * *
- * Copyright (C) 2017 Rens Rikkerink
+ * **********
+ * Copyright © 2015-2018
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
- * * * *
+ * **********
  * BasicClassLoader.php
- * "Basic" class loader relying on PHP's require_once to load PHP classes without any special features.
  */
 
 namespace SmoothPHP\Framework\Core\ClassLoader;

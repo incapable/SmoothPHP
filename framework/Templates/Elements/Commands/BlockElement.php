@@ -1,14 +1,13 @@
 <?php
 
-/* !
+/**
  * SmoothPHP
  * This file is part of the SmoothPHP project.
- * * * *
- * Copyright (C) 2017 Rens Rikkerink
+ * **********
+ * Copyright © 2015-2018
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
- * * * *
+ * **********
  * BlockElement.php
- * Template block, which can be replaced, prepended and appended on later moments in the code without losing its position.
  */
 
 namespace SmoothPHP\Framework\Templates\Elements\Commands;

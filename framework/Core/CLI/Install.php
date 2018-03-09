@@ -1,14 +1,13 @@
 <?php
 
-/*!
+/**
  * SmoothPHP
  * This file is part of the SmoothPHP project.
- * * * *
- * Copyright (C) 2017 Rens Rikkerink
+ * **********
+ * Copyright © 2015-2018
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
- * * * *
+ * **********
  * Install.php
- * Inserts all SQL files into the database. Not for use during production.
  */
 
 namespace SmoothPHP\Framework\Core\CLI;

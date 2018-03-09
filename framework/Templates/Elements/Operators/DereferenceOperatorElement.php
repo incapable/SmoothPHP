@@ -1,14 +1,13 @@
 <?php
 
-/* !
+/**
  * SmoothPHP
  * This file is part of the SmoothPHP project.
- * * * *
- * Copyright (C) 2017 Rens Rikkerink
+ * **********
+ * Copyright © 2015-2018
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
- * * * *
+ * **********
  * DereferenceOperatorElement.php
- * '->' operator, used to get objects out of a class or invoking functions on it.
  */
 
 namespace SmoothPHP\Framework\Templates\Elements\Operators;

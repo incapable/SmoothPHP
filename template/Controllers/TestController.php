@@ -1,9 +1,17 @@
 <?php
+/**
+ * SmoothPHP
+ * This file is part of the SmoothPHP project.
+ * **********
+ * Copyright © 2015-2018
+ * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
+ * **********
+ * TestController.php
+ */
 
 namespace Test\Controllers;
 
 use SmoothPHP\Framework\Authentication\AuthenticationManager;
-use SmoothPHP\Framework\Authentication\UserTypes\User;
 use SmoothPHP\Framework\Cache\Assets\AssetsRegister;
 use SmoothPHP\Framework\Core\Abstracts\Controller;
 use SmoothPHP\Framework\Core\Kernel;

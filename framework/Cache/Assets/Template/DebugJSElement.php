@@ -1,14 +1,13 @@
 <?php
 
-/* !
+/**
  * SmoothPHP
  * This file is part of the SmoothPHP project.
- * * * *
- * Copyright (C) 2017 Rens Rikkerink
+ * **********
+ * Copyright © 2015-2018
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
- * * * *
+ * **********
  * DebugJSElement.php
- * Similar to JSElement, except that this doesn't optimize nor merge JS files
  */
 
 namespace SmoothPHP\Framework\Cache\Assets\Template;
