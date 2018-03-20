@@ -17,10 +17,9 @@ use SmoothPHP\Framework\Templates\Compiler\TemplateCompileException;
 use SmoothPHP\Framework\Templates\Compiler\TemplateLexer;
 use SmoothPHP\Framework\Templates\Elements\Chain;
 use SmoothPHP\Framework\Templates\Elements\Commands\BlockElement;
-use SmoothPHP\Framework\Templates\Elements\Element;
 use SmoothPHP\Framework\Templates\Elements\Operators\ArithmeticOperatorElement;
-use SmoothPHP\Framework\Templates\Elements\Operators\BinaryAndOperatorElement;
 use SmoothPHP\Framework\Templates\Elements\Operators\DereferenceOperatorElement;
+use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
 
 class TemplateCompiler {
 	const DELIMITER_START = '{';
@@ -122,6 +121,10 @@ class TemplateCompiler {
 
 		if ($stackEnd != null && $command->peek($stackEnd)) {
 			return true;
+		} else if ($command->peek('*')) {
+			$comment = trim($command->readRaw('*'));
+			if (__ENV__ == 'dev')
+				$chain->addElement(new PrimitiveElement(sprintf('<!-- %s -->', $comment)));
 		} else if ($command->peek('(')) {
 			$elements = new Chain();
 			$this->handleCommand($command, $lexer, $elements, ')');
