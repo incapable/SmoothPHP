@@ -92,6 +92,15 @@ class TemplateCompiler {
 					continue;
 				}
 
+				$finishString();
+
+				if ($lexer->peek('*')) {
+					$comment = $lexer->readRaw('*' . self::DELIMITER_END);
+					if (__ENV__ == 'dev')
+						$chain->addElement(new PrimitiveElement(sprintf('<!-- %s -->', trim($comment))));
+					continue;
+				}
+
 				$command = '';
 				while (!$lexer->peek(self::DELIMITER_END)) {
 					$char = $lexer->next();
@@ -121,10 +130,6 @@ class TemplateCompiler {
 
 		if ($stackEnd != null && $command->peek($stackEnd)) {
 			return true;
-		} else if ($command->peek('*')) {
-			$comment = trim($command->readRaw('*'));
-			if (__ENV__ == 'dev')
-				$chain->addElement(new PrimitiveElement(sprintf('<!-- %s -->', $comment)));
 		} else if ($command->peek('(')) {
 			$elements = new Chain();
 			$this->handleCommand($command, $lexer, $elements, ')');
