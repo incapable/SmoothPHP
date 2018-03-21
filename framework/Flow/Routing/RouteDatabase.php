@@ -173,6 +173,7 @@ class RouteDatabase {
 	public function buildPath() {
 		list($route, $args) = $this->validateRoute(func_get_args());
 
+		/* @var $request Request */
 		global $request;
 		switch ($route['https']) {
 			case HTTPS::ENFORCE_ACTIVE:
@@ -195,7 +196,7 @@ class RouteDatabase {
 	}
 
 	private function validateRoute(array $args) {
-		if (count($args) < 0)
+		if (count($args) < 1)
 			throw new \Exception('RouteDatabase#buildPath(...) called with no arguments, requires at least 1.');
 
 		$route = $this->getRoute($args[0]);
@@ -230,6 +231,7 @@ class RouteDatabase {
 	private function assembleFullPath(array $route, array $args) {
 		$path = $this->assemblePath($route, $args);
 
+		/* @var $request Request */
 		global $request;
 		switch ($route['https']) {
 			case HTTPS::ENFORCE_ACTIVE:
