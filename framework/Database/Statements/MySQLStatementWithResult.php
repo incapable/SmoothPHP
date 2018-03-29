@@ -12,7 +12,7 @@
 
 namespace SmoothPHP\Framework\Database\Statements;
 
-use SmoothPHP\Framework\Database\MySQLException;
+use SmoothPHP\Framework\Database\MySQL;
 use SmoothPHP\Framework\Database\MySQLResult;
 
 class MySQLStatementWithResult extends MySQLStatement {
@@ -22,8 +22,7 @@ class MySQLStatementWithResult extends MySQLStatement {
 		$stmt = $this->getMySQLi_stmt();
 
 		$result = $stmt->get_result();
-		if ($stmt->errno)
-			throw new MySQLException($stmt->error);
+		MySQL::checkError($result);
 
 		if ($result->num_rows > 0)
 			while ($data = $result->fetch_assoc())
