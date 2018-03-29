@@ -41,7 +41,7 @@ class SelectType extends Type {
 	public function checkConstraint(Request $request, $name, $label, $value, Form $form) {
 		parent::checkConstraint($request, $name, $label, $value, $form);
 
-		if ($this->options['strict']) {
+		if (last($this->options['strict'])) {
 			$mode = last($this->options['options_mode']);
 			$method = (((($mode >> 4) & self::KEY_SELECTOR) == self::KEY_SELECTOR) ? 'array_keys' : 'array_values');
 			$options = call_user_func($method, $this->options['options']);
