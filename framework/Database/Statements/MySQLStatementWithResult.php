@@ -22,7 +22,7 @@ class MySQLStatementWithResult extends MySQLStatement {
 		$stmt = $this->getMySQLi_stmt();
 
 		$result = $stmt->get_result();
-		MySQL::checkError($result);
+		MySQL::checkError($stmt);
 
 		if ($result->num_rows > 0)
 			while ($data = $result->fetch_assoc())
