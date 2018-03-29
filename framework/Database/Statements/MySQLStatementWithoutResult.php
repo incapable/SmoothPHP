@@ -12,10 +12,15 @@
 
 namespace SmoothPHP\Framework\Database\Statements;
 
+use SmoothPHP\Framework\Database\MySQLException;
+
 class MySQLStatementWithoutResult extends MySQLStatement {
 
 	public function createResult() {
 		$stmt = $this->getMySQLi_stmt();
+
+		if ($stmt->errno)
+			throw new MySQLException($stmt->error);
 
 		$stmt->store_result();
 
