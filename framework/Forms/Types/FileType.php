@@ -30,7 +30,7 @@ class FileType extends Type {
 	}
 
 	public function initialize(array $options) {
-		$this->required = last($options['required']);
+		$this->required = isset($options['required']) ? last($this->options['required']) : last($options['required']);
 		$options['required'] = false;
 		parent::initialize($options);
 	}
