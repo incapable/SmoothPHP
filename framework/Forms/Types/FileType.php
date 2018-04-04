@@ -24,7 +24,7 @@ class FileType extends Type {
 			'attr'     => [
 				'type' => 'file'
 			],
-			'required' => false
+			'required' => true
 		]);
 	}
 
