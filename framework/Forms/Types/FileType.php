@@ -17,6 +17,7 @@ use SmoothPHP\Framework\Forms\Containers\Type;
 use SmoothPHP\Framework\Forms\Form;
 
 class FileType extends Type {
+	private $required;
 
 	public function __construct($field) {
 		parent::__construct($field);
@@ -28,14 +29,19 @@ class FileType extends Type {
 		]);
 	}
 
+	public function initialize(array $options) {
+		$this->required = last($options['required']);
+		$options['required'] = false;
+		parent::initialize($options);
+	}
+
 	public function checkConstraint(Request $request, $name, $label, $value, Form $form) {
 		global $kernel;
 		$language = $kernel->getLanguageRepository();
 
-		if (!$request->files->{$name} || !$request->files->{$name}->isUploaded()) {
-			if (last($this->options['required'])) {
+		if ($request->files->{$name} === false || !$request->files->{$name}->isUploaded()) {
+			if ($this->required)
 				$form->addErrorMessage(sprintf($kernel->getLanguageRepository()->getEntry('smooth_form_file_required'), $label));
-			}
 
 			return;
 		}
