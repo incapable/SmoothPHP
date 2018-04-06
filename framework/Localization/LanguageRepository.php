@@ -52,7 +52,7 @@ class LanguageRepository {
 				return $entry;
 		}
 
-		return '#!lang:' . $key;
+		return '#!lang-' . $language . ':' . $key;
 	}
 
 	public function __get($name) {
