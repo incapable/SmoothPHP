@@ -43,7 +43,7 @@ class SelectType extends Type {
 
 		if (last($this->options['strict'])) {
 			$mode = last($this->options['options_mode']);
-			$method = (((($mode >> 4) & self::KEY_SELECTOR) == self::KEY_SELECTOR) ? 'array_keys' : 'array_values');
+			$method = ((($mode >> 4) & self::KEY_SELECTOR) == self::KEY_SELECTOR) ? 'array_keys' : 'array_values';
 			$options = call_user_func($method, $this->options['options']);
 
 			if (!in_array($value, $options)) {
