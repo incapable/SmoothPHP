@@ -114,8 +114,8 @@ class AssetsController extends Controller {
 		]);
 	}
 
-	public function favicon(Kernel $kernel, Request $request, LanguageRepository $language) {
-		return $this->getImage($kernel, $request, $language, ['favicon.ico']);
+	public function favicon(Kernel $kernel, LanguageRepository $language) {
+		return $this->getImage($kernel, $language, ['favicon.ico']);
 	}
 
 	private function checkGZip(Request $request, &$file) {
