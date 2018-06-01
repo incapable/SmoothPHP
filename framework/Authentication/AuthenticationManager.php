@@ -262,7 +262,7 @@ class AuthenticationManager {
 			} // Permissions
 			else {
 				$required = (array)$routeOpts['authentication'];
-				$missing = array_diff($required, $this->permissions[$user->getId()]);
+				$missing = array_diff($required, $user->isLoggedIn() ? $this->permissions[$user->getId()] : []);
 				if (count($missing) > 0)
 					return $request ? $this->determineNoAccessAction($request, $user->isLoggedIn()) : false;
 			}
