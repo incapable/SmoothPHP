@@ -218,7 +218,7 @@ class RouteDatabase {
 					$path = preg_replace('/' . preg_quote(self::VARARGS_INPUT, '/') . '/', $varArgs, $path);
 					break;
 				} else
-					throw new \Exception(sprintf('Not enough arguments given, route \'%s\' requested argument %d, %d given.', func_get_arg(0), $i, count($args)));
+					throw new \Exception(sprintf('Not enough arguments given, route \'%s\' requested argument %d, %d given.', $route['name'], $i, count($args)));
 			}
 		}
 

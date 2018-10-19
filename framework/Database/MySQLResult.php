@@ -54,4 +54,8 @@ class MySQLResult {
 		else
 			return false;
 	}
+
+	public function __iterate() {
+		return $this->results;
+	}
 }

@@ -38,6 +38,13 @@ class SelectType extends Type {
 		]);
 	}
 
+	public function setAttribute($key, $value) {
+		if ($key == 'value')
+			$this->options['selected'] = $value;
+		else
+			parent::setAttribute($key, $value);
+	}
+
 	public function checkConstraint(Request $request, $name, $label, $value, Form $form) {
 		parent::checkConstraint($request, $name, $label, $value, $form);
 

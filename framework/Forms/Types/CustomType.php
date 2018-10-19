@@ -26,6 +26,10 @@ class CustomType extends Type {
 		]);
 	}
 
+	public function setAttribute($key, $value) {
+		$this->options[$key] = $value;
+	}
+
 	public function checkConstraint(Request $request, $name, $label, $value, Form $form) {
 	}
 
