@@ -58,14 +58,17 @@ class MySQL {
 
 	public function start() {
 		$this->connection->begin_transaction();
+		self::checkError($this->connection);
 	}
 
 	public function commit() {
 		$this->connection->commit();
+		self::checkError($this->connection);
 	}
 
 	public function rollback() {
 		$this->connection->rollback();
+		self::checkError($this->connection);
 	}
 
 	/**
