@@ -40,12 +40,16 @@ class FieldGroup extends Type {
 			/* @var $element Type */
 			$element = new $value['type']($value['field']);
 			$element->initialize(array_merge_recursive($childOptions, $value));
-			$this->children[] = new FormContainer([
+			$this->children[$value['field']] = new FormContainer([
 				'groupseparator' => $first ? '' : sprintf('</td></tr><tr class="fieldgroup_%s"><td></td><td>', $this->field),
 				'input'          => $element
 			]);
 			$first = false;
 		}
+	}
+
+	public function &getChild($key) {
+		return $this->children[$key];
 	}
 
 	public function getContainer() {

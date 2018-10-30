@@ -44,12 +44,18 @@ class Form extends FormContainer {
 		return isset($this->inputs->{$key});
 	}
 
-	public function setValue($key, $value) {
-		$this->setAttribute($key, 'value', $value);
+	public function setValue($key, $value, $group = null) {
+		$this->setAttribute($key, 'value', $value, $group);
 	}
 
-	public function setAttribute($key, $attribute, $value) {
-		$this->inputs->{$key}->input->setAttribute($attribute, $value);
+	public function setAttribute($key, $attribute, $value, $group = null) {
+		/* @var $input \SmoothPHP\Framework\Forms\Containers\Type */
+		if ($group == null)
+			$input = $this->inputs->{$key}->input;
+		else
+			$input = $this->inputs->{$group}->children->{$key};
+
+		$input->setAttribute($attribute, $value);
 	}
 
 	public function setAction() {
