@@ -1,11 +1,18 @@
 {
-    "config": {
-        "vendor-dir": "framework/meta/vendor"
-    },
-    "require": {
-        "tubalmartin/cssmin": "^4.1",
-        "tedivm/jshrink": "^1.2",
-        "ext-mysqli": "*",
-        "ext-json": "*"
-    }
+  "config": {
+    "vendor-dir": "framework/meta/vendor"
+  },
+  "require": {
+    "tubalmartin/cssmin": "^4.1",
+    "tedivm/jshrink": "^1.2",
+    "ext-mysqli": "*",
+    "ext-json": "*",
+    "ext-gd": "*",
+    "ext-exif": "*",
+    "ext-zlib": "*",
+    "ext-openssl": "*",
+    "ext-ctype": "*",
+    "ext-dom": "*",
+    "ext-intl": "*"
+  }
 }
