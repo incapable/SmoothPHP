@@ -69,7 +69,7 @@ abstract class Type extends Constraint {
 		foreach ($this->constraints as $constraint)
 			/* @var $constraint Constraint */
 			$constraint->checkConstraint($request, $name, last($this->options['label']), $value, $form);
-		$this->options['attr']['value'] = $value;
+		$this->setAttribute('value', $value);
 	}
 
 	public function getFieldName() {
