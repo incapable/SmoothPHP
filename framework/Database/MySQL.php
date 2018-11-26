@@ -36,6 +36,8 @@ class MySQL {
 		if (!isset($this->connection)) {
 			$prefix = ini_get('mysqli.allow_persistent') ? 'p:' : '';
 			$this->connection = new \mysqli($prefix . $this->config->mysql_host, $this->config->mysql_user, $this->config->mysql_password, $this->config->mysql_database);
+			if (!$this->connection->ping())
+				throw new MySQLException('Could not ping nor reconnect MySQL server.');
 			if (!$this->connection->real_query('SET SESSION sql_mode = \'\';'))
 				throw new MySQLException('Could not reset sql_mode for session: ' . $this->connection->error);
 			if (!$this->connection->set_charset('utf8'))
