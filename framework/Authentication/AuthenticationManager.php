@@ -47,6 +47,9 @@ class AuthenticationManager {
 	/* @var $user User|AbstractUser */
 	private $user, $session, $permissions;
 
+	// Customisation
+	private $authSchemes = [];
+
 	public function initialize(Kernel $kernel) {
 		$mysql = $kernel->getMySQL();
 		$this->loginSessionMap = $mysql->map(LoginSession::class);
@@ -86,6 +89,12 @@ class AuthenticationManager {
 		$this->defaultForm = $formBuilder->getForm();
 
 		$this->permissions = [];
+	}
+
+	public function addAuthenticationScheme($scheme, $callable) {
+		if (!is_callable($callable))
+			throw new \RuntimeException('Passed $callable is not callable');
+		$this->authSchemes[$scheme] = $callable;
 	}
 
 	public function setUserClass($clazz) {
@@ -147,16 +156,34 @@ class AuthenticationManager {
 				'email' => $request->post->get('email')
 			]);
 
-			if (!$user || !password_verify($request->post->password, $user->password)) {
+			if (!$user) {
 				$form->addErrorMessage('Email and/or password are incorrect.');
 				$session->increaseFailure();
 				$this->loginSessionMap->insert($session);
 				return false;
 			}
 
-			if (password_needs_rehash($user->password, PASSWORD_DEFAULT)) {
-				$user->setPassword($request->post->password);
-				$this->userMap->insert($user);
+			$authenticated = false;
+			foreach ($this->authSchemes as $scheme => $callable) {
+				if (strpos($user->password, $scheme . '://') === 0) {
+					$result = $callable($request, $user, substr($user->password, strlen($scheme) + 3));
+					if ($result)
+						$authenticated = true;
+				}
+			}
+
+			if (!$authenticated) {
+				if (!password_verify($request->post->password, $user->password)) {
+					$form->addErrorMessage('Email and/or password are incorrect.');
+					$session->increaseFailure();
+					$this->loginSessionMap->insert($session);
+					return false;
+				}
+
+				if (password_needs_rehash($user->password, PASSWORD_DEFAULT)) {
+					$user->setPassword($request->post->password);
+					$this->userMap->insert($user);
+				}
 			}
 
 			$this->loginSessionMap->delete($session);
