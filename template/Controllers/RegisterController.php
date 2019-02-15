@@ -31,7 +31,7 @@ use Test\Model\TestUser;
 class RegisterController extends Controller {
 	/* @var Form */
 	private $registerForm;
-	/* @var \SmoothPHP\Framework\Database\Mapper\MySQLObjectMapper */
+	/* @var \SmoothPHP\Framework\Database\Mapper\DBObjectMapper */
 	private $userMap;
 
 	public function onInitialize(Kernel $kernel) {

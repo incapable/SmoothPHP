@@ -7,12 +7,12 @@
  * Copyright © 2015-2018
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * **********
- * MappedMySQLObject.php
+ * MappedDBObjectp
  */
 
 namespace SmoothPHP\Framework\Database\Mapper;
 
-class MappedMySQLObject {
+class MappedDBObject {
 	public $id = 0;
 
 	public function getTableName() {

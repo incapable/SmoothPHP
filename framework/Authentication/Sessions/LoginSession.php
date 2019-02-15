@@ -12,10 +12,10 @@
 
 namespace SmoothPHP\Framework\Authentication\Sessions;
 
-use SmoothPHP\Framework\Database\Mapper\MappedMySQLObject;
+use SmoothPHP\Framework\Database\Mapper\MappedDBObject;
 use SmoothPHP\Framework\Flow\Requests\Request;
 
-class LoginSession extends MappedMySQLObject {
+class LoginSession extends MappedDBObject {
 
 	private $ip;
 	private $token;

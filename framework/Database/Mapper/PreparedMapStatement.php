@@ -14,7 +14,7 @@ namespace SmoothPHP\Framework\Database\Mapper;
 
 class PreparedMapStatement {
 	public $params, $references;
-	/* @var $statement \SmoothPHP\Framework\Database\Statements\MySQLStatement */
+	/* @var $statement \SmoothPHP\Framework\Database\Statements\SQLStatement */
 	public $statement;
 
 	public function __construct() {

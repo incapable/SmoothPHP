@@ -12,9 +12,9 @@
 
 namespace SmoothPHP\Framework\Authentication\UserTypes;
 
-use SmoothPHP\Framework\Database\Mapper\MappedMySQLObject;
+use SmoothPHP\Framework\Database\Mapper\MappedDBObject;
 
-class User extends MappedMySQLObject implements AbstractUser {
+class User extends MappedDBObject implements AbstractUser {
 
 	public $email;
 	public $password;

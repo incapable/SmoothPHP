@@ -7,17 +7,17 @@
  * Copyright © 2015-2018
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * **********
- * MySQLObjectMapper.php
+ * DBObjectMapperp
  */
 
 namespace SmoothPHP\Framework\Database\Mapper;
 
-use SmoothPHP\Framework\Database\MySQL;
-use SmoothPHP\Framework\Database\MySQLException;
+use SmoothPHP\Framework\Database\Database;
+use SmoothPHP\Framework\Database\DatabaseException;
 
 define('MYSQL_NO_LIMIT', -1);
 
-class MySQLObjectMapper {
+class DBObjectMapper {
 	private $mysql;
 
 	private $className, $classDef;
@@ -25,14 +25,14 @@ class MySQLObjectMapper {
 
 	private $fetch, $insert, $delete;
 
-	public function __construct(MySQL $mysql, $clazz) {
+	public function __construct(Database $mysql, $clazz) {
 		$this->mysql = $mysql;
 
 		$this->className = $clazz;
 		$this->classDef = new \ReflectionClass($clazz);
 
-		if (!$this->classDef->isSubclassOf(MappedMySQLObject::class))
-			throw new MySQLException("Attempting to map an object that is not a subclass of MappedMySQLObject");
+		if (!$this->classDef->isSubclassOf(MappedDBObject::class))
+			throw new DatabaseException("Attempting to map an object that is not a subclass of MappedDBObject");
 
 		$this->fields = array_filter(array_map(function (\ReflectionProperty $field) {
 			if ($field->isStatic())
@@ -119,7 +119,7 @@ class MySQLObjectMapper {
 	/**
 	 * @param int|array|string $where Either an object ID, or an array of properties, or a string
 	 * @param int $limit
-	 * @return array|MappedMySQLObject
+	 * @return array|MappedDBObject
 	 */
 	public function fetch($where, $limit = 1) {
 		$prepared = null;
@@ -179,7 +179,7 @@ class MySQLObjectMapper {
 				$prepared->statement->execute();
 
 			call_user_func_array([$prepared->statement->getMySQLi_stmt(), 'bind_result'], $prepared->references);
-			MySQL::checkError($prepared->statement->getMySQLi_stmt());
+			Database::checkError($prepared->statement->getMySQLi_stmt());
 		}
 
 		$stmt = $prepared->statement->getMySQLi_stmt();
@@ -197,7 +197,7 @@ class MySQLObjectMapper {
 
 		$stmt->free_result();
 		$stmt->reset();
-		MySQL::checkError($stmt);
+		Database::checkError($stmt);
 
 		if ($limit == 1) {
 			if (count($results) == 0)
@@ -209,7 +209,7 @@ class MySQLObjectMapper {
 		return $results;
 	}
 
-	public function insert(MappedMySQLObject $object) {
+	public function insert(MappedDBObject $object) {
 		$params = [];
 		/* @var $field \ReflectionProperty */
 		$idField = null;
@@ -220,17 +220,17 @@ class MySQLObjectMapper {
 		}
 
 		call_user_func_array([$this->insert->statement, 'execute'], $params);
-		MySQL::checkError($this->insert->statement->getMySQLi_stmt());
+		Database::checkError($this->insert->statement->getMySQLi_stmt());
 		$id = $this->insert->statement->getMySQLi_stmt()->insert_id;
 		if ($id != 0)
 			$idField->setValue($object, $id);
 	}
 
 	/**
-	 * @param MappedMySQLObject|int $object
+	 * @param MappedDBObject|int $object
 	 */
 	public function delete($object) {
-		if ($object instanceof MappedMySQLObject)
+		if ($object instanceof MappedDBObject)
 			$id = $object->getId();
 		else
 			$id = $object;

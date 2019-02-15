@@ -19,8 +19,8 @@ use SmoothPHP\Framework\Authentication\UserTypes\AbstractUser;
 use SmoothPHP\Framework\Authentication\UserTypes\AnonymousUser;
 use SmoothPHP\Framework\Authentication\UserTypes\User;
 use SmoothPHP\Framework\Core\Kernel;
-use SmoothPHP\Framework\Database\Mapper\MySQLObjectMapper;
-use SmoothPHP\Framework\Database\Statements\MySQLStatement;
+use SmoothPHP\Framework\Database\Mapper\DBObjectMapper;
+use SmoothPHP\Framework\Database\Statements\SQLStatement;
 use SmoothPHP\Framework\Flow\Requests\Request;
 use SmoothPHP\Framework\Flow\Responses\RedirectResponse;
 use SmoothPHP\Framework\Flow\Responses\Response;
@@ -36,9 +36,9 @@ class AuthenticationManager {
 	const SESSION_KEY_LOGINTOKEN = 'sm_logintoken';
 
 	// Login flow
-	/* @var MySQLObjectMapper */
+	/* @var DBObjectMapper */
 	private $loginSessionMap, $activeSessionMap, $longLivedMap, $userMap;
-	/* @var MySQLStatement */
+	/* @var SQLStatement */
 	private $permissionsQuery, $sessionLastActiveQuery;
 	/* @var Form */
 	private $defaultForm;

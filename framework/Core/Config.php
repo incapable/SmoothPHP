@@ -13,6 +13,7 @@
 namespace SmoothPHP\Framework\Core;
 
 use SmoothPHP\Framework\Core\Cron\Handlers\CronTab;
+use SmoothPHP\Framework\Database\Engines\MySQL;
 
 class Config {
 	public $default_language = 'en_us';
@@ -21,12 +22,13 @@ class Config {
 	public $date_format = 'l, d-M-Y H:i:s';
 	public $image_inline_threshold = 10000;
 
-	public $mysql_enabled = false;
-	public $mysql_host = 'localhost';
-	public $mysql_database = 'smoothphp';
-	public $mysql_port = 3306;
-	public $mysql_user = 'root';
-	public $mysql_password = '';
+	public $db_enabled = false;
+	public $db_engine = MySQL::class;
+	public $db_host = 'localhost';
+	public $db_database = 'smoothphp';
+	public $db_port = 3306;
+	public $db_user = 'root';
+	public $db_password = '';
 
 	public $authentication_enabled = false;
 	public $authentication_loginroute = null;

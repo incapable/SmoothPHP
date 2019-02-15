@@ -12,7 +12,7 @@
 
 namespace SmoothPHP\Framework\Database\Statements;
 
-class MySQLStatementWithoutResult extends MySQLStatement {
+class SQLStatementWithoutResult extends SQLStatement {
 
 	public function createResult() {
 		$stmt = $this->getMySQLi_stmt();

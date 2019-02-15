@@ -26,7 +26,7 @@ class Uninstall extends Command {
 			return;
 		}
 
-		printf('THIS METHOD WILL EMPTY DATABASE \'%s\', ARE YOU ABSOLUTELY SURE? [y/n]' . PHP_EOL, $kernel->getConfig()->mysql_database);
+		printf('THIS METHOD WILL EMPTY DATABASE \'%s\', ARE YOU ABSOLUTELY SURE? [y/n]' . PHP_EOL, $kernel->getConfig()->db_database);
 		$line = trim(fgets(STDIN));
 
 		if ($line != 'y')
@@ -49,7 +49,7 @@ class Uninstall extends Command {
 			        LEFT JOIN
 			    information_schema.REFERENTIAL_CONSTRAINTS C USING (CONSTRAINT_NAME)
 			WHERE
-			    K.REFERENCED_TABLE_SCHEMA = %s", [$kernel->getConfig()->mysql_database]);
+			    K.REFERENCED_TABLE_SCHEMA = %s", [$kernel->getConfig()->db_database]);
 
 		if ($constraints->hasData()) {
 			do {
@@ -67,7 +67,7 @@ class Uninstall extends Command {
 			FROM
 			    information_schema.tables
 			WHERE
-			    table_schema = %s", [$kernel->getConfig()->mysql_database]);
+			    table_schema = %s", [$kernel->getConfig()->db_database]);
 
 		if ($databases->hasData()) {
 			do {

@@ -7,10 +7,10 @@
  * Copyright © 2015-2018
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * **********
- * MySQLException.php
+ * DatabaseExceptionion.php
  */
 
 namespace SmoothPHP\Framework\Database;
 
-class MySQLException extends \Exception {
+class DatabaseException extends \Exception {
 }

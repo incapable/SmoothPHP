@@ -13,8 +13,8 @@
 namespace SmoothPHP\Framework\Core\CLI;
 
 use SmoothPHP\Framework\Core\Kernel;
-use SmoothPHP\Framework\Database\MySQL;
-use SmoothPHP\Framework\Database\MySQLException;
+use SmoothPHP\Framework\Database\Database;
+use SmoothPHP\Framework\Database\DatabaseException;
 
 class Install extends Command {
 
@@ -48,7 +48,7 @@ class Install extends Command {
 		});
 	}
 
-	private function import(MySQL $mysql, $file, $debug) {
+	private function import(Database $mysql, $file, $debug) {
 		if (!strpos($file, '.sql'))
 			return; // Skip non-sql file
 
@@ -71,10 +71,10 @@ class Install extends Command {
 					continue;
 
 				$query = str_replace('LAST_INSERT_ID()', $insert_id, $query);
-				$mysql->getConnection()->real_query($query);
-				if ($mysql->getConnection()->errno)
-					throw new MySQLException($mysql->getConnection()->error);
-				$insert_id = $mysql->getConnection()->insert_id;
+				$mysql->getEngine()->real_query($query);
+				if ($mysql->getEngine()->errno)
+					throw new DatabaseException($mysql->getEngine()->error);
+				$insert_id = $mysql->getEngine()->insert_id;
 				$count++;
 			}
 

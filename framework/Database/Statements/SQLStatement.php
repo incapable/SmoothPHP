@@ -12,12 +12,12 @@
 
 namespace SmoothPHP\Framework\Database\Statements;
 
-use SmoothPHP\Framework\Database\MySQL;
-use SmoothPHP\Framework\Database\MySQLException;
-use SmoothPHP\Framework\Database\MySQLResult;
+use SmoothPHP\Framework\Database\Database;
+use SmoothPHP\Framework\Database\DatabaseException;
+use SmoothPHP\Framework\Database\DatabaseResult;
 
-abstract class MySQLStatement {
-	protected $mysql;
+abstract class SQLStatement {
+	protected $db;
 
 	protected $query;
 	protected $params;
@@ -27,11 +27,11 @@ abstract class MySQLStatement {
 	private $stmt;
 
 	/**
-	 * @param MySQL $mysql
+	 * @param Database $db
 	 * @param $query
 	 */
-	public function __construct(MySQL $mysql, $query) {
-		$this->mysql = $mysql;
+	public function __construct(Database $db, $query) {
+		$this->db = $db;
 		$this->params = [''];
 		$this->args = [];
 
@@ -43,7 +43,7 @@ abstract class MySQLStatement {
 				$previousMatch = $matches[1];
 			} else {
 				if ($previousMatch == null)
-					throw new MySQLException('Trying to use %r (repeat) in a query with no previous variables.');
+					throw new DatabaseException('Trying to use %r (repeat) in a query with no previous variables.');
 				$this->params[0] .= $previousMatch;
 			}
 			$this->params[] = &$this->args[count($this->args) - 1];
@@ -59,13 +59,11 @@ abstract class MySQLStatement {
 
 	private function verifyStmtAwake() {
 		if (!isset($this->stmt)) {
-			$this->mysql->__wakeup();
-			$this->stmt = $this->mysql->getConnection()->prepare($this->query);
-			MySQL::checkError($this->mysql->getConnection());
+			$this->db->__wakeup();
+			$this->stmt = $this->db->getEngine()->prepare($this->query);
 
 			if (count($this->params) > 1) {
-				call_user_func_array([$this->stmt, 'bind_param'], $this->params);
-				MySQL::checkError($this->stmt);
+				$this->db->getEngine()->bindQueryParams($this->stmt, $this->params);
 			}
 		}
 	}
@@ -76,7 +74,7 @@ abstract class MySQLStatement {
 	}
 
 	/**
-	 * @return MySQLResult|int
+	 * @return DatabaseResult|int
 	 */
 	public function execute() {
 		$this->verifyStmtAwake();
@@ -89,7 +87,7 @@ abstract class MySQLStatement {
 			$this->args[$i] = $args[$i];
 
 		$this->stmt->execute();
-		MySQL::checkError($this->stmt);
+		Database::checkError($this->stmt);
 
 		return $this->createResult();
 	}

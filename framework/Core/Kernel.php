@@ -16,7 +16,7 @@ use SmoothPHP\Framework\Authentication\AuthenticationManager;
 use SmoothPHP\Framework\Cache\Assets\AssetsRegister;
 use SmoothPHP\Framework\Core\Abstracts\WebPrototype;
 use SmoothPHP\Framework\Core\Cron\CronManager;
-use SmoothPHP\Framework\Database\MySQL;
+use SmoothPHP\Framework\Database\Database;
 use SmoothPHP\Framework\Flow\Requests\Request;
 use SmoothPHP\Framework\Flow\Requests\Robots;
 use SmoothPHP\Framework\Flow\Responses\AlternateErrorResponse;
@@ -146,13 +146,13 @@ class Kernel {
 	}
 
 	/**
-	 * @return MySQL
+	 * @return Database
 	 */
 	public function getMySQL() {
-		if (!$this->config->mysql_enabled)
+		if (!$this->config->db_enabled)
 			throw new \RuntimeException("MySQL is not enabled");
 		if (!isset($this->mysql))
-			$this->mysql = new MySQL($this->config);
+			$this->mysql = new Database($this->config);
 		return $this->mysql;
 	}
 

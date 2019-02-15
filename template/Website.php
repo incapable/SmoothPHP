@@ -23,10 +23,10 @@ class Website extends WebPrototype {
 		// getConfig() will return a reference to the used config instance, any changes will be reflected back
 		$config = $kernel->getConfig();
 
-		$config->mysql_enabled = true;
-		$config->mysql_database = 'test';
-		$config->mysql_user = 'root';
-		$config->mysql_password = 'root';
+		$config->db_enabled = true;
+		$config->db_database = 'test';
+		$config->db_user = 'root';
+		$config->db_password = 'root';
 
 		$config->authentication_enabled = true;
 		$config->authentication_loginroute = 'front_login';
