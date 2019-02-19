@@ -20,7 +20,7 @@ class EmailExistsConstraint extends Constraint {
 
 	public function __construct() {
 		global $kernel;
-		$this->checkQuery = $kernel->getMySQL()->prepare('SELECT `id` FROM `users` WHERE `email` = %s');
+		$this->checkQuery = $kernel->getDatabase()->prepare('SELECT `id` FROM `users` WHERE `email` = %s');
 	}
 
 	public function checkConstraint(Request $request, $name, $label, $value, Form $form) {

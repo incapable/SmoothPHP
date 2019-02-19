@@ -35,7 +35,7 @@ class Kernel {
 	private $errorHandler, $ignoreRouteContentType;
 	private $templateEngine;
 	private $assetsRegister;
-	private $mysql;
+	private $database;
 	private $authentication;
 	private $languagerepo;
 
@@ -48,10 +48,10 @@ class Kernel {
 	public function registerCron(CronManager $mgr) {
 		if ($this->config->authentication_enabled) {
 			$mgr->newJob('authentication_clean_loginsessions', '@hourly', function (Kernel $kernel) {
-				$kernel->getMySQL()->execute('DELETE FROM `loginsessions` WHERE `lastUpdate` < UNIX_TIMESTAMP((NOW() - INTERVAL 1 HOUR))');
+				$kernel->getDatabase()->execute('DELETE FROM `loginsessions` WHERE `lastUpdate` < UNIX_TIMESTAMP((NOW() - INTERVAL 1 HOUR))');
 			});
 			$mgr->newJob('authentication_clean_sessions', '@hourly', function (Kernel $kernel) {
-				$kernel->getMySQL()->execute('DELETE FROM `sessions` WHERE `lastActive` < (NOW() - INTERVAL 12 HOUR)');
+				$kernel->getDatabase()->execute('DELETE FROM `sessions` WHERE `lastActive` < (NOW() - INTERVAL 12 HOUR)');
 			});
 		}
 	}
@@ -148,12 +148,12 @@ class Kernel {
 	/**
 	 * @return Database
 	 */
-	public function getMySQL() {
+	public function getDatabase() {
 		if (!$this->config->db_enabled)
-			throw new \RuntimeException("MySQL is not enabled");
-		if (!isset($this->mysql))
-			$this->mysql = new Database($this->config);
-		return $this->mysql;
+			throw new \RuntimeException("Database is not enabled");
+		if (!isset($this->database))
+			$this->database = new Database($this->config);
+		return $this->database;
 	}
 
 	/**

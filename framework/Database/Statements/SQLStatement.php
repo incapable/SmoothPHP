@@ -15,6 +15,7 @@ namespace SmoothPHP\Framework\Database\Statements;
 use SmoothPHP\Framework\Database\Database;
 use SmoothPHP\Framework\Database\DatabaseException;
 use SmoothPHP\Framework\Database\DatabaseResult;
+use SmoothPHP\Framework\Database\Engines\Statement;
 
 abstract class SQLStatement {
 	protected $db;
@@ -23,7 +24,7 @@ abstract class SQLStatement {
 	protected $params;
 	protected $args;
 
-	/* @var \mysqli_stmt */
+	/* @var Statement */
 	private $stmt;
 
 	/**
@@ -54,21 +55,17 @@ abstract class SQLStatement {
 	}
 
 	public function __sleep() {
-		return ['mysql', 'query', 'params', 'args'];
+		return ['db', 'query', 'params', 'args'];
 	}
 
 	private function verifyStmtAwake() {
 		if (!isset($this->stmt)) {
 			$this->db->__wakeup();
-			$this->stmt = $this->db->getEngine()->prepare($this->query);
-
-			if (count($this->params) > 1) {
-				$this->db->getEngine()->bindQueryParams($this->stmt, $this->params);
-			}
+			$this->stmt = $this->db->getEngine()->prepare($this->query, $this->params);
 		}
 	}
 
-	public function getMySQLi_stmt() {
+	public function getStatement() {
 		$this->verifyStmtAwake();
 		return $this->stmt;
 	}
@@ -87,7 +84,6 @@ abstract class SQLStatement {
 			$this->args[$i] = $args[$i];
 
 		$this->stmt->execute();
-		Database::checkError($this->stmt);
 
 		return $this->createResult();
 	}

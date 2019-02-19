@@ -34,10 +34,10 @@ class Uninstall extends Command {
 
 		(new Cache())->handle($kernel, []);
 
-		$mysql = $kernel->getMySQL();
+		$db = $kernel->getDatabase();
 
 		print('Dropping constraints...' . PHP_EOL);
-		$constraints = $mysql->fetch("
+		$constraints = $db->fetch("
 			SELECT DISTINCT
 			    CONCAT('ALTER TABLE `',
 			            K.TABLE_NAME,
@@ -54,14 +54,14 @@ class Uninstall extends Command {
 		if ($constraints->hasData()) {
 			do {
 				printf('Executing: %s' . PHP_EOL, $constraints->query);
-				$mysql->execute($constraints->query);
+				$db->execute($constraints->query);
 			} while ($constraints->next());
 		} else {
 			print('Nothing to do!' . PHP_EOL);
 		}
 
 		print('Dropping tables...' . PHP_EOL);
-		$databases = $mysql->fetch("
+		$databases = $db->fetch("
 			SELECT
 			    concat('DROP TABLE IF EXISTS `', table_name, '`;') AS query
 			FROM
@@ -72,7 +72,7 @@ class Uninstall extends Command {
 		if ($databases->hasData()) {
 			do {
 				printf('Executing: %s' . PHP_EOL, $databases->query);
-				$mysql->execute($databases->query);
+				$db->execute($databases->query);
 			} while ($databases->next());
 		} else {
 			print('Nothing to do!' . PHP_EOL);

@@ -15,12 +15,7 @@ namespace SmoothPHP\Framework\Database\Statements;
 class SQLStatementWithoutResult extends SQLStatement {
 
 	public function createResult() {
-		$stmt = $this->getMySQLi_stmt();
-
-		$id = $stmt->insert_id;
-
-		$stmt->reset();
-		return $id;
+		return $this->getStatement()->getInsertID();
 	}
 
 }

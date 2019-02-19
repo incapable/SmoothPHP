@@ -14,19 +14,20 @@ namespace SmoothPHP\Framework\Database\Mapper;
 
 use SmoothPHP\Framework\Database\Database;
 use SmoothPHP\Framework\Database\DatabaseException;
+use SmoothPHP\Framework\Database\Statements\SQLStatementWithResult;
 
-define('MYSQL_NO_LIMIT', -1);
+define('DB_NO_LIMIT', -1);
 
 class DBObjectMapper {
-	private $mysql;
+	private $db;
 
 	private $className, $classDef;
 	private $fields;
 
 	private $fetch, $insert, $delete;
 
-	public function __construct(Database $mysql, $clazz) {
-		$this->mysql = $mysql;
+	public function __construct(Database $db, $clazz) {
+		$this->db = $db;
 
 		$this->className = $clazz;
 		$this->classDef = new \ReflectionClass($clazz);
@@ -61,7 +62,7 @@ class DBObjectMapper {
 
 				$query .= ' FROM `' . $object->getTableName() . '` WHERE `id` = %d';
 
-				$this->fetch->statement = $this->mysql->prepareCustom($query);
+				$this->fetch->statement = $this->db->prepare($query);
 			}
 
 			// Set up insert/update query
@@ -93,13 +94,13 @@ class DBObjectMapper {
 				}, $this->fields);
 
 				$query .= ') VALUES (' . implode(', ', $insertParams) . ') ON DUPLICATE KEY UPDATE ' . implode(', ', array_values($this->insert->params));
-				$this->insert->statement = $this->mysql->prepare($query, false);
+				$this->insert->statement = $this->db->prepare($query, false);
 			}
 
 			// Set up delete query
 			{
 				$query = 'DELETE FROM `' . $object->getTableName() . '` WHERE `id` = %d';
-				$this->delete = $this->mysql->prepare($query, false);
+				$this->delete = $this->db->prepare($query, false);
 			}
 		}
 	}
@@ -125,8 +126,7 @@ class DBObjectMapper {
 		$prepared = null;
 		if (is_int($where) || ctype_digit($where)) {
 			$prepared = $this->fetch;
-			$prepared->statement->execute((int)$where);
-			call_user_func_array([$prepared->statement->getMySQLi_stmt(), 'bind_result'], $prepared->references);
+			$rawResults = $prepared->statement->execute((int)$where);
 		} else {
 			$query = 'SELECT ';
 
@@ -168,36 +168,26 @@ class DBObjectMapper {
 			} else
 				$query .= $where;
 
-			if ($limit != MYSQL_NO_LIMIT)
+			if ($limit != DB_NO_LIMIT)
 				$query .= ' LIMIT ' . $limit;
 
-			$prepared->statement = $this->mysql->prepareCustom($query);
+			$prepared->statement = new SQLStatementWithResult($this->db, $query);
 
 			if (is_array($where)) {
-				call_user_func_array([$prepared->statement, 'execute'], array_values($where));
+				$rawResults = call_user_func_array([$prepared->statement, 'execute'], array_values($where));
 			} else
-				$prepared->statement->execute();
-
-			call_user_func_array([$prepared->statement->getMySQLi_stmt(), 'bind_result'], $prepared->references);
-			Database::checkError($prepared->statement->getMySQLi_stmt());
+				$rawResults = $prepared->statement->execute();
 		}
 
-		$stmt = $prepared->statement->getMySQLi_stmt();
-		$stmt->store_result();
-
 		$results = [];
-		while ($stmt->fetch()) {
+		foreach ($rawResults->getAsArray(false) as $result) {
 			$target = $this->classDef->newInstanceWithoutConstructor();
 			/* @var $field \ReflectionProperty */
 			foreach ($this->fields as $field) {
-				$field->setValue($target, $prepared->params[$field->getName()]);
+				$field->setValue($target, $result[$field->getName()]);
 			}
 			$results[] = $target;
 		}
-
-		$stmt->free_result();
-		$stmt->reset();
-		Database::checkError($stmt);
 
 		if ($limit == 1) {
 			if (count($results) == 0)
@@ -219,9 +209,7 @@ class DBObjectMapper {
 			$params[] = $field->getValue($object);
 		}
 
-		call_user_func_array([$this->insert->statement, 'execute'], $params);
-		Database::checkError($this->insert->statement->getMySQLi_stmt());
-		$id = $this->insert->statement->getMySQLi_stmt()->insert_id;
+		$id = call_user_func_array([$this->insert->statement, 'execute'], $params);
 		if ($id != 0)
 			$idField->setValue($object, $id);
 	}

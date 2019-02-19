@@ -51,17 +51,17 @@ class AuthenticationManager {
 	private $authSchemes = [];
 
 	public function initialize(Kernel $kernel) {
-		$mysql = $kernel->getMySQL();
-		$this->loginSessionMap = $mysql->map(LoginSession::class);
-		$this->activeSessionMap = $mysql->map(ActiveSession::class);
-		$this->longLivedMap = $mysql->map(LongLivedSession::class);
-		$this->userMap = $this->userMap ?: $mysql->map(User::class);
-		$this->permissionsQuery = $mysql->prepare('
+		$db = $kernel->getDatabase();
+		$this->loginSessionMap = $db->map(LoginSession::class);
+		$this->activeSessionMap = $db->map(ActiveSession::class);
+		$this->longLivedMap = $db->map(LongLivedSession::class);
+		$this->userMap = $this->userMap ?: $db->map(User::class);
+		$this->permissionsQuery = $db->prepare('
             SELECT `permission` FROM `permissions` WHERE `userId` = %d AND NOT ISNULL(`permission`)
             UNION DISTINCT
             SELECT `permission` FROM `permissions` WHERE `group` IN (SELECT `group` FROM `permissions` WHERE `userId` = %d AND NOT ISNULL(`group`)) AND NOT ISNULL(`permission`)
         ', true);
-		$this->sessionLastActiveQuery = $mysql->prepare('UPDATE `sessions` SET `lastActive` = NOW() WHERE `id` = %d', false);
+		$this->sessionLastActiveQuery = $db->prepare('UPDATE `sessions` SET `lastActive` = NOW() WHERE `id` = %d', false);
 
 		$formBuilder = new FormBuilder();
 		$language = $kernel->getLanguageRepository();
@@ -104,7 +104,7 @@ class AuthenticationManager {
 			throw new \RuntimeException('Class ' . $clazz . ' does not derive from ' . User::class);
 
 		global $kernel;
-		$this->userMap = $kernel->getMySQL()->map($clazz);
+		$this->userMap = $kernel->getDatabase()->map($clazz);
 	}
 
 	public function getLoginForm(Request $request) {

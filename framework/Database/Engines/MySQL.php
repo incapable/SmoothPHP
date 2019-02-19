@@ -26,32 +26,66 @@ class MySQL implements Engine {
 
 	public function start() {
 		$this->connection->begin_transaction();
-		self::checkError($this->connection);
+		mySQLCheckError($this->connection);
 	}
 
 	public function commit() {
 		$this->connection->commit();
-		self::checkError($this->connection);
+		mySQLCheckError($this->connection);
 	}
 
 	public function rollback() {
 		$this->connection->rollback();
-		self::checkError($this->connection);
+		mySQLCheckError($this->connection);
 	}
 
-	private static function checkError($source = null) {
-		if ($source->errno)
-			throw new DatabaseException($source->error);
+	public function prepare($query, array &$params = []) {
+		$stmt = $this->connection->prepare($query);
+		mySQLCheckError($this->connection);
+
+		if (count($params) > 1) {
+			call_user_func_array([$stmt, 'bind_param'], $params);
+			mySQLCheckError($stmt);
+		}
+
+		return new MySQLStatement($stmt);
+	}
+}
+
+class MySQLStatement implements Statement {
+	private $stmt;
+
+	public function __construct(\mysqli_stmt $stmt) {
+		$this->stmt = $stmt;
 	}
 
-	public function prepare($query) {
-		$r = $this->connection->prepare($query);
-		self::checkError($this->connection);
-		return $r;
+	public function execute() {
+		$this->stmt->execute();
 	}
 
-	public function bindQueryParams($stmt, $params) {
-		call_user_func_array([$stmt, 'bind_param'], $params);
-		self::checkError($stmt);
+	public function getInsertID() {
+		$id = $this->stmt->insert_id;
+		$this->stmt->reset();
+		return $id;
 	}
+
+	public function getResults() {
+		$resultList = [];
+
+		$result = $this->stmt->get_result();
+		mySQLCheckError($this->stmt);
+
+		if ($result->num_rows > 0)
+			while ($data = $result->fetch_assoc())
+				$resultList[] = $data;
+
+		$this->stmt->free_result();
+		$this->stmt->reset();
+		return $resultList;
+	}
+}
+
+function mySQLCheckError($source = null) {
+	if ($source->errno)
+		throw new DatabaseException($source->error);
 }

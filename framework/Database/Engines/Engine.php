@@ -15,7 +15,13 @@ interface Engine {
 
 	public function rollback();
 
-	public function prepare($query);
+	public function prepare($query, array &$params = []);
+}
 
-	public function bindQueryParams($stmt, $params);
+interface Statement {
+	public function execute();
+
+	public function getInsertID();
+
+	public function getResults();
 }

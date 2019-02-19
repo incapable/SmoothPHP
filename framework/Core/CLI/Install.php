@@ -40,15 +40,15 @@ class Install extends Command {
 
 				// fallthrough
 				default:
-					$this->import($kernel->getMySQL(), $file, $debug);
+					$this->import($kernel->getDatabase(), $file, $debug);
 			}
 		});
 		$this->traverse(__ROOT__ . 'src/sql', function ($file) use ($kernel, $debug) {
-			$this->import($kernel->getMySQL(), $file, $debug);
+			$this->import($kernel->getDatabase(), $file, $debug);
 		});
 	}
 
-	private function import(Database $mysql, $file, $debug) {
+	private function import(Database $db, $file, $debug) {
 		if (!strpos($file, '.sql'))
 			return; // Skip non-sql file
 
@@ -64,23 +64,20 @@ class Install extends Command {
 		$count = 0;
 		$insert_id = 0;
 
-		$mysql->start();
+		$db->start();
 		try {
 			foreach ($queries as $query) {
 				if (strlen(preg_replace('( |\n|\r|' . PHP_EOL . ')', '', $query)) == 0)
 					continue;
 
 				$query = str_replace('LAST_INSERT_ID()', $insert_id, $query);
-				$mysql->getEngine()->real_query($query);
-				if ($mysql->getEngine()->errno)
-					throw new DatabaseException($mysql->getEngine()->error);
-				$insert_id = $mysql->getEngine()->insert_id;
+				$insert_id = $db->execute($query);
 				$count++;
 			}
 
-			$mysql->commit();
+			$db->commit();
 		} catch (\Exception $e) {
-			$mysql->rollback();
+			$db->rollback();
 			/** @noinspection PhpUnhandledExceptionInspection */
 			throw $e;
 		}

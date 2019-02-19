@@ -87,7 +87,7 @@ class ControllerCall {
 			return $kernel->getLanguageRepository();
 		});
 		$this->setRef(Database::class, function () use ($kernel) {
-			return $kernel->getMySQL();
+			return $kernel->getDatabase();
 		});
 		$this->setRef(AuthenticationManager::class, function () use ($kernel) {
 			return $kernel->getAuthenticationManager();

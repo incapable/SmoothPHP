@@ -65,7 +65,7 @@ class RegisterController extends Controller {
 		$this->registerForm = $registerFormBuilder->getForm();
 
 		// Create a user mapping
-		$this->userMap = $kernel->getMySQL()->map(TestUser::class);
+		$this->userMap = $kernel->getDatabase()->map(TestUser::class);
 	}
 
 	public function register(Request $request) {
