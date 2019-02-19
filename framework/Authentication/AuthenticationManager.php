@@ -126,7 +126,7 @@ class AuthenticationManager {
 		return $this->defaultForm;
 	}
 
-	public function checkLoginResult(Request $request) {
+	public function checkLoginResult(Request $request, $createSession = true) {
 		$form = $this->defaultForm;
 		$form->validate($request);
 
@@ -187,16 +187,12 @@ class AuthenticationManager {
 			}
 
 			$this->loginSessionMap->delete($session);
-			$activeSession = new ActiveSession($user);
-			$this->activeSessionMap->insert($activeSession);
-
-			global $kernel;
-			if ($kernel->getConfig()->authentication_rememberme && $request->post->rememberme) {
-				$longLivedSession = new LongLivedSession($user, $activeSession);
-				$this->longLivedMap->insert($longLivedSession);
+			if ($createSession) {
+				global $kernel;
+				$this->assignSession($user, $kernel->getConfig()->authentication_rememberme && $request->post->rememberme);
 			}
 
-			return true;
+			return $user;
 		} else
 			return false;
 	}
@@ -206,6 +202,16 @@ class AuthenticationManager {
 		$this->loginSessionMap->insert($session);
 		$_SESSION[self::SESSION_KEY_LOGINTOKEN] = $session->getToken();
 		return $session;
+	}
+
+	public function assignSession(User $user, $longLivedSession = false) {
+		$activeSession = new ActiveSession($user);
+		$this->activeSessionMap->insert($activeSession);
+
+		if ($longLivedSession) {
+			$longLivedSession = new LongLivedSession($user, $activeSession);
+			$this->longLivedMap->insert($longLivedSession);
+		}
 	}
 
 	/**
