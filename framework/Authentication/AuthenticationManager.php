@@ -126,6 +126,11 @@ class AuthenticationManager {
 		return $this->defaultForm;
 	}
 
+	/**
+	 * @param Request $request The request to compare the login form against.
+	 * @param bool $createSession Should a session be created upon success? If not, you will have to call #assignSession yourself later.
+	 * @return bool|User User instance on success, false on failure.
+	 */
 	public function checkLoginResult(Request $request, $createSession = true) {
 		$form = $this->defaultForm;
 		$form->validate($request);
