@@ -37,7 +37,7 @@ abstract class SQLStatement {
 		$this->args = [];
 
 		$previousMatch = null;
-		$this->query = preg_replace_callback('/%(d|f|s|r)/', function (array $matches) use (&$previousMatch) {
+		$this->query = preg_replace_callback('/\'[^\']*\'(*SKIP)(*FAIL)|%(d|f|s|r)/', function (array $matches) use (&$previousMatch) {
 			if ($matches[1] != 'r') {
 				$this->params[0] .= $matches[1];
 				$this->args[] = null;
