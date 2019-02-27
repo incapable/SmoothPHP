@@ -26,9 +26,11 @@ class Config {
 	public $db_engine = MySQL::class;
 	public $db_host = 'localhost';
 	public $db_database = 'smoothphp';
+	public $db_schema = 'public'; // Not used for MySQL
 	public $db_port = 3306;
 	public $db_user = 'root';
 	public $db_password = '';
+	public $db_parameters = ''; // Not used for MySQL
 
 	public $authentication_enabled = false;
 	public $authentication_loginroute = null;

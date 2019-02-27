@@ -14,7 +14,7 @@ namespace SmoothPHP\Framework\Core\CLI;
 
 use SmoothPHP\Framework\Core\Kernel;
 use SmoothPHP\Framework\Database\Database;
-use SmoothPHP\Framework\Database\DatabaseException;
+use SmoothPHP\Framework\Database\Engines\Engine;
 
 class Install extends Command {
 
@@ -52,9 +52,28 @@ class Install extends Command {
 		if (!strpos($file, '.sql'))
 			return; // Skip non-sql file
 
-		if (!$debug && strpos($file, '.debug.sql')) {
-			printf('Skipping %s...' . PHP_EOL, $file);
+		$parts = explode('.', pathinfo($file, PATHINFO_BASENAME));
+
+		if (!$debug && in_array('debug', $parts)) {
+			printf('Skipping debug file %s...' . PHP_EOL, $file);
 			return;
+		}
+		if (in_array('query', $parts)) {
+			printf('Skipping query file %s...' . PHP_EOL, $file);
+			return;
+		}
+		
+		$engines = Database::$engines;
+		if (($key = array_search(get_class($db->getEngine()), $engines)) !== false) {
+			unset($engines[$key]);
+		}
+		foreach ($engines as $engine) {
+			/* @var $inst Engine */
+			$inst = new $engine();
+			if (in_array($inst->getShortName(), $parts)) {
+				printf('Skipping different engine file %s...' . PHP_EOL, $file);
+				return;
+			}
 		}
 
 		printf('Importing %s... ', $file);

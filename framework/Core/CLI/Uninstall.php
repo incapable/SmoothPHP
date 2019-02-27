@@ -33,50 +33,7 @@ class Uninstall extends Command {
 			throw new \RuntimeException('Cancelled.' . PHP_EOL);
 
 		(new Cache())->handle($kernel, []);
-
-		$db = $kernel->getDatabase();
-
-		print('Dropping constraints...' . PHP_EOL);
-		$constraints = $db->fetch("
-			SELECT DISTINCT
-			    CONCAT('ALTER TABLE `',
-			            K.TABLE_NAME,
-			            '` DROP FOREIGN KEY `',
-			            K.CONSTRAINT_NAME,
-			            '`;') AS query
-			FROM
-			    information_schema.KEY_COLUMN_USAGE K
-			        LEFT JOIN
-			    information_schema.REFERENTIAL_CONSTRAINTS C USING (CONSTRAINT_NAME)
-			WHERE
-			    K.REFERENCED_TABLE_SCHEMA = %s", [$kernel->getConfig()->db_database]);
-
-		if ($constraints->hasData()) {
-			do {
-				printf('Executing: %s' . PHP_EOL, $constraints->query);
-				$db->execute($constraints->query);
-			} while ($constraints->next());
-		} else {
-			print('Nothing to do!' . PHP_EOL);
-		}
-
-		print('Dropping tables...' . PHP_EOL);
-		$databases = $db->fetch("
-			SELECT
-			    concat('DROP TABLE IF EXISTS `', table_name, '`;') AS query
-			FROM
-			    information_schema.tables
-			WHERE
-			    table_schema = %s", [$kernel->getConfig()->db_database]);
-
-		if ($databases->hasData()) {
-			do {
-				printf('Executing: %s' . PHP_EOL, $databases->query);
-				$db->execute($databases->query);
-			} while ($databases->next());
-		} else {
-			print('Nothing to do!' . PHP_EOL);
-		}
+		$kernel->getDatabase()->getEngine()->wipe();
 
 		print('Done clearing database.' . PHP_EOL);
 	}

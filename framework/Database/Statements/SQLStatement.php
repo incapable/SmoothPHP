@@ -13,7 +13,6 @@
 namespace SmoothPHP\Framework\Database\Statements;
 
 use SmoothPHP\Framework\Database\Database;
-use SmoothPHP\Framework\Database\DatabaseException;
 use SmoothPHP\Framework\Database\DatabaseResult;
 use SmoothPHP\Framework\Database\Engines\Statement;
 
@@ -33,35 +32,21 @@ abstract class SQLStatement {
 	 */
 	public function __construct(Database $db, $query) {
 		$this->db = $db;
-		$this->params = [''];
+		$this->params = [];
 		$this->args = [];
-
-		$previousMatch = null;
-		$this->query = preg_replace_callback('/\'[^\']*\'(*SKIP)(*FAIL)|%(d|f|s|r)/', function (array $matches) use (&$previousMatch) {
-			if ($matches[1] != 'r') {
-				$this->params[0] .= $matches[1];
-				$this->args[] = null;
-				$previousMatch = $matches[1];
-			} else {
-				if ($previousMatch == null)
-					throw new DatabaseException('Trying to use %r (repeat) in a query with no previous variables.');
-				$this->params[0] .= $previousMatch;
-			}
-			$this->params[] = &$this->args[count($this->args) - 1];
-			return '?';
-		}, $query);
+		$this->query = $query;
 
 		$this->verifyStmtAwake();
 	}
 
 	public function __sleep() {
-		return ['db', 'query', 'params', 'args'];
+		return ['db', 'query', 'args'];
 	}
 
 	private function verifyStmtAwake() {
 		if (!isset($this->stmt)) {
 			$this->db->__wakeup();
-			$this->stmt = $this->db->getEngine()->prepare($this->query, $this->params);
+			$this->stmt = $this->db->getEngine()->prepare($this->query, $this->args, $this->params);
 		}
 	}
 

@@ -14,10 +14,14 @@ namespace SmoothPHP\Framework\Database;
 
 use SmoothPHP\Framework\Core\Config;
 use SmoothPHP\Framework\Database\Engines\Engine;
+use SmoothPHP\Framework\Database\Engines\MySQL;
+use SmoothPHP\Framework\Database\Engines\PostgreSQL;
 use SmoothPHP\Framework\Database\Mapper\DBObjectMapper;
 use SmoothPHP\Framework\Database\Statements as Statements;
 
 class Database {
+	static $engines = [MySQL::class, PostgreSQL::class];
+
 	/* @var $engine Engine */
 	private $engine;
 	private $config;
@@ -51,6 +55,19 @@ class Database {
 	public function prepare($query, $returnsData = true) {
 		return $returnsData ? new Statements\SQLStatementWithResult($this, $query)
 			: new Statements\SQLStatementWithoutResult($this, $query);
+	}
+
+	public function prepareFile($filename, $returnsData = true) {
+		$attempts = [
+			__ROOT__ . 'src/sql/' . $filename . '.' . $this->engine->getShortName() . '.query.sql',
+			__ROOT__ . 'src/sql/' . $filename . '.query.sql',
+			__ROOT__ . 'framework/meta/sql/' . $filename . '.' . $this->engine->getShortName() . '.query.sql',
+			__ROOT__ . 'framework/meta/sql/' . $filename . '.query.sql',
+		];
+		foreach ($attempts as $attempt)
+			if (file_exists($attempt))
+				return $this->prepare(file_get_contents($attempt), $returnsData);
+		throw new \Exception('No sql query file ' . $filename . '.query.sql or ' . $filename . '.' . $this->engine->getShortName() . '.query.sql found in either src/sql/ or framework/meta/sql/');
 	}
 
 	public function start() {

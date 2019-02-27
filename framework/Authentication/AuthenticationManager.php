@@ -52,16 +52,13 @@ class AuthenticationManager {
 
 	public function initialize(Kernel $kernel) {
 		$db = $kernel->getDatabase();
+		$engine = $db->getEngine();
 		$this->loginSessionMap = $db->map(LoginSession::class);
 		$this->activeSessionMap = $db->map(ActiveSession::class);
 		$this->longLivedMap = $db->map(LongLivedSession::class);
 		$this->userMap = $this->userMap ?: $db->map(User::class);
-		$this->permissionsQuery = $db->prepare('
-            SELECT `permission` FROM `permissions` WHERE `userId` = %d AND NOT ISNULL(`permission`)
-            UNION DISTINCT
-            SELECT `permission` FROM `permissions` WHERE `group` IN (SELECT `group` FROM `permissions` WHERE `userId` = %d AND NOT ISNULL(`group`)) AND NOT ISNULL(`permission`)
-        ', true);
-		$this->sessionLastActiveQuery = $db->prepare('UPDATE `sessions` SET `lastActive` = NOW() WHERE `id` = %d', false);
+		$this->permissionsQuery = $db->prepareFile('permissions', true);
+		$this->sessionLastActiveQuery = $db->prepare('UPDATE ' . $engine->quote('sessions') . ' SET ' . $engine->quote('lastActive') . ' = NOW() WHERE ' . $engine->quote('id') . ' = %d', false);
 
 		$formBuilder = new FormBuilder();
 		$language = $kernel->getLanguageRepository();

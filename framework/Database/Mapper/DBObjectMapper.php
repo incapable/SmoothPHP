@@ -14,6 +14,8 @@ namespace SmoothPHP\Framework\Database\Mapper;
 
 use SmoothPHP\Framework\Database\Database;
 use SmoothPHP\Framework\Database\DatabaseException;
+use SmoothPHP\Framework\Database\Engines\MySQL;
+use SmoothPHP\Framework\Database\Engines\PostgreSQL;
 use SmoothPHP\Framework\Database\Statements\SQLStatementWithResult;
 
 define('DB_NO_LIMIT', -1);
@@ -28,6 +30,7 @@ class DBObjectMapper {
 
 	public function __construct(Database $db, $clazz) {
 		$this->db = $db;
+		$engine = $this->db->getEngine();
 
 		$this->className = $clazz;
 		$this->classDef = new \ReflectionClass($clazz);
@@ -46,6 +49,7 @@ class DBObjectMapper {
 
 		// Prepare queries
 		{
+			/* @var $object MappedDBObject */
 			$object = $this->classDef->newInstanceWithoutConstructor();
 
 			// Set up fetch query
@@ -54,31 +58,31 @@ class DBObjectMapper {
 
 				$this->fetch = new PreparedMapStatement();
 
-				$query .= implode(', ', array_map(function (\ReflectionProperty $field) {
+				$query .= implode(', ', array_map(function (\ReflectionProperty $field) use ($engine) {
 					$this->fetch->references[] = null;
 					$this->fetch->params[$field->getName()] = &$this->fetch->references[count($this->fetch->references) - 1];
-					return '`' . $field->getName() . '`';
+					return $engine->quote($field->getName());
 				}, $this->fields));
 
-				$query .= ' FROM `' . $object->getTableName() . '` WHERE `id` = %d';
+				$query .= ' FROM ' . $engine->quote($object->getTableName()) . ' WHERE ' . $engine->quote('id') . ' = %d';
 
 				$this->fetch->statement = $this->db->prepare($query);
 			}
 
 			// Set up insert/update query
 			{
-				$query = 'INSERT INTO `' . $object->getTableName() . '` (';
+				$query = 'INSERT INTO ' . $engine->quote($object->getTableName()) . ' (';
 
 				$insertParams = [];
 				$this->insert = new PreparedMapStatement();
 
 				$first = true;
-				array_map(function (\ReflectionProperty $field) use (&$object, &$query, &$insertParams, &$first) {
+				array_map(function (\ReflectionProperty $field) use ($engine, &$object, &$query, &$insertParams, &$first) {
 					if (!$first)
 						$query .= ', ';
 					else
 						$first = false;
-					$query .= '`' . $field->getName() . '`';
+					$query .= $engine->quote($field->getName());
 
 					$value = $field->getValue($object);
 					if (is_int($value))
@@ -88,18 +92,29 @@ class DBObjectMapper {
 					else
 						$insertKey = '%s';
 
+					if ($engine instanceof PostgreSQL && $field->getName() == 'id')
+						$insertKey = 'CASE WHEN ' . $insertKey . ' != 0 THEN %r ELSE nextval(pg_get_serial_sequence(\'' . $object->getTableName() . '\', \'id\')) END';
 					$insertParams[] = $insertKey;
-					if ($field->getName() != 'id')
-						$this->insert->params[$field->getName()] = '`' . $field->getName() . '` = VALUES(`' . $field->getName() . '`)';
+					if ($field->getName() != 'id') {
+						if ($engine instanceof MySQL)
+							$this->insert->params[$field->getName()] = $engine->quote($field->getName()) . ' = VALUES(' . $engine->quote($field->getName()) . ')';
+						else if ($engine instanceof PostgreSQL)
+							$this->insert->params[$field->getName()] = $engine->quote($field->getName()) . ' = excluded.' . $engine->quote($field->getName());
+					}
 				}, $this->fields);
 
-				$query .= ') VALUES (' . implode(', ', $insertParams) . ') ON DUPLICATE KEY UPDATE ' . implode(', ', array_values($this->insert->params));
+				$conflictCondition = 'ON DUPLICATE KEY UPDATE ';
+				if ($engine instanceof PostgreSQL)
+					$conflictCondition = 'ON CONFLICT (' . $engine->quote('id') . ') DO UPDATE SET ';
+				$query .= ') VALUES (' . implode(', ', $insertParams) . ') ' . $conflictCondition . implode(', ', array_values($this->insert->params));
+				if ($engine instanceof PostgreSQL)
+					$query .= ' RETURNING "id"';
 				$this->insert->statement = $this->db->prepare($query, false);
 			}
 
 			// Set up delete query
 			{
-				$query = 'DELETE FROM `' . $object->getTableName() . '` WHERE `id` = %d';
+				$query = 'DELETE FROM ' . $engine->quote($object->getTableName()) . ' WHERE ' . $engine->quote('id') . ' = %d';
 				$this->delete = $this->db->prepare($query, false);
 			}
 		}
@@ -128,17 +143,18 @@ class DBObjectMapper {
 			$prepared = $this->fetch;
 			$rawResults = $prepared->statement->execute((int)$where);
 		} else {
+			$engine = $this->db->getEngine();
 			$query = 'SELECT ';
 
 			$prepared = new PreparedMapStatement();
 
-			$query .= implode(', ', array_map(function (\ReflectionProperty $field) use (&$prepared) {
+			$query .= implode(', ', array_map(function (\ReflectionProperty $field) use ($engine, &$prepared) {
 				$prepared->references[] = null;
 				$prepared->params[$field->getName()] = &$prepared->references[count($prepared->references) - 1];
-				return '`' . $field->getName() . '`';
+				return $engine->quote($field->getName());
 			}, $this->fields));
 
-			$query .= ' FROM `' . $this->classDef->newInstanceWithoutConstructor()->getTableName() . '` WHERE ';
+			$query .= ' FROM ' . $engine->quote($this->classDef->newInstanceWithoutConstructor()->getTableName()) . ' WHERE ';
 
 			if (is_array($where)) {
 				$whereSeparator = 'AND';
@@ -148,7 +164,7 @@ class DBObjectMapper {
 				}
 
 				$conditions = [];
-				array_walk($where, function (&$value, $key) use (&$conditions) {
+				array_walk($where, function (&$value, $key) use ($engine, &$conditions) {
 					if ($key[0] == '_')
 						return;
 
@@ -158,7 +174,7 @@ class DBObjectMapper {
 						$key = substr($key, 5);
 					}
 					$valueType = is_int($value) || ctype_digit($value) ? '%d' : '%s';
-					$conditions[] = sprintf('`%s` %s %s', $key, $comparator, $valueType);
+					$conditions[] = sprintf('%s %s %s', $engine->quote($key), $comparator, $valueType);
 				});
 				$query .= implode(' ' . $whereSeparator . ' ', $conditions);
 
@@ -204,9 +220,11 @@ class DBObjectMapper {
 		/* @var $field \ReflectionProperty */
 		$idField = null;
 		foreach ($this->fields as $field) {
-			if ($field->getName() == 'id')
+			$val = $field->getValue($object);
+			if ($field->getName() == 'id') {
 				$idField = $field;
-			$params[] = $field->getValue($object);
+			}
+			$params[] = $val;
 		}
 
 		$id = call_user_func_array([$this->insert->statement, 'execute'], $params);

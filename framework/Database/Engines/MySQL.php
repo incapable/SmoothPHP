@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SmoothPHP
  * This file is part of the SmoothPHP project.
@@ -7,6 +8,12 @@
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * **********
  * MySQL.php
+ */
+
+/**
+ * PhpComposerExtensionStubsInspection -> This is a suggested dependency.
+ * PhpUnhandledExceptionInspection -> Will be handled by wrappers.
+ * @noinspection PhpComposerExtensionStubsInspection,PhpUnhandledExceptionInspection
  */
 
 namespace SmoothPHP\Framework\Database\Engines;
@@ -33,6 +40,10 @@ class MySQL implements Engine {
 		$this->connection->close();
 	}
 
+	public function getShortName() {
+		return 'my';
+	}
+
 	public function start() {
 		$this->connection->begin_transaction();
 		mySQLCheckError($this->connection);
@@ -48,7 +59,23 @@ class MySQL implements Engine {
 		mySQLCheckError($this->connection);
 	}
 
-	public function prepare($query, array &$params = []) {
+	public function prepare($query, array &$args = [], array &$params = []) {
+		$params[0] = '';
+		$previousMatch = null;
+		$query = preg_replace_callback('/\'[^\']*\'(*SKIP)(*FAIL)|%(d|f|s|r)/', function (array $matches) use (&$previousMatch, &$args, &$params) {
+			if ($matches[1] != 'r') {
+				$params[0] .= $matches[1];
+				$args[] = null;
+				$previousMatch = $matches[1];
+			} else {
+				if ($previousMatch == null)
+					throw new DatabaseException('Trying to use %r (repeat) in a query with no previous variables.');
+				$params[0] .= $previousMatch;
+			}
+			$params[] = &$args[count($args) - 1];
+			return '?';
+		}, $query);
+
 		$stmt = $this->connection->prepare($query);
 		mySQLCheckError($this->connection);
 
@@ -58,6 +85,55 @@ class MySQL implements Engine {
 		}
 
 		return new MySQLStatement($stmt);
+	}
+
+	public function quote($field) {
+		return '`' . $field . '`';
+	}
+
+	public function wipe() {
+		if (__ENV__ != 'cli')
+			die('Wipe cannot be called outside of the CLI environment.');
+
+		global $kernel;
+
+		print('Dropping constraints...' . PHP_EOL);
+		$constraints = $this->connection->query("SELECT DISTINCT
+			    CONCAT('ALTER TABLE `',
+			            K.TABLE_NAME,
+			            '` DROP FOREIGN KEY `',
+			            K.CONSTRAINT_NAME,
+			            '`;') AS query
+			FROM
+			    information_schema.KEY_COLUMN_USAGE K
+			        LEFT JOIN
+			    information_schema.REFERENTIAL_CONSTRAINTS C USING (CONSTRAINT_NAME)
+			WHERE
+			    K.REFERENCED_TABLE_SCHEMA = '" . $this->connection->escape_string($kernel->getConfig()->db_database) . "'");
+		mySQLCheckError($this->connection);
+
+		while ($constraint = $constraints->fetch_assoc()) {
+			printf('Executing: %s' . PHP_EOL, $constraints->query);
+			$this->connection->real_query($constraint['query']);
+			mySQLCheckError($this->connection);
+		}
+		$constraints->free_result();
+
+		print('Dropping tables...' . PHP_EOL);
+		$databases = $this->connection->query("
+			SELECT
+			    concat('DROP TABLE IF EXISTS `', table_name, '`;') AS query
+			FROM
+			    information_schema.tables
+			WHERE
+			    table_schema = '" . $this->connection->escape_string($kernel->getConfig()->db_database) . "'");
+		mySQLCheckError($this->connection);
+
+		while ($database = $databases->fetch_assoc()) {
+			printf('Executing: %s' . PHP_EOL, $database['query']);
+			$this->connection->real_query($database['query']);
+			mySQLCheckError($this->connection);
+		}
 	}
 }
 

@@ -18,13 +18,22 @@ interface Engine {
 
 	public function disconnect();
 
+	public function getShortName();
+
 	public function start();
 
 	public function commit();
 
 	public function rollback();
 
-	public function prepare($query, array &$params = []);
+	public function prepare($query, array &$args = [], array &$params = []);
+	
+	public function quote($field);
+
+	/**
+	 * This function will only work inside the CLI environment.
+	 */
+	public function wipe();
 }
 
 interface Statement {
