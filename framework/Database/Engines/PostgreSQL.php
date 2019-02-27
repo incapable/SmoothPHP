@@ -69,6 +69,10 @@ class PostgreSQL implements Engine {
 				$params[] = &$args[count($args) - 1];
 			} else if ($previousMatch == null)
 				throw new DatabaseException('Trying to use %r (repeat) in a query with no previous variables.');
+
+			if ($matches[1] == 's')
+				return 'NULLIF($' . count($params) . ', \'\')';
+
 			return '$' . count($params);
 		}, $query);
 
