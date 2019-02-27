@@ -32,15 +32,19 @@ abstract class SQLStatement {
 	 */
 	public function __construct(Database $db, $query) {
 		$this->db = $db;
-		$this->params = [];
-		$this->args = [];
 		$this->query = $query;
 
+		$this->__wakeup();
 		$this->verifyStmtAwake();
 	}
 
 	public function __sleep() {
-		return ['db', 'query', 'args', 'params'];
+		return ['db', 'query'];
+	}
+
+	public function __wakeup() {
+		$this->params = [];
+		$this->args = [];
 	}
 
 	private function verifyStmtAwake() {
