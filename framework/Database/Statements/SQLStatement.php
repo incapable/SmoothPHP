@@ -40,7 +40,7 @@ abstract class SQLStatement {
 	}
 
 	public function __sleep() {
-		return ['db', 'query', 'args'];
+		return ['db', 'query', 'args', 'params'];
 	}
 
 	private function verifyStmtAwake() {
