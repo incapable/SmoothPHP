@@ -16,8 +16,6 @@ use SmoothPHP\Framework\Core\Config;
 interface Engine {
 	public function connect(Config $config);
 
-	public function disconnect();
-
 	public function getShortName();
 
 	public function start();

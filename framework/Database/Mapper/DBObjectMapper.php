@@ -221,9 +221,9 @@ class DBObjectMapper {
 		$idField = null;
 		foreach ($this->fields as $field) {
 			$val = $field->getValue($object);
-			if ($field->getName() == 'id') {
+			if ($field->getName() == 'id')
 				$idField = $field;
-			}
+
 			$params[] = $val;
 		}
 

@@ -36,10 +36,6 @@ class MySQL implements Engine {
 			throw new DatabaseException('Could not set charset for MySQLi client: ' . $this->connection->error);
 	}
 
-	public function disconnect() {
-		$this->connection->close();
-	}
-
 	public function getShortName() {
 		return 'my';
 	}

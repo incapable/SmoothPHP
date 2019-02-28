@@ -18,27 +18,29 @@
 
 namespace SmoothPHP\Framework\Database\Engines;
 
+use PDO;
+use PDOException;
+use PDOStatement;
 use SmoothPHP\Framework\Core\Config;
 use SmoothPHP\Framework\Database\DatabaseException;
 
 class PostgreSQL implements Engine {
+	/* @var $connection PDO */
 	private $connection;
 
 	public function connect(Config $config) {
-		$this->connection = \pg_connect(sprintf('host=%s port=%d dbname=%s user=%s password=%s %s',
-			$config->db_host,
-			$config->db_port,
-			$config->db_database,
-			$config->db_user,
-			$config->db_password,
-			$config->db_parameters));
-		if (!$this->connection)
-			throw new DatabaseException(\pg_last_error($this->connection));
-	}
-
-	public function disconnect() {
-		if (!\pg_close($this->connection))
-			throw new DatabaseException(\pg_last_error($this->connection));
+		try {
+			$this->connection = new PDO(sprintf('pgsql:host=%s port=%d dbname=%s user=%s password=%s %s',
+				$config->db_host,
+				$config->db_port,
+				$config->db_database,
+				$config->db_user,
+				$config->db_password,
+				$config->db_parameters));
+			$this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+		} catch (PDOException $e) {
+			throw new DatabaseException($e);
+		}
 	}
 
 	public function getShortName() {
@@ -46,18 +48,27 @@ class PostgreSQL implements Engine {
 	}
 
 	public function start() {
-		if (!\pg_query($this->connection, "BEGIN"))
-			throw new DatabaseException(\pg_last_error($this->connection));
+		try {
+			$this->connection->beginTransaction();
+		} catch (PDOException $e) {
+			throw new DatabaseException($e);
+		}
 	}
 
 	public function commit() {
-		if (!\pg_query($this->connection, "COMMIT"))
-			throw new DatabaseException(\pg_last_error($this->connection));
+		try {
+			$this->connection->commit();
+		} catch (PDOException $e) {
+			throw new DatabaseException($e);
+		}
 	}
 
 	public function rollback() {
-		if (!\pg_query($this->connection, "ROLLBACK"))
-			throw new DatabaseException(\pg_last_error($this->connection));
+		try {
+			$this->connection->rollBack();
+		} catch (PDOException $e) {
+			throw new DatabaseException($e);
+		}
 	}
 
 	public function prepare($query, array &$args = [], array &$params = []) {
@@ -66,23 +77,19 @@ class PostgreSQL implements Engine {
 			if ($matches[1] != 'r') {
 				$args[] = null;
 				$previousMatch = $matches[1];
-				$params[] = &$args[count($args) - 1];
 			} else if ($previousMatch == null)
 				throw new DatabaseException('Trying to use %r (repeat) in a query with no previous variables.');
 
-			return '$' . count($params);
+			$params[] = &$args[count($args) - 1];
+			return '?';
 		}, $query);
 
-		$stmtName = "sphp_pgprep_" . md5($query);
 		try {
-			if (!\pg_prepare($this->connection, $stmtName, $query))
-				throw new DatabaseException(\pg_last_error($this->connection));
-		} catch (\ErrorException $e) {
-			if (strpos($e->getMessage(), 'already exists') === false)
-				throw $e;
+			$stmt = $this->connection->prepare($query);
+			return new PostgreSQLStatement($stmt, $params);
+		} catch (PDOException $e) {
+			throw new DatabaseException($e);
 		}
-
-		return new PostgreSQLStatement($this->connection, $stmtName, $params);
 	}
 
 	public function quote($field) {
@@ -93,52 +100,49 @@ class PostgreSQL implements Engine {
 		if (__ENV__ != 'cli')
 			die('Wipe cannot be called outside of the CLI environment.');
 
-		if (!pg_query($this->connection, 'DROP OWNED BY current_user CASCADE;'))
-			throw new DatabaseException(\pg_last_error($this->connection));
+		try {
+			$this->connection->exec('DROP OWNED BY current_user CASCADE');
+		} catch (PDOException $e) {
+			throw new DatabaseException($e);
+		}
 	}
 }
 
 class PostgreSQLStatement implements Statement {
-	private $connection;
-	private $stmtName;
+	private $stmt;
 	private $params;
 
-	private $result;
-
-	public function __construct($connection, $stmtName, array &$params) {
-		$this->connection = $connection;
-		$this->stmtName = $stmtName;
+	public function __construct(PDOStatement $stmt, array &$params) {
+		$this->stmt = $stmt;
 		$this->params = &$params;
 	}
 
 	public function execute() {
-		$this->result = \pg_execute($this->connection, $this->stmtName, $this->params);
-		if (!$this->result)
-			throw new DatabaseException(\pg_last_error($this->connection));
+		try {
+			$this->stmt->execute($this->params);
+		} catch (PDOException $e) {
+			throw new DatabaseException($e);
+		}
 	}
 
 	public function getInsertID() {
-		$results = \pg_fetch_all($this->result);
-		if (!$results) {
-			$err = \pg_last_error($this->connection);
-			if ($err)
-				throw new DatabaseException($err);
-			else
-				return 0;
-		}
+		try {
+			$results = $this->stmt->fetchAll();
 
-		\pg_free_result($this->result);
-		return $results[0]['id'];
+			if (!isset($results[0]['id']))
+				return 0;
+
+			return $results[0]['id'];
+		} catch (PDOException $e) {
+			throw new DatabaseException($e);
+		}
 	}
 
 	public function getResults() {
-		if (pg_num_rows($this->result) == 0)
-			return [];
-
-		$resultList = \pg_fetch_all($this->result);
-		if (!$resultList)
-			throw new DatabaseException(\pg_last_error($this->connection));
-		\pg_free_result($this->result);
-		return $resultList;
+		try {
+			return $this->stmt->fetchAll();
+		} catch (PDOException $e) {
+			throw new DatabaseException($e);
+		}
 	}
 }
