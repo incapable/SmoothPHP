@@ -7,13 +7,7 @@
  * Copyright © 2015-2019
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * **********
- * PostgreSQL.php
- */
-
-/**
- * PhpComposerExtensionStubsInspection -> This is a suggested dependency.
- * PhpUnhandledExceptionInspection -> Will be handled by wrappers.
- * @noinspection PhpComposerExtensionStubsInspection,PhpUnhandledExceptionInspection
+ * PDOEngine.php
  */
 
 namespace SmoothPHP\Framework\Database\Engines;

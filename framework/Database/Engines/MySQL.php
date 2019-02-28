@@ -10,12 +10,6 @@
  * MySQL.php
  */
 
-/**
- * PhpComposerExtensionStubsInspection -> This is a suggested dependency.
- * PhpUnhandledExceptionInspection -> Will be handled by wrappers.
- * @noinspection PhpComposerExtensionStubsInspection,PhpUnhandledExceptionInspection
- */
-
 namespace SmoothPHP\Framework\Database\Engines;
 
 use PDO;
