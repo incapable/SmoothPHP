@@ -258,7 +258,7 @@ class AuthenticationManager {
 		if ($user instanceof User)
 			$user = $user->getId();
 		if (!isset($this->permissions[$user]))
-			$this->permissions[$user] = $this->permissionsQuery->execute($user, $user)->getAsArray();
+			$this->permissions[$user] = $this->permissionsQuery->execute($user)->getAsArray();
 		return $this->permissions[$user];
 	}
 

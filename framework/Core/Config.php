@@ -30,7 +30,7 @@ class Config {
 	public $db_port = 3306;
 	public $db_user = 'root';
 	public $db_password = '';
-	public $db_parameters = ''; // Not used for MySQL
+	public $db_parameters = ''; // Additional parameters to be passed to PDO
 
 	public $authentication_enabled = false;
 	public $authentication_loginroute = null;
