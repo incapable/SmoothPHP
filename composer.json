@@ -12,12 +12,12 @@
     "ext-openssl": "*",
     "ext-ctype": "*",
     "ext-dom": "*",
-    "ext-intl": "*"
+    "ext-intl": "*",
+    "ext-pdo": "*"
   },
   "suggest": {
     "ext-apcu": "Strongly recommended for production environments, allows the framework to memcache itself.",
-    "ext-mysqli": "Required for using the MySQL DB Engine",
-    "ext-pdo": "Required for using the PostgreSQL DB Engine",
+    "ext-pdo_mysql": "Required for using the MySQL DB Engine",
     "ext-pdo_pgsql": "Required for using the PostgreSQL DB Engine"
   }
 }
