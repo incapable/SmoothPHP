@@ -17,6 +17,7 @@
   "suggest": {
     "ext-apcu": "Strongly recommended for production environments, allows the framework to memcache itself.",
     "ext-mysqli": "Required for using the MySQL DB Engine",
-    "ext-pgsql": "Required for using the PostgresQL DB Engine"
+    "ext-pdo": "Required for using the PostgreSQL DB Engine",
+    "ext-pdo_pgsql": "Required for using the PostgreSQL DB Engine"
   }
 }
