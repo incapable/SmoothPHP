@@ -1,0 +1,1 @@
+DELETE FROM "sessions" WHERE "lastActive" < (NOW() - INTERVAL '12 hours')

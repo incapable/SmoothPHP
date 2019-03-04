@@ -1,0 +1,1 @@
+DELETE FROM `loginsessions` WHERE `lastUpdate` < UNIX_TIMESTAMP((NOW() - INTERVAL 1 HOUR))

@@ -1,0 +1,1 @@
+DELETE FROM "loginsessions" WHERE "lastUpdate" > (NOW() - INTERVAL '1 hour')

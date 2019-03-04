@@ -48,10 +48,10 @@ class Kernel {
 	public function registerCron(CronManager $mgr) {
 		if ($this->config->authentication_enabled) {
 			$mgr->newJob('authentication_clean_loginsessions', '@hourly', function (Kernel $kernel) {
-				$kernel->getDatabase()->execute('DELETE FROM `loginsessions` WHERE `lastUpdate` < UNIX_TIMESTAMP((NOW() - INTERVAL 1 HOUR))');
+				$kernel->getDatabase()->prepareFile('cleanup_loginsessions')->execute();
 			});
 			$mgr->newJob('authentication_clean_sessions', '@hourly', function (Kernel $kernel) {
-				$kernel->getDatabase()->execute('DELETE FROM `sessions` WHERE `lastActive` < (NOW() - INTERVAL 12 HOUR)');
+				$kernel->getDatabase()->prepareFile('cleanup_sessions')->execute();
 			});
 		}
 	}
