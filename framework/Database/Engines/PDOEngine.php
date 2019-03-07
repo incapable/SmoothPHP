@@ -26,8 +26,9 @@ abstract class PDOEngine implements Engine {
 
 	public function connect(Config $config) {
 		try {
-			$this->connection = new PDO($this->getDSN($config), $config->db_user, $config->db_password);
-			$this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			$this->connection = new PDO($this->getDSN($config), $config->db_user, $config->db_password, [
+				PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+			]);
 		} catch (PDOException $e) {
 			throw new DatabaseException($e);
 		}
