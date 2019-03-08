@@ -79,8 +79,8 @@ class SelectType extends Type {
 		foreach ($this->options['options'] as $key => $value) {
 			$optionValue = ((($mode >> 4) & self::KEY_SELECTOR) == self::KEY_SELECTOR) ? $key : $value;
 			$labelValue = (($mode & self::KEY_SELECTOR) == self::KEY_SELECTOR) ? $key : $value;
-			$selected = $selected != null && ($key == $selected || $value == $selected) ? ' selected' : '';
-			$options[] = sprintf('<option value="%s"%s%s>%s</option>', $optionValue, strlen($optionsAttr) ? ' ' . $optionsAttr : '', $selected, $labelValue);
+			$selectedStr = $selected != null && ($key == $selected || $value == $selected) ? ' selected' : '';
+			$options[] = sprintf('<option value="%s"%s%s>%s</option>', $optionValue, strlen($optionsAttr) ? ' ' . $optionsAttr : '', $selectedStr, $labelValue);
 		}
 
 		return sprintf('<select %s>%s</select>', $this->transformAttributes($attributes), implode(' ', $options));
