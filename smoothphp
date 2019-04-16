@@ -6,18 +6,21 @@ print('Initializing SmoothPHP CLI module.' . PHP_EOL);
 set_time_limit(0);
 define('__ENV__', 'cli');
 
+$root;
 if (file_exists(sprintf('%s/%s', getcwd(), 'smoothphp'))) {
-	define('__ROOT__', getcwd() . '/');
+	$root = getcwd() . '/';
 } else if (file_exists(file_exists(sprintf('%s/%s', __DIR__, 'smoothphp')))) {
-	define('__ROOT__', __DIR__ . '/');
+	$root = __DIR__ . '/';
 } else {
 	$prts = explode('/', $argv[0]);
 	unset($prts[count($prts) - 1]);
 	if (file_exists(sprintf('%s/%s', implode('/', $prts), 'smoothphp')))
-		define('__ROOT__', realpath(implode('/', $prts)) . '/');
+		$root = realpath(implode('/', $prts)) . '/';
 	else
 		printf('Could not reliably determine __ROOT__.');
 }
+
+define('__ROOT__', str_replace('\\', '/', $root));
 
 require_once __ROOT__ . 'framework/Bootstrap.php';
 use SmoothPHP\Framework\Core\Kernel;

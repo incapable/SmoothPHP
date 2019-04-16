@@ -26,7 +26,7 @@ set_error_handler(function ($severity, $msg, $file, $line) {
 });
 
 if (!defined('__ROOT__'))
-	define('__ROOT__', str_replace('public', '', $_SERVER['DOCUMENT_ROOT']));
+	define('__ROOT__', strrev(preg_replace(strrev('/public/'), '', strrev($_SERVER['DOCUMENT_ROOT']), 1)));
 
 require_once __ROOT__ . 'framework/Core/Utilities.php';
 require_once __ROOT__ . 'framework/Core/ClassLoader/BasicClassLoader.php';
