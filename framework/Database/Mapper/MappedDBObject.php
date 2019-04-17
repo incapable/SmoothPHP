@@ -4,15 +4,15 @@
  * SmoothPHP
  * This file is part of the SmoothPHP project.
  * **********
- * Copyright © 2015-2018
+ * Copyright © 2015-2019
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * **********
- * MappedMySQLObject.php
+ * MappedDBObject.php
  */
 
 namespace SmoothPHP\Framework\Database\Mapper;
 
-class MappedMySQLObject {
+class MappedDBObject {
 	public $id = 0;
 
 	public function getTableName() {

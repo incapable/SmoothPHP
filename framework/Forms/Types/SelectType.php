@@ -4,7 +4,7 @@
  * SmoothPHP
  * This file is part of the SmoothPHP project.
  * **********
- * Copyright © 2015-2018
+ * Copyright © 2015-2019
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * **********
  * SelectType.php
@@ -29,12 +29,14 @@ class SelectType extends Type {
 	public function __construct($field) {
 		parent::__construct($field);
 		$this->options = array_replace_recursive($this->options, [
-			'options_mode' => self::KEY_VALUE_INVERSE,
-			'strict'       => true,
-			'options'      => [],
-			'options_attr' => [],
-			'selected'     => null,
-			'required'     => false
+			'options_mode'        => self::KEY_VALUE_INVERSE,
+			'strict'              => true,
+			'options'             => [],
+			'options_attr'        => [],
+			'selected'            => null,
+			'empty_default'       => true,
+			'empty_default_label' => '',
+			'required'            => true
 		]);
 	}
 
@@ -69,13 +71,16 @@ class SelectType extends Type {
 		$mode = last($this->options['options_mode']);
 		$options = [];
 		$optionsAttr = $this->transformAttributes($this->options['options_attr']);
+		$selected = last($this->options['selected']);
+
+		if (last($this->options['empty_default']) && $selected == null)
+			$options[] = '<option disabled selected value style="display: none;">' . last($this->options['empty_default_label']) . '</option>';
 
 		foreach ($this->options['options'] as $key => $value) {
 			$optionValue = ((($mode >> 4) & self::KEY_SELECTOR) == self::KEY_SELECTOR) ? $key : $value;
 			$labelValue = (($mode & self::KEY_SELECTOR) == self::KEY_SELECTOR) ? $key : $value;
-			$selected = last($this->options['selected']);
-			$selected = $selected != null && ($key == $selected || $value == $selected) ? ' selected' : '';
-			$options[] = sprintf('<option value="%s"%s%s>%s</option>', $optionValue, strlen($optionsAttr) ? ' ' . $optionsAttr : '', $selected, $labelValue);
+			$selectedStr = $selected != null && ($key == $selected || $value == $selected) ? ' selected' : '';
+			$options[] = sprintf('<option value="%s"%s%s>%s</option>', $optionValue, strlen($optionsAttr) ? ' ' . $optionsAttr : '', $selectedStr, $labelValue);
 		}
 
 		return sprintf('<select %s>%s</select>', $this->transformAttributes($attributes), implode(' ', $options));

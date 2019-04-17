@@ -4,15 +4,15 @@
  * SmoothPHP
  * This file is part of the SmoothPHP project.
  * **********
- * Copyright © 2015-2018
+ * Copyright © 2015-2019
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * **********
- * MySQLResult.php
+ * DatabaseResult.php
  */
 
 namespace SmoothPHP\Framework\Database;
 
-class MySQLResult {
+class DatabaseResult {
 	private $results;
 	private $current;
 

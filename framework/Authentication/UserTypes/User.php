@@ -4,7 +4,7 @@
  * SmoothPHP
  * This file is part of the SmoothPHP project.
  * **********
- * Copyright © 2015-2018
+ * Copyright © 2015-2019
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * **********
  * User.php
@@ -12,9 +12,9 @@
 
 namespace SmoothPHP\Framework\Authentication\UserTypes;
 
-use SmoothPHP\Framework\Database\Mapper\MappedMySQLObject;
+use SmoothPHP\Framework\Database\Mapper\MappedDBObject;
 
-class User extends MappedMySQLObject implements AbstractUser {
+class User extends MappedDBObject implements AbstractUser {
 
 	public $email;
 	public $password;

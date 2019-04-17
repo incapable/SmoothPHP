@@ -4,7 +4,7 @@
  * SmoothPHP
  * This file is part of the SmoothPHP project.
  * **********
- * Copyright © 2015-2018
+ * Copyright © 2015-2019
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * **********
  * LongLivedSession.php
@@ -13,10 +13,10 @@
 namespace SmoothPHP\Framework\Authentication\Sessions;
 
 use SmoothPHP\Framework\Authentication\UserTypes\User;
-use SmoothPHP\Framework\Database\Mapper\MappedMySQLObject;
-use SmoothPHP\Framework\Database\Mapper\MySQLObjectMapper;
+use SmoothPHP\Framework\Database\Mapper\MappedDBObject;
+use SmoothPHP\Framework\Database\Mapper\DBObjectMapper;
 
-class LongLivedSession extends MappedMySQLObject {
+class LongLivedSession extends MappedDBObject {
 
 	const SESSION_KEY = 'sm_lses';
 
@@ -62,7 +62,7 @@ class LongLivedSession extends MappedMySQLObject {
 				false); // This cookie can be transferred over non-HTTP
 	}
 
-	public static function readCookie(MySQLObjectMapper $map) {
+	public static function readCookie(DBObjectMapper $map) {
 		if (isset($_COOKIE[self::SESSION_KEY])) {
 			$cookie = explode(':', $_COOKIE[self::SESSION_KEY]);
 

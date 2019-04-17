@@ -4,7 +4,7 @@
  * SmoothPHP
  * This file is part of the SmoothPHP project.
  * **********
- * Copyright © 2015-2018
+ * Copyright © 2015-2019
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * **********
  * TemplateEngine.php
@@ -15,6 +15,7 @@ namespace SmoothPHP\Framework\Templates;
 use SmoothPHP\Framework\Cache\Builder\FileCacheProvider;
 use SmoothPHP\Framework\Cache\Builder\RuntimeCacheProvider;
 use SmoothPHP\Framework\Templates\Compiler\CompilerState;
+use SmoothPHP\Framework\Templates\Elements\Element;
 use SmoothPHP\Framework\Templates\Elements\PrimitiveElement;
 
 class TemplateEngine {
@@ -25,7 +26,10 @@ class TemplateEngine {
 	public function __construct() {
 		$this->compiler = new TemplateCompiler();
 
-		$compileCache = new FileCacheProvider('ctpl', 'ctpl', [$this->compiler, 'compile'], [TemplateEngine::class, 'deserializeTemplate'], [TemplateEngine::class, 'serializeTemplate']);
+		$compileCache = new FileCacheProvider('ctpl', 'ctpl',
+			[$this->compiler, 'compile'],
+			[TemplateEngine::class, 'deserializeTemplate'],
+			[TemplateEngine::class, 'serializeTemplate']);
 		$this->runtimeCache = RuntimeCacheProvider::create([$compileCache, 'fetch']);
 	}
 
@@ -40,7 +44,7 @@ class TemplateEngine {
 		return $this->prepareOutput($this->compiler->compile($absoluteFile), $args, false);
 	}
 
-	private function prepareOutput($template, array $args, $allowMinify = __ENV__ != 'dev') {
+	private function prepareOutput(Element $template, array $args, $allowMinify = __ENV__ != 'dev') {
 		$state = new CompilerState();
 		$state->allowMinify = $allowMinify;
 		foreach ($args as $key => $value)

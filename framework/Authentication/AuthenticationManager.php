@@ -4,7 +4,7 @@
  * SmoothPHP
  * This file is part of the SmoothPHP project.
  * **********
- * Copyright © 2015-2018
+ * Copyright © 2015-2019
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * **********
  * AuthenticationManager.php
@@ -19,8 +19,8 @@ use SmoothPHP\Framework\Authentication\UserTypes\AbstractUser;
 use SmoothPHP\Framework\Authentication\UserTypes\AnonymousUser;
 use SmoothPHP\Framework\Authentication\UserTypes\User;
 use SmoothPHP\Framework\Core\Kernel;
-use SmoothPHP\Framework\Database\Mapper\MySQLObjectMapper;
-use SmoothPHP\Framework\Database\Statements\MySQLStatement;
+use SmoothPHP\Framework\Database\Mapper\DBObjectMapper;
+use SmoothPHP\Framework\Database\Statements\SQLStatement;
 use SmoothPHP\Framework\Flow\Requests\Request;
 use SmoothPHP\Framework\Flow\Responses\RedirectResponse;
 use SmoothPHP\Framework\Flow\Responses\Response;
@@ -36,9 +36,9 @@ class AuthenticationManager {
 	const SESSION_KEY_LOGINTOKEN = 'sm_logintoken';
 
 	// Login flow
-	/* @var MySQLObjectMapper */
+	/* @var DBObjectMapper */
 	private $loginSessionMap, $activeSessionMap, $longLivedMap, $userMap;
-	/* @var MySQLStatement */
+	/* @var SQLStatement */
 	private $permissionsQuery, $sessionLastActiveQuery;
 	/* @var Form */
 	private $defaultForm;
@@ -51,17 +51,14 @@ class AuthenticationManager {
 	private $authSchemes = [];
 
 	public function initialize(Kernel $kernel) {
-		$mysql = $kernel->getMySQL();
-		$this->loginSessionMap = $mysql->map(LoginSession::class);
-		$this->activeSessionMap = $mysql->map(ActiveSession::class);
-		$this->longLivedMap = $mysql->map(LongLivedSession::class);
-		$this->userMap = $this->userMap ?: $mysql->map(User::class);
-		$this->permissionsQuery = $mysql->prepare('
-            SELECT `permission` FROM `permissions` WHERE `userId` = %d AND NOT ISNULL(`permission`)
-            UNION DISTINCT
-            SELECT `permission` FROM `permissions` WHERE `group` IN (SELECT `group` FROM `permissions` WHERE `userId` = %d AND NOT ISNULL(`group`)) AND NOT ISNULL(`permission`)
-        ', true);
-		$this->sessionLastActiveQuery = $mysql->prepare('UPDATE `sessions` SET `lastActive` = NOW() WHERE `id` = %d', false);
+		$db = $kernel->getDatabase();
+		$engine = $db->getEngine();
+		$this->loginSessionMap = $db->map(LoginSession::class);
+		$this->activeSessionMap = $db->map(ActiveSession::class);
+		$this->longLivedMap = $db->map(LongLivedSession::class);
+		$this->userMap = $this->userMap ?: $db->map(User::class);
+		$this->permissionsQuery = $db->prepareFile('permissions', true);
+		$this->sessionLastActiveQuery = $db->prepare('UPDATE ' . $engine->quote('sessions') . ' SET ' . $engine->quote('lastActive') . ' = NOW() WHERE ' . $engine->quote('id') . ' = %d', false);
 
 		$formBuilder = new FormBuilder();
 		$language = $kernel->getLanguageRepository();
@@ -104,7 +101,7 @@ class AuthenticationManager {
 			throw new \RuntimeException('Class ' . $clazz . ' does not derive from ' . User::class);
 
 		global $kernel;
-		$this->userMap = $kernel->getMySQL()->map($clazz);
+		$this->userMap = $kernel->getDatabase()->map($clazz);
 	}
 
 	public function getLoginForm(Request $request) {
@@ -126,7 +123,12 @@ class AuthenticationManager {
 		return $this->defaultForm;
 	}
 
-	public function checkLoginResult(Request $request) {
+	/**
+	 * @param Request $request The request to compare the login form against.
+	 * @param bool $createSession Should a session be created upon success? If not, you will have to call #assignSession yourself later.
+	 * @return bool|User User instance on success, false on failure.
+	 */
+	public function checkLoginResult(Request $request, $createSession = true) {
 		$form = $this->defaultForm;
 		$form->validate($request);
 
@@ -187,16 +189,12 @@ class AuthenticationManager {
 			}
 
 			$this->loginSessionMap->delete($session);
-			$activeSession = new ActiveSession($user);
-			$this->activeSessionMap->insert($activeSession);
-
-			global $kernel;
-			if ($kernel->getConfig()->authentication_rememberme && $request->post->rememberme) {
-				$longLivedSession = new LongLivedSession($user, $activeSession);
-				$this->longLivedMap->insert($longLivedSession);
+			if ($createSession) {
+				global $kernel;
+				$this->assignSession($user, $kernel->getConfig()->authentication_rememberme && $request->post->rememberme);
 			}
 
-			return true;
+			return $user;
 		} else
 			return false;
 	}
@@ -206,6 +204,16 @@ class AuthenticationManager {
 		$this->loginSessionMap->insert($session);
 		$_SESSION[self::SESSION_KEY_LOGINTOKEN] = $session->getToken();
 		return $session;
+	}
+
+	public function assignSession(User $user, $longLivedSession = false) {
+		$activeSession = new ActiveSession($user);
+		$this->activeSessionMap->insert($activeSession);
+
+		if ($longLivedSession) {
+			$longLivedSession = new LongLivedSession($user, $activeSession);
+			$this->longLivedMap->insert($longLivedSession);
+		}
 	}
 
 	/**
@@ -250,7 +258,7 @@ class AuthenticationManager {
 		if ($user instanceof User)
 			$user = $user->getId();
 		if (!isset($this->permissions[$user]))
-			$this->permissions[$user] = $this->permissionsQuery->execute($user, $user)->getAsArray();
+			$this->permissions[$user] = $this->permissionsQuery->execute($user)->getAsArray();
 		return $this->permissions[$user];
 	}
 

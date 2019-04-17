@@ -4,7 +4,7 @@
  * SmoothPHP
  * This file is part of the SmoothPHP project.
  * **********
- * Copyright © 2015-2018
+ * Copyright © 2015-2019
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * **********
  * ControllerCall.php
@@ -16,7 +16,7 @@ use SmoothPHP\Framework\Authentication\AuthenticationManager;
 use SmoothPHP\Framework\Cache\Assets\AssetsRegister;
 use SmoothPHP\Framework\Core\Abstracts\Controller;
 use SmoothPHP\Framework\Core\Kernel;
-use SmoothPHP\Framework\Database\MySQL;
+use SmoothPHP\Framework\Database\Database;
 use SmoothPHP\Framework\Flow\Requests\Request;
 use SmoothPHP\Framework\Localization\LanguageRepository;
 
@@ -44,7 +44,7 @@ class ControllerCall {
 				case RouteDatabase::class:
 				case AssetsRegister::class:
 				case LanguageRepository::class:
-				case MySQL::class:
+				case Database::class:
 				case AuthenticationManager::class:
 					$this->controllerArgs[] = &$this->getRef($className);
 					break;
@@ -86,8 +86,8 @@ class ControllerCall {
 		$this->setRef(LanguageRepository::class, function () use ($kernel) {
 			return $kernel->getLanguageRepository();
 		});
-		$this->setRef(MySQL::class, function () use ($kernel) {
-			return $kernel->getMySQL();
+		$this->setRef(Database::class, function () use ($kernel) {
+			return $kernel->getDatabase();
 		});
 		$this->setRef(AuthenticationManager::class, function () use ($kernel) {
 			return $kernel->getAuthenticationManager();

@@ -4,18 +4,20 @@
  * SmoothPHP
  * This file is part of the SmoothPHP project.
  * **********
- * Copyright © 2015-2018
+ * Copyright © 2015-2019
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * **********
- * MySQLCustomStatement.php
+ * SQLStatementWithResult.php
  */
 
 namespace SmoothPHP\Framework\Database\Statements;
 
-class MySQLCustomStatement extends MySQLStatement {
+use SmoothPHP\Framework\Database\DatabaseResult;
+
+class SQLStatementWithResult extends SQLStatement {
 
 	public function createResult() {
-		return null;
+		return new DatabaseResult($this->getStatement()->getResults());
 	}
 
 }

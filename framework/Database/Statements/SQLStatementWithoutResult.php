@@ -4,23 +4,18 @@
  * SmoothPHP
  * This file is part of the SmoothPHP project.
  * **********
- * Copyright © 2015-2018
+ * Copyright © 2015-2019
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * **********
- * MySQLStatementWithoutResult.php
+ * SQLStatementWithoutResult.php
  */
 
 namespace SmoothPHP\Framework\Database\Statements;
 
-class MySQLStatementWithoutResult extends MySQLStatement {
+class SQLStatementWithoutResult extends SQLStatement {
 
 	public function createResult() {
-		$stmt = $this->getMySQLi_stmt();
-
-		$id = $stmt->insert_id;
-
-		$stmt->reset();
-		return $id;
+		return $this->getStatement()->getInsertID();
 	}
 
 }

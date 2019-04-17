@@ -3,7 +3,7 @@
  * SmoothPHP
  * This file is part of the SmoothPHP project.
  * **********
- * Copyright © 2015-2018
+ * Copyright © 2015-2019
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * **********
  * RegisterController.php
@@ -31,7 +31,7 @@ use Test\Model\TestUser;
 class RegisterController extends Controller {
 	/* @var Form */
 	private $registerForm;
-	/* @var \SmoothPHP\Framework\Database\Mapper\MySQLObjectMapper */
+	/* @var \SmoothPHP\Framework\Database\Mapper\DBObjectMapper */
 	private $userMap;
 
 	public function onInitialize(Kernel $kernel) {
@@ -65,7 +65,7 @@ class RegisterController extends Controller {
 		$this->registerForm = $registerFormBuilder->getForm();
 
 		// Create a user mapping
-		$this->userMap = $kernel->getMySQL()->map(TestUser::class);
+		$this->userMap = $kernel->getDatabase()->map(TestUser::class);
 	}
 
 	public function register(Request $request) {

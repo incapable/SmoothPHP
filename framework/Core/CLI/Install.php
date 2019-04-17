@@ -4,7 +4,7 @@
  * SmoothPHP
  * This file is part of the SmoothPHP project.
  * **********
- * Copyright © 2015-2018
+ * Copyright © 2015-2019
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * **********
  * Install.php
@@ -13,8 +13,8 @@
 namespace SmoothPHP\Framework\Core\CLI;
 
 use SmoothPHP\Framework\Core\Kernel;
-use SmoothPHP\Framework\Database\MySQL;
-use SmoothPHP\Framework\Database\MySQLException;
+use SmoothPHP\Framework\Database\Database;
+use SmoothPHP\Framework\Database\Engines\Engine;
 
 class Install extends Command {
 
@@ -40,21 +40,40 @@ class Install extends Command {
 
 				// fallthrough
 				default:
-					$this->import($kernel->getMySQL(), $file, $debug);
+					$this->import($kernel->getDatabase(), $file, $debug);
 			}
 		});
 		$this->traverse(__ROOT__ . 'src/sql', function ($file) use ($kernel, $debug) {
-			$this->import($kernel->getMySQL(), $file, $debug);
+			$this->import($kernel->getDatabase(), $file, $debug);
 		});
 	}
 
-	private function import(MySQL $mysql, $file, $debug) {
+	private function import(Database $db, $file, $debug) {
 		if (!strpos($file, '.sql'))
 			return; // Skip non-sql file
 
-		if (!$debug && strpos($file, '.debug.sql')) {
-			printf('Skipping %s...' . PHP_EOL, $file);
+		$parts = explode('.', pathinfo($file, PATHINFO_BASENAME));
+
+		if (!$debug && in_array('debug', $parts)) {
+			printf('Skipping debug file %s...' . PHP_EOL, $file);
 			return;
+		}
+		if (in_array('query', $parts)) {
+			printf('Skipping query file %s...' . PHP_EOL, $file);
+			return;
+		}
+		
+		$engines = Database::$engines;
+		if (($key = array_search(get_class($db->getEngine()), $engines)) !== false) {
+			unset($engines[$key]);
+		}
+		foreach ($engines as $engine) {
+			/* @var $inst Engine */
+			$inst = new $engine();
+			if (in_array($inst->getShortName(), $parts)) {
+				printf('Skipping different engine file %s...' . PHP_EOL, $file);
+				return;
+			}
 		}
 
 		printf('Importing %s... ', $file);
@@ -64,23 +83,20 @@ class Install extends Command {
 		$count = 0;
 		$insert_id = 0;
 
-		$mysql->start();
+		$db->start();
 		try {
 			foreach ($queries as $query) {
 				if (strlen(preg_replace('( |\n|\r|' . PHP_EOL . ')', '', $query)) == 0)
 					continue;
 
 				$query = str_replace('LAST_INSERT_ID()', $insert_id, $query);
-				$mysql->getConnection()->real_query($query);
-				if ($mysql->getConnection()->errno)
-					throw new MySQLException($mysql->getConnection()->error);
-				$insert_id = $mysql->getConnection()->insert_id;
+				$insert_id = $db->execute($query);
 				$count++;
 			}
 
-			$mysql->commit();
+			$db->commit();
 		} catch (\Exception $e) {
-			$mysql->rollback();
+			$db->rollback();
 			/** @noinspection PhpUnhandledExceptionInspection */
 			throw $e;
 		}

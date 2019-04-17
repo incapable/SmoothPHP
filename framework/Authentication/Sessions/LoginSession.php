@@ -4,7 +4,7 @@
  * SmoothPHP
  * This file is part of the SmoothPHP project.
  * **********
- * Copyright © 2015-2018
+ * Copyright © 2015-2019
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * **********
  * LoginSession.php
@@ -12,10 +12,10 @@
 
 namespace SmoothPHP\Framework\Authentication\Sessions;
 
-use SmoothPHP\Framework\Database\Mapper\MappedMySQLObject;
+use SmoothPHP\Framework\Database\Mapper\MappedDBObject;
 use SmoothPHP\Framework\Flow\Requests\Request;
 
-class LoginSession extends MappedMySQLObject {
+class LoginSession extends MappedDBObject {
 
 	private $ip;
 	private $token;

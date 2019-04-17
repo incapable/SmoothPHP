@@ -4,7 +4,7 @@
  * SmoothPHP
  * This file is part of the SmoothPHP project.
  * **********
- * Copyright © 2015-2018
+ * Copyright © 2015-2019
  * License: https://github.com/Ikkerens/SmoothPHP/blob/master/License.md
  * **********
  * AssetsRegister.php
@@ -15,7 +15,6 @@ namespace SmoothPHP\Framework\Cache\Assets;
 use SmoothPHP\Framework\Cache\Builder\FileCacheProvider;
 use SmoothPHP\Framework\Core\Kernel;
 use SmoothPHP\Framework\Flow\Requests\Robots;
-use tubalmartin\CssMin\Minifier;
 
 class AssetsRegister {
 	/* @var FileCacheProvider */
@@ -104,6 +103,9 @@ class AssetsRegister {
 	}
 
 	public static function getSourcePath($type, $file) {
+		if (file_exists($file))
+			return $file;
+
 		$path = sprintf('%ssrc/assets/%s/%s', __ROOT__, $type, $file);
 		if (!file_exists($path))
 			throw new \RuntimeException($type . " file '" . $file . "' does not exist.");
